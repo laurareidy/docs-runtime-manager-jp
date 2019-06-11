@@ -1,0 +1,478 @@
+= 外部分析ツールへのデータのエクスポート (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+Mule アプリケーションのイベント通知を Splunk や ELK などのサードパーティツールに送信するには、外部分析ツールにデータをエクスポートするよう Runtime Manager を設定します。
+
+この機能は、ハイブリッドデプロイメントシナリオのみで使用可能です。CloudHub にデプロイされたアプリケーションでは使用できません。
+
+== 基本的なアーキテクチャ
+
+Runtime Manager は次として存在ます。
+
+* Anypoint Platform のコンポーネント。
+* オンプレミスにインストールできる Anypoint Platform Private Cloud Edition のコンポーネント。
+
+Anypoint Platform Private Cloud Edition には、オンプレミスにデプロイされているアプリケーションのみを処理する Runtime Manager があります。Anypoint Platform のクラウドベースバージョンには、xref:index.adoc[CloudHub] にデプロイされたアプリケーションとオンプレミスおよび独自のクラウドサーバにデプロイされているアプリケーションを管理できる Runtime Manager があります。Runtime Manager のどちらのバージョンを使用しても、アプリケーションを監視する方法があります。
+
+CloudHub にデプロイされたアプリケーションでは、MuleSoft の分析および監視機能であるxref:insight.adoc[インサイト]を使用できます。オンプレミスまたは独自のクラウドサーバにデプロイするアプリケーションをサードパーティ分析アプリケーションに統合することができます。このドキュメントではそれについて説明します。
+
+////
+Applications deployed on Cloud can either use Insights (MuleSoft’s Analytics & Monitoring feature) or be integrated into third party analytics applications for a unified view of monitoring and analytics. Apps deployed on on-prem must be integrated into third party analytics applications.
+////
+
+お客様が管理する Mule サーバに Runtime Manager からアプリケーションをデプロイする場合、Mule アプリケーションのイベントおよび分析データを、Elk や Splunk などのサードパーティ分析ソフトウェアに送信できます。
+
+[NOTE]
+サードパーティソフトウェアへのデータの送信は、xref:cloudhub.adoc[CloudHub] にあるアプリケーションでは現在使用できません。詳細は、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
+
+Runtime Manager とサードパーティ分析ソフトウェアのインテグレーションは、次のようになります。
+
+image::amc-onprem-diagram-detail.jpg[]
+
+xref:runtime-manager-agent.adoc[Runtime Manager エージェント]は、Runtime Manager とサードパーティソフトウェアの間で機能します。エージェントによってインテグレーションが可能になり、イベント通知がサードパーティ分析ソフトウェアに送信されます。
+
+== 前提条件
+
+* Mule v3.6 以降。または API ゲートウェイを使用して構築されるアプリケーションを使用する場合は API ゲートウェイスタンドアロンのバージョン 2.1.0 以降。
+* Runtime Manager エージェント 1.2.0 以降が必要です。インストールおよび設定の手順を以下に示します。
+
+== サードパーティ分析ツールを使用する Runtime Manager のインストールとセットアップ
+
+Runtime Manager から外部分析ツールにデータを送信するには、次の手順に従う必要があります。これらについては後で詳しく説明します。
+
+image::steps-for-external-logs.png[手順]
+
+=== Runtime Manager エージェントの更新
+
+まず、Runtime Manager エージェントの最新バージョンをインストールする必要があります。Runtime Manager エージェントは Mule からメッセージの送信を行います。サードパーティソフトウェアにイベント情報を送信するには、Runtime Manager エージェントのバージョン 1.2.0 以降を使用する必要があります。
+xref:installing-and-configuring-runtime-manager-agent.adoc[「Runtime Manager エージェントのインストールと設定」]を参照してください。
+
+[NOTE]
+====
+バージョン 3.7 以降の Mule にはデフォルトで Runtime Manager エージェントがバンドルされていますが、3.7.2 より前のすべての Mule バージョンには、この機能をサポートしない古いバージョンの Runtime Manager が含まれています。Mule バージョンが 3.7.2 より古い場合は、Runtime Manager エージェントの最新バージョンを別個にダウンロードする必要があります。
+
+http://mule-agent.s3.amazonaws.com/1.2.0/mule-agent-1.2.0.zip[Runtime Manager エージェントのダウンロード]
+====
+
+=== Runtime Manager エージェントの登録
+
+エージェントファイルを `{MULE_HOME}/bin` フォルダに入れた後、ターミナルでコマンドを実行して Runtime Manager に登録する必要があります。Runtime Manager をクラウドプラットフォームで使用するのか、または Anypoint Platform Private Cloud Edition の一部として使用するのかに応じて、異なる引数セットにこのコマンドを渡して登録する必要があります。実行する必要がある基本コマンドを (Runtime Manager インスタンス ID とともに) 取得するには、次を実行する必要があります。
+
+このコードを取得するには、次を実行する必要があります。
+
+. Anypoint Platform アカウントにサインインします。
++
+[TIP]
+Anypoint Platform Private Cloud Edition を開くには、Runtime Manager がすでに開始されていることを確認します。開始されていない場合は、docker を実行して起動する必要があります。開始されたら、ブラウザで +https://localhost+ に移動してアクセスすることができます。
+
+. *[Runtime Manager] > [Servers (サーバ)]* に移動します。
+. *[Add Server (サーバを追加)]* をクリックします。実際に新しいサーバを追加しなくても、特定の組織用のコードを含むサンプルコマンドがポップアップウィンドウに表示されます。このコマンドをコピーします。デプロイ先に応じて引数を追加しなければならない場合があります。
+
++
+image::org-code.png[]
+
+
+[.ex]
+=====
+[discrete.view]
+=== Anypoint Platform クラウド
+
+Runtime Manager エージェントをクラウドベースの Anypoint Platform の一部として使用する場合は、Runtime Manager UI に表示された同じコマンドを正確に入力してエージェントを起動します。
+
+`+amc_setup -H 1c3eded9-7917-4a5e-bbe0-f73f9d4f33c1---2 myServer+`
+
+Windows の場合は次のようになります。
+
+`+amc_setup.bat -H 1c3eded9-7917-4a5e-bbe0-f73f9d4f33c1---2 myServer+`
+
+引数 `-H` は、Anypoint Platform Private Cloud Edition のインストール内の組織を参照する ID です。
+
+このコマンドの最後の引数は、Runtime Manager エージェントインスタンスに割り当てる名前です。上の例では `myServer` です。この名前は、Runtime Manager コンソールからエージェントを操作するときに表示されます。
+
+[discrete.view]
+=== Anypoint Platform Private Cloud Edition
+
+オンプレミスで実行中のアプリケーションとして Anypoint Platform を使用する場合は、次の引数を使用してエージェントを起動します。
+
+`+amc_setup -A http://localhost:8080/hybrid/api/v1 -W wss://localhost:8443/mule -C https://dev.anypoint.mulesoft.com/accounts -H 361755d7-c619-42ce-9187-19db7a6d94a0---2 myServer+`
+
+Windows の場合は次のようになります。
+
+`+amc_setup.bat -A http://localhost:8080/hybrid/api/v1 -W wss://localhost:8443/mule -C https://dev.anypoint.mulesoft.com/accounts -H 361755d7-c619-42ce-9187-19db7a6d94a0---2 myServer+`
+
+引数 `-H` は、Anypoint Platform のインストール内の組織を参照する ID です。
+
+このコマンドの最後の引数は、Runtime Manager エージェントインスタンスに割り当てる名前です。上の例では `myServer` です。この名前は、Runtime Manager コンソールからエージェントを操作するときに表示されます。
+
+-A、-W、-C という 3 つの引数を、Runtime Manager UI からコピーしたコマンドに追加する必要があります。
+* *A* は Runtime Manager のホストアドレスを設定します。
+* *C* はアクセス管理のホストアドレスを設定します。
+* *W* は Mule Communications Manager (MCM) のホストアドレスを設定します。
+
+=====
+
+=== Runtime Manager エージェントの更新
+
+Runtime Manager エージェントのバージョンを更新する場合、実行中のアプリケーションをアンデプロイする必要はありません。
+
+
+[TIP]
+Runtime Manager エージェントをインストールまたは更新する方法についての詳細は、xref:installing-and-configuring-runtime-manager-agent.adoc[「Runtime Manager エージェントのインストールと設定」]を参照してください。
+
+
+image::agent-server.jpg[]
+
+[NOTE]
+1 つのサーバ内に複数のエージェントを作成することはサポートされていません。
+
+==== エージェント登録の確認
+
+前述のコマンドを実行した後、Runtime Manager を開き、エージェントが正常に登録されたことを確認します。
+
+. ログイン情報を使用して Anypoint Platform にサインインします。
+. [Runtime Manager] -> [Servers (サーバ)] に移動します。表示されるサーバの 1 つは、インストール時に指定した名前が付いた Runtime Manager エージェントインスタンスになっているはずです。
+
+image::verify-agent.jpg[]
+
+=== Mule カスタムイベントの設定
+
+Mule イベント (フローの実行、発生した例外など) が外部ソフトウェアに送信されるよう Runtime Manager を設定することができます。これは、クラウドの Runtime Manager と xref:1.5@private-cloud::index.adoc[Anypoint Platform Private Cloud Edition] にバンドルされた Runtime Manager の両方で、どの Runtime にデプロイされたアプリケーションでも機能します。
+
+==== Splunk の統合
+
+http://www.splunk.com/[Splunk] を使用して、Mule イベント通知を検索可能なリポジトリにキャプチャおよびインデックス化し、このリポジトリからグラフ、レポート、アラート、ダッシュボード、視覚化を生成することができます。
+
+image::amc-onprem-diagram-detail-splunk.jpg[]
+
+===== Splunk アカウントの設定
+
+API ゲートウェイから送信される HTTP イベントを解析するために、Splunk インスタンスに新しいソース種別を適切に設定する必要があります。
+それには、`$SPLUNK_HOME/opt/splunk/etc/system/local/props.conf` ファイルに次のソース種別を追加する必要があります。
+
+....
+[mule]
+TRUNCATE = 0
+LINE_BREAKER = ([\r\n]+)
+SHOULD_LINEMERGE = false
+INDEXED_EXTRACTIONS = JSON
+KV_MODE = JSON
+category = Mule Splunk Integration
+description = Mule Agent event information
+....
+
+[NOTE]
+このファイルが存在しない場合は作成する必要があります。
+
+これらの変更を加えた後、Splunk インスタンスを再起動して変更を有効にする必要があります。
+
+.設定可能な項目
+|===
+|項目|データ型|説明|型|デフォルト値
+
+|`user`
+|String (文字列)
+|Splunk に接続するためのユーザ名。
+|必須
+|
+
+|`pass`
+|String (文字列)
+|Splunk ユーザのパスワード。
+|必須
+|
+
+|`host`
+|String (文字列)
+|Splunk を実行中のサーバの IP またはホスト名。
+|必須
+|
+
+|`port`
+|int
+|Splunk 管理ポート。
+|省略可能
+|8089
+
+|`scheme`
+|String (文字列)
+|Splunk 管理ポートとの接続のスキーム。可能な値: http、https
+|省略可能
+|https
+
+|`sslSecurityProtocol`
+|String (文字列)
+|https 接続で使用される SSL セキュリティプロトコル。可能な値: TLSv1_2、TLSv1_1、TLSv1、SSLv3
+|省略可能
+|TLSv1_2
+
+|`splunkIndexName`
+|String (文字列)
+|すべてのイベントの送信先である Splunk インデックス名。ユーザに権限があり、インデックスが存在しない場合は、内部ハンドラによって作成されます。
+|省略可能
+|main
+
+|`splunkSource`
+|String (文字列)
+|Splunk に送信されるイベントで使用されるソース。
+|省略可能
+|Mule
+
+|`splunkSourceType`
+|String (文字列)
+|Splunk に送信されるイベントで使用されるソース種別。
+|省略可能
+|Mule
+
+|`dateFormatPattern`
+|String (文字列)
+|タイムスタンプで使用される日付形式。
+|省略可能
+|yyyy-MM-dd'T'HH:mm:ssSZ
+
+|===
+
+.Splunk 内部ハンドラの最小限の設定例
+[source,yaml]
+....
+---
+  mule.agent.gw.http.handler.splunk:
+    host: 192.168.61.131
+    user: admin
+    pass: test
+....
+
+=== REST API
+
+この機能には、Runtime Manager エージェントのバージョン 1.2.0 以降が必要です。
+
+. どのサーバの情報を送信するのかを選択します。
+. 右側のメニューで、*[Manage Server (サーバを管理)]* をクリックし、サーバの設定にアクセスします。
++
+image::sending-data-from-arm-to-external-monitoring-software-manage-server.png[]
+
+. *[Plugins (プラグイン)]* タブを選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-plugins.png[]
+
+. *[Level (レベル)]* ドロップダウンメニューで、送信する情報の種類を選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-level.png[]
+
+. *[Event Tracking (イベント追跡)]* 領域で、*[Splunk]* スイッチを有効にします。Splunk ユーザ、パスワードデータ、接続のホストとポートを入力するポップアップメニューが開きます。
++
+image::sending-data-from-arm-to-external-monitoring-software-splunk.png[]
+
+. 必要に応じて詳細メニューを開き、送信されるデータの特定の書式設定プロパティをセットアップできます。
++
+image::agent-to-splunk-restapi-advanced.png[splunk]
+
+[discrete.view]
+=== HTTP イベントコレクタ
+
+この機能には、エージェントバージョン 1.3.1 以降が必要です。
+
+[NOTE]
+この機能には、Runtime Manager エージェントのバージョン 1.3.1 以降が必要です。
+
+. 最初に Splunk からトークンを取得する必要があります。次の手順を実行します。
+.. Splunk アカウントにサインインします。
+.. *[Settings (設定)]* -> *[Data Inputs (データ入力)]* に移動します。
+.. さまざまなオプションの中から *[HTTP Event Collector (HTTP イベントコレクタ)]* を見つけ、その横の *[Add New (新規追加)]* リンクをクリックします。
++
+image::splunk-datainput-setup.png[Splunk の設定]
+.. ウィザードのステップに従ってデータ入力をセットアップし、トークンを取得します。
+
+. Runtime Manager に戻り、どのサーバの情報を送信するのかを選択します。
+. 右側のメニューで、*[Manage Server (サーバを管理)]* をクリックし、サーバの設定にアクセスします。
++
+image::sending-data-from-arm-to-external-monitoring-software-manage-server.png[]
+
+. *[Plugins (プラグイン)]* タブを選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-plugins.png[]
+
+. *[Level (レベル)]* ドロップダウンメニューで、送信する情報の種類を選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-level.png[]
+
+. *[Event Tracking (イベント追跡)]* 領域で、*[Splunk]* スイッチを有効にします。Splunk ユーザ、パスワードデータ、接続のホストとポートを入力できるポップアップメニューが開きます。
++
+image::sending-data-from-arm-to-external-monitoring-software-splunk.png[]
+
++
+image::agent-to-splunk-httpevent.png[splunk]
+
+. *[HTTP Event Collector (HTTP イベントコレクタ)]* オプションを選択し、Splunk から提供されたトークンを貼り付けます。
+. 必要に応じて詳細メニューを開き、送信されるデータの特定の書式設定プロパティをセットアップできます。
++
+image::agent-to-splunk-httpevent-advanced.png[splunk]
+
+[NOTE]
+Splunk アカウントにデータ入力を登録するときに Splunk インデックス、Splunk ソース、Splunk ソース種別の値を設定できますが、この値は Runtime Manager エージェントの *[Plugins (プラグイン)]* メニューの *[Advanced (詳細)]* セクションでこれらの項目に設定する値で上書きされます。
+
+[discrete.view]
+=== TCP
+
+この機能には、エージェントバージョン 1.3.1 以降が必要です。
+
+. 最初に Splunk で入力ソースを有効にする必要があります。次の手順を実行します。
+.. Splunk アカウントにサインインします。
+.. *[Settings (設定)]* -> *[Data Inputs (データ入力)]* に移動します。
+.. さまざまなオプションの中から *[TCP]* オプションを見つけます。その横に *[Add New (新規追加)]* リンクがあります。目的のリンクをクリックします。
++
+image::splunk-datainput-setup-tcp.png[Splunk の設定]
+.. ウィザードのステップに従ってデータ入力をセットアップします。
+
+. Runtime Manager に戻り、どのサーバの情報を送信するのかを選択します。
+. 右側のメニューで、*[Manage Server (サーバを管理)]* をクリックし、サーバの設定にアクセスします。
++
+image::sending-data-from-arm-to-external-monitoring-software-manage-server.png[]
+
+. *[Plugins (プラグイン)]* タブを選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-plugins.png[]
+
+. *[Level (レベル)]* ドロップダウンメニューで、送信する情報の種類を選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-level.png[]
+
+. *[Event Tracking (イベント追跡)]* 領域で、*[Splunk]* スイッチを有効にします。Splunk ユーザ、パスワードデータ、接続のホストとポートを入力できるポップアップメニューが開きます。
++
+image::sending-data-from-arm-to-external-monitoring-software-splunk.png[]
+
+. *[Splunk]* スイッチを有効にすると、ポップアップメニューが開きます。ドロップダウンで *[TCP]* を選択し、接続のホストとポートを入力します。
++
+image::agent-to-splunk-tcp.png[splunk]
+
+=====
+
+==== ELK スタックの統合
+
+ELK では、連携する 3 つのオープンソースツール (Elasticsearch、Logstash、Kibana) を組み合わせて、ログデータの保存、検索、分析を行うことができます。Mule イベント通知を汎用システムログとして出力できます。これは、ELK スタックで処理することができます。Logstash でデータがログにキャプチャおよびインデックス化されます。このログから、Elasticsearch と Kibana を使用してグラフ、レポート、アラート、ダッシュボード、可視化を生成することができます。
+Runtime Manager エージェントでは、Mule Runtime フローから生成されたすべてのイベント通知を、ローリングファイルポリシーを使用して設定可能なログファイルに保存することができます。
+
+image::amc-onprem-diagram-detail-elk.jpg[]
+
+ELK スタックに読み取られるフォルダに情報を送るには、次を実行する必要があります。
+
+. どのサーバの情報を送信するのかを選択します。
+. 右側のメニューで、*[Manage Server (サーバを管理)]* をクリックし、サーバの設定にアクセスします。
++
+image::sending-data-from-arm-to-external-monitoring-software-manage-server.png[]
+
+. *[Plugins (プラグイン)]* タブを選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-plugins.png[]
+
+. *[Level (レベル)]* ドロップダウンメニューで、送信する情報の種類を選択します。
++
+image::sending-data-from-arm-to-external-monitoring-software-level.png[]
+
+. *[Event Tracking (イベント追跡)]* 領域で、*[ELK]* スイッチを有効にします。ELK スタックによって読み取られるログファイルの保存先フォルダのアドレスを入力できるポップアップメニューが開きます。
++
+image::sending-data-from-arm-to-external-monitoring-software-elk.png[]
+
+. 必要に応じて詳細メニューを開き、送信するデータの特定の書式設定プロパティと情報のアーカイブ方法をセットアップできます。
++
+image::elk-config-advanced.jpg[ELK の詳細]
+
+=== API Analytics の設定
+
+Runtime Manager UI を使用して外部ソフトウェアとの接続をセットアップするには、その準備として先に API ゲートウェイに変更を加える必要があります。
+
+. API ゲートウェイスタンドアロンのディレクトリで、`conf/wrapper.conf` ファイルを見つけます。
+. ファイル内の次の行で、プロパティが true に設定されていることを確認します。
++
+[source,java,linenums]
+----
+wrapper.java.additional.<n>=-Danypoint.platform.analytics_enabled=true
+----
+
+. 次の行を見つけます。
++
+[source,java,linenums]
+----
+wrapper.java.additional.<n>=-Danypoint.platform.analytics_base_uri=https://analytics-ingest.anypoint.mulesoft.com
+----
+. 行から URL を削除します。次のようになります。
++
+[source,java,linenums]
+----
+wrapper.java.additional.<n>=-Danypoint.platform.analytics_base_uri=
+----
+. Anypoint Platform Private Cloud Edition を使用する場合は、変更が必要なパラメータがもう 1 つあります。
++
+[source,java,linenums]
+----
+wrapper.java.additional.<n>=-Danypoint.platform.on_prem=true
+----
++
+`anypoint.platform.on_prem` はデフォルトで `false` に設定されます。Anypoint Platform Private Cloud Edition を使用して管理するには、これを `true` に設定する必要があります。クラウドの Runtime Manager を使用して管理する場合は `false` のままにしておきます。
+
+[TIP]
+上のコードスニペットで行に含まれている `.<n>` は、ラッパー内で一意の整数に置き換えられます。
+
+スタンドアロン API ゲートウェイをセットアップしたら、Splunk と ELK に接続する手順は、対応するスイッチを使用して設定する必要があるという点を除けば、Mule カスタムイベントの場合と同じです。
+
+image::sending-data-from-arm-to-external-monitoring-software-api-analytics.png[]
+
+[WARNING]
+上記のように `wrapper.conf` ファイルを変更しても、(Runtime Manager UI を使用して) データに外部宛先を割り当てないと、この分析データは API ゲートウェイが実行されているサーバのキューに保存され、システムがクラッシュするまで集積する可能性があります。
+
+== API Analytics と Splunk および ELK の統合
+
+API ゲートウェイを設定したら、Runtime Manager に戻り、サーバのメニューにオプションがいくつか追加されていることを確認できます。
+
+image::sending-data-from-arm-to-external-monitoring-software-api-analytics.png[]
+
+API Analytics を Splunk と ELK の両方に送信するようセットアップできます。ビジネスイベントを送信する場合とまったく同じように設定できます。<<Integrating with an ELK Stack,「ELK スタックの統合」>>と<<Integrating with Splunk,「Splunk の統合」>>を参照してください。
+
+== ペイロード形式
+
+ペイロードのコンテンツをログにエクスポートする場合は、すべての形式をエクスポートできるわけではないことに留意してください。詳細は、xref:about-logging-of-payload-formats.adoc[「ペイロード形式のログについて」]を参照してください。
+
+== パスワードの暗号化
+
+Mule インスタンスまたは API ゲートウェイスタンドアロンインスタンスを起動するときに、マスタパスワードを割り当てます。割り当てない場合、Runtime Manager UI を使用して外部アプリケーションのログイン情報をセットアップするときに、ログイン情報はプレーンテキストとして `conf/mule-agent.yml` ファイルに保存されます。これは、セキュリティ上の理由からお勧めできません。代わりに、引数を追加して Mule または API ゲートウェイランタイムを起動します。この引数を使用して、YAML ファイルに保存するときにこれらのパスワードが暗号化されます。
+
+=== Mule
+
+----
+{MULE_HOME}/bin/mule -M-Dmule.agent.configuration.password=myMasterPassword
+----
+
+Windows の場合は次のようになります。
+
+----
+{MULE_HOME}\bin\mule.bat -M-Dmule.agent.configuration.password=myMasterPassword
+----
+
+
+[discrete.view]
+=== API ゲートウェイ - 非推奨
+
+----
+{MULE_HOME}/bin/gateway -M-Dmule.agent.configuration.password=myMasterPassword
+----
+
+Windows の場合は次のようになります。
+
+----
+{MULE_HOME}\bin\gateway.bat -M-Dmule.agent.configuration.password=myMasterPassword
+----
+
+=====
+
+Mule または API ゲートウェイを再起動するときにこれらの暗号化されたパスワードにアクセスするには、生成するときに使用した同じマスタパスワードを割り当てる必要があります。
+マスタパスワードを変更する、または Runtime の起動時に省略する場合、サードパーティインテグレーションが引き続き正常に機能するには、Runtime Manager UI を使用してパスワードを再割り当てする必要があります。
+
+== 関連情報
+
+* xref:managing-servers.adoc[サーバの管理]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:deploying-to-your-own-servers.adoc[独自のサーバへのアプリケーションのデプロイ]
+* xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]には、デプロイ後にアプリケーションを管理する方法についての追加情報が含まれています。
+* xref:managing-applications-on-your-own-servers.adoc[「独自のサーバにあるアプリケーションの管理」]には、オンプレミスデプロイメントに固有の詳細が含まれています。
+* https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] はサーバへのデプロイメントでも使用できます。

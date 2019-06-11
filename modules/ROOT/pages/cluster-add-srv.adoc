@@ -1,0 +1,23 @@
+= クラスタへのサーバの追加 (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+サーバをクラスタに追加するには、クラスタ内のすべてのサーバが同じバージョンの Mule Runtime と Runtime Manager エージェントを実行する必要があります。
+
+[NOTE]
+最初に、同じバージョンの https://www.mulesoft.com/platform/mule[Mule] をダウンロードおよびインストールし、各サーバで xref:managing-servers.adoc#add-a-server[amc_setup] スクリプトを実行して、クラスタ内の各サーバを登録する必要があります。
+クラスタは、サーバグループまたは別のクラスタにまだ含まれていないサーバのみで構成できます。
+
+
+. Runtime Manager の *[Servers (サーバ)]* タブで、クラスタの名前をクリックして詳細ビューを開きます。
++
+image::server-details.png[]
+
+. *[Add Servers (サーバを追加)]* をクリックします。
++
+image::add-servers-button.png[AddServers]
+
+. クラスタに追加する各サーバのチェックボックスをオンにして、*[Add Servers (サーバを追加)]* をクリックします。
++
+image::addingservertocluster-selectserver.png[AddAnotherServer]

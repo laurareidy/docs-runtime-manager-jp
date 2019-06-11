@@ -1,0 +1,89 @@
+= 独自のサーバでのアプリケーションの管理
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, 監視, デプロイ, Runtime Manager, arm
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+xref:managing-servers.adoc#add-a-server[サーバを追加]し、そこにxref:deploying-to-your-own-servers.adoc[アプリケーションをデプロイ]した後に、Runtime Manager を使用してアプリケーションの監視と管理を実行できます。
+
+アプリケーションが xref:deploying-to-cloudhub.adoc[CloudHub] またはxref:deploying-to-your-own-servers.adoc[独自サーバ]のどちらにデプロイされているかに応じて、デプロイ後に実行できる一連のアクションが異なります。このページでは、独自サーバにデプロイされたアプリケーションに固有のアクションに焦点を絞ります。両方の種類のデプロイメント対象に共通する基本的な管理ツールについては、xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]を参照してください。
+
+xref:managing-applications-on-your-own-servers.adoc[独自サーバ]にデプロイしたアプリケーションについて、次のことを実行できます。
+
+* xref:monitoring.adoc[アプリケーションとそれが実行されるサーバの監視]
+* xref:managing-servers.adoc[サーバの管理]
+
+[NOTE]
+このドキュメントでは、 https://anypoint.mulesoft.com[クラウドベース]の Anypoint Platform または Anypoint Platform Private Cloud Edition を使用してデプロイされたオンプレミスのデプロイメントについて説明します。このページで説明する機能の一部は、Anypoint Platform Private Cloud Edition ではまだ使用できません。明確な区別については、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。Anypoint Platform Private Cloud Edition をリクエストすることに関心がある場合は、営業担当にお問い合わせください。
+
+[NOTE]
+Runtime Manager を使用してデプロイされたアプリケーションのみが表示され、このツールで管理できます。アプリケーションは自動的に検出されないため、オンプレミスサーバに手動でアプリケーションをデプロイした場合、それらは Runtime Manager に表示されません。
+
+== アプリケーションダッシュボード
+
+[Applications (アプリケーション)] タブでいずれかのアプリケーションを選択すると、右側にパネルが開きます。ここでは、アプリケーションに関する追加情報を参照し、その設定にアクセスできます。
+
+image::managing-applications-on-your-own-servers-26ef4.png[]
+
+このダッシュボードに表示される内容は、アプリケーションが xref:managing-applications-on-cloudhub.adoc[CloudHub] と xref:managing-applications-on-your-own-servers.adoc[Mule] のどちらにデプロイされているかによって異なります。
+
+Mule にデプロイされているアプリケーションの場合は、状況、最終変更日時、デプロイされたアプリケーション ZIP ファイルが表示されます。ZIP ファイルは、このメニューから *[Choose File (ファイルを選択)]* ボタンを使用して変更できます。クラスタとサーバグループにデプロイされているアプリケーションの場合は、さらにサーバのリストと各サーバの状況も表示されます。
+
+[TIP]
+アプリケーションが実行されているサーバについての情報を確認するには、パネルでサーバ名をクリックするか、*[Servers (サーバ)]* タブでサーバ名を検索します。詳細は、xref:managing-servers.adoc#servers-dashboard[「サーバ、サーバグループ、クラスタについて」]を参照してください。
+
+
+すべてのパネルには、次の 2 つのボタンが表示されます。
+
+* *[Manage Application (アプリケーションを管理)]* ボタン。アプリケーションの設定ページに移動します。このページには、アプリケーションとアプリケーションが実行されるサーバに関する詳細な情報が表示されます。また、ここからアプリケーションダッシュボードにもアクセスできます。詳細は、xref:monitoring-dashboards.adoc#the-dashboard-for-apps-on-servers[「ダッシュボードの監視」]を参照してください。
++
+image::managing-applications-on-your-own-servers-b0e6f.png[]
+
+* *[Insight (インサイト)]* ボタン。トランザクションレベルのデータが表示されます。表示される内容についての詳細は、xref:insight.adoc[「インサイト」]を参照してください。
++
+image::managing-applications-on-your-own-servers-ba927.png[]
++
+[NOTE]
+現在、​*インサイト*​機能は、Anypoint Platform Private Cloud Edition では使用できません。
+
+== アプリケーション設定へのアクセス
+
+https://anypoint.mulesoft.com[Anypoint Platform] にサインインし、Runtime Manager の *[Applications (アプリケーション)]* タブを表示します。CloudHub で実行されているアプリケーションのいずれかを選択して、右側のパネルを開きます。パネルで、*[Manage Application (アプリケーションを管理)]* ボタンをクリックして、アプリケーションの設定を開きます。
+
+image::managing-applications-on-your-own-servers-1fd39.png[]
+
+このメニューには、パネル上に表示されるのと同じデータがすべて表示され、さらに *[Alerts History (アラート履歴)]* タブに、このアプリケーションでトリガされたアラートの記録が表示されます。詳細は、xref:alerts-on-runtime-manager.adoc[「Runtime Manager のアラート」]を参照してください。
+
+
+== フロー管理
+
+UI のこのタブを使用して、デプロイされたアプリケーション内の特定のフローを個別に開始または停止できます。xref:flow-management.adoc[「フロー管理」]を参照してください。
+
+== アプリケーションの監視
+
+アプリケーションが独自サーバのいずれかにデプロイされている場合は、アプリケーションで発生するイベントやアプリケーションが実行されているサーバ、サーバグループ、クラスタのパフォーマンスを監視するためのツール群があります。詳細は、xref:monitoring.adoc[「アプリケーションの監視」]を参照してください。
+
+
+== アプリケーションの削除
+
+デプロイされたアプリケーションをサーバから削除するには、アプリケーションの状況の横にある矢印をクリックし、*[Delete (削除)]* を選択します。
+
+image::managing-applications-on-your-own-servers-96463.png[]
+
+[NOTE]
+このオプションが使用可能になるには、サーバが実行中である必要があります。クラスタまたはサーバグループの場合、少なくとも 1 つのノードが実行中である必要があります。
+
+== 関連情報
+
+アプリケーションを管理するための他のツールには次のものがあります。
+
+* xref:managing-servers.adoc[「サーバ、サーバグループ、クラスタについて」]には、サーバ、サーバグループ、クラスタを登録してそこにデプロイできるようにする方法と、それらを管理する方法についての情報が含まれています。
+* xref:deploying-to-your-own-servers.adoc[独自サーバにアプリケーションをデプロイ]する方法について参照してください。
+* xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]には、デプロイ後にアプリケーションを管理する方法についての追加情報が含まれています。
+* xref:monitoring.adoc[アプリケーションを監視]する方法について参照してください。
+* サーバのデプロイメントには、 https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] も使用できます。

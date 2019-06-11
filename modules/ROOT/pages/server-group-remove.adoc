@@ -1,0 +1,12 @@
+= サーバグループからのサーバの削除 (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+. *[Servers (サーバ)]* タブでサーバグループエントリを展開し、エントリの右端にある *[X]* アイコンをクリックします。
++
+image::removeserverfromagroup.png[RemoveServerFromAGroup]
+
+. Anypoint Connection Manager に確認を促すメッセージが表示されます。チェックボックスをクリックし、*[Remove (削除)]* をクリックします。
++
+image::removeverifyprompt.png[RemoveVerifyPrompt]

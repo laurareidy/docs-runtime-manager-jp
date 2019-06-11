@@ -1,0 +1,167 @@
+= Anypoint Platform CLI 3.x
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: 管理, api, 組織, ユーザ, ゲートウェイ, テーマ, cli
+
+Anypoint Platform には、Anypoint Platform と Anypoint Platform Private Cloud Edition のスクリプトおよびコマンドラインツールが用意されています。
+CLI は、対話型シェルと標準 CLI モードの両方をサポートしており、以下で動作します。
+
+* xref:exchange::index.adoc[Anypoint Exchange]
+* xref:access-management::index.adoc[アクセス管理]
+* MuleSoft でホストされている (CloudHub) および顧客がホストしている Mule Runtime にデプロイされている Mule アプリケーション用の xref:index.adoc[Runtime Manager]
+* xref:virtual-private-cloud.adoc[VPC]
+* xref:cloudhub-dedicated-load-balancer.adoc[Cloudhub ロードバランサ]
+* xref:2.x@api-manager::index.adoc[API Manager 2.x (Crowd リリース)]
+* xref:design-center::index.adoc[Design Center]
+
+== 前提条件
+
+Anypoint-CLI は、NodeJS アプリケーションです。Anypoint Platform CLI をコンピュータにインストールするには、NPM (デフォルトの NodeJS パッケージマネージャ) と共に NodeJS ランタイム環境がコンピュータにインストールされていることを確認する必要があります。
+NodeJS のドキュメントに従って、両方のリソースを取得します。
+
+また、git バージョン管理システムもコンピュータにインストールする必要があります。特定のオペレーティングシステムのインストール手順やダウンロードリンクは、Git ドキュメントサイトにあります。
+
+NodeJS (npm を使用) と git をインストールしたら、コマンドラインインターフェースを開いて以下を入力し、Anypoint Platform CLI をインストールできます。
+
+[source]
+----
+> anypoint-cli 
+----
+
+== インストール
+
+システムの設定によっては、システム管理者のログイン情報を使用して、次のコマンドを実行することが必要になる場合もあります。
+
+[source]
+----
+$ npm install -g anypoint-cli@latest
+----
+
+[NOTE]
+--
+インストールプロセス中に npm で `fatal: read error: Invalid argument` エラーがスローされた場合、git クライアントがコンピュータにインストールされていて、git プロトコルがファイアウォールまたはネットワークでブロックされていないことを確認します。
+--
+
+== 参照
+
+Anypoint-CLI の各インスタンスでは、次のいずれかのオプションが使用されます。
+
+[%header%autowidth.spread,cols="a,a,a"]
+|===
+|パラメータ |説明 | 必須
+| `username` | Anypoint Platform ユーザ名。
+
+環境変数 `export ANYPOINT_USERNAME=<name>` を使用して、この値を渡すこともできます。 | はい
+
+| `password` | Anypoint Platform パスワード。
+
+環境変数 `export ANYPOINT_PASSWORD=<pwd>` を使用して、この値を渡すこともできます。 | はい
+
+| `organization` | Anypoint Platform 内の組織。
+
+環境変数 ` export ANYPOINT_ORG=<name>` を使用して、この値を渡すこともできます。 | いいえ
+
+| `environment` | Anypoint 環境。
+
+環境変数 `export ANYPOINT_ENV=<name>` を使用して、この値を渡すこともできます。 | いいえ
+
+|host (ホスト) | Anypoint Platform インストールのホスト。 +
+デフォルトでは、この値は +https://anypoint.mulesoft.com+ を参照します。 +
+Anypoint Platform Private Cloud Edition を使用している場合、プラットフォームをホストしているアドレスを渡していることを確認します。
+Anypoint Platform EU クラウドを使用している場合、EU 準拠の URL を渡していることを確認します。
+
+専用の環境変数 `ANYPOINT_HOST=<name>` を使用して、この値を渡すこともできます。 | いいえ
+
+|bearer (ベアラー) | ユーザ名とパスワードを渡す代わりに、アカウントのトークンを渡すことができる。 +
+アカウントのトークンを取得するには、ユーザ名とパスワードを使用して +https://anypoint.mulesoft.com/accounts/login+ エンドポイントにアクセスし、ベアラー値を取得します。
+
+トークンベアラーの有効期限が切れると、セッションの有効期限が切れます。 +
+ユーザ名/パスワードとトークンベアラーの両方を送信した場合、CLI ではベアラーログインが優先されます。
+| いいえ
+|===
+
+== 使い方
+
+=== ログイン
+
+=== ログイン情報ファイル
+
+これらのオプションを Anypoint Platform CLI インストールに渡すには、`./anypoint/` ディレクトリ内にある `credentials` ファイルを使用することをお勧めします。このファイルは、インストール時に自動的に作成されません。ログイン情報ファイルを作成する手順は、次のとおりです。
+
+. Linux および OSx では `~/` ディレクトリ、Windows では `C:\Users\USERNAME \` に `.anypoint` というディレクトリを作成します。
+. `.anypoint` ディレクトリに移動し、次の構造の `credentials` という名前の空白のファイルを作成します。
++
+[source,text,linenums]
+----
+{
+ "default": {
+  "username": "yourAnypointUserName",
+  "password": "yourAnypointPassword",
+  "organization": "",
+  "environment": "",
+  "host": ""
+ },
+ "otherProfile": {
+  "username": "",
+  "password": "",
+  "organization": "",
+  "environment": "",
+  "host": ""
+ }
+}
+----
+`ANYPOINT_PROFILE` 環境変数が設定されていないと、`default` プロファイルが使用されます。
++
+[source,text,linenums]
+----
+> export ANYPOINT_PROFILE="otherProfile"
+> anypoint-cli
+----
+
+次に、オプションを指定せずに `anypoint-cli` コマンドを実行します。
+
+[source,text,linenums]
+----
+> anypoint-cli
+----
+
+=== 専用の環境変数
+
+`anypoint-cli` の実行時にログイン情報を渡す場合、両方のパラメータを環境変数 `ANYPOINT_USERNAME` および `ANYPOINT_PASSWORD` として渡します。
+
+[source,text,linenums]
+----
+> export ANYPOINT_USERNAME="username"
+> export ANYPOINT_PASSWORD="password"
+> anypoint-cli
+----
+
+=== CLI オプション
+
+前述したように、ユーザ名とパスワードのパラメータは必須です。ただし、ユーザ名を渡すと、Anypoint Platform CLI からパスワードを求められます。
+
+[source,text,linenums]
+----
+> anypoint-cli --username="user"
+Password: ****
+----
+
+=== コマンドを渡す
+
+CLI から Anypoint Platform にアクセスする適切な方法をセットアップしたら、コマンドを渡すことができます。 +
+これらの使用方法の手順については、xref:anypoint-platform-cli-commands.adoc[「Anypoint Platform CLI 3.x のコマンドリスト」]を参照してください。
+
+== 考慮事項
+
+Anypoint-CLI を使用する場合、いくつかの考慮事項があります。
+
+. 環境変数はログイン情報ファイルパラメータよりも優先され、コマンドラインパラメータは環境変数よりも優先されます。 +
+コマンドラインパラメータを渡さない場合、デフォルトプロファイルのプロパティが使用されます。
+. 環境が設定されていない場合、自動的に `production` に送信されます。 +
+. Anypoint セッションの有効期限は、xref:access-management::organization.adoc#manage-the-master-organization-s-settings[マスタ組織の設定]の *[Default session timeout (デフォルトセッションタイムアウト)]* に基づいています。 +
+. Anypoint-CLI は、コートコンプリートと連動します。コマンドまたはパラメータの名前の入力を開始して `tab` キーを押すと、オートコンプリートが実行されます。また、`tab` キーをダブルタップすると、使用可能なすべてのオプションのリストが表示されます。
+
+== 関連情報
+
+* xref:anypoint-platform-cli-commands.adoc[Anypoint Platform CLI のコマンドリスト]

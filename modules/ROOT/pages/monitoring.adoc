@@ -1,0 +1,82 @@
+= 監視
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: 監視, Runtime Manager, arm, cloudhub, アプリケーション, サーバ
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-active.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+アプリケーションをデプロイした後、Runtime Manager でサポートされるいずれかのxref:deployment-strategies.adoc[デプロイメント戦略]に従い、Runtime Manager を使用して、アプリケーションとアプリケーションが実行されるサーバのパフォーマンスを監視できます (オンプレミスでデプロイする場合)。
+
+[NOTE]
+使用するxref:deployment-strategies.adoc[デプロイメント戦略]に応じて、現在、使用可能な監視リソースセットが異なります。この機能の差は、一方で欠如している機能を新しいリリースで実装することで徐々に小さくなります。
+
+
+== アプリケーションの監視
+
+次のツールを使用して、監視情報にアクセスできます。
+
+* xref:alerts-on-runtime-manager.adoc[アラート] – image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"] 重要なイベントが発生したらメールアラートを送信します。これらのアラートがトリガされた日時の履歴にアクセスすることもできます。
+
+
+* xref:monitoring-dashboards.adoc[ダッシュボード] – image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"] サービス使用量と利用可能な処理能力に関するパフォーマンスの重要なメトリクスの推移を参照します。
+
+
+
+* xref:notifications-on-runtime-manager.adoc[通知] – image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"] 特定のイベントによって、Anypoint Platform でベルアイコンをクリックすると表示される通知がトリガされることがあります。また、自分が関心のある任意のイベントのカスタム通知を作成することもできます。
+
+== フローの監視
+
+次のツールを使用して、個々のフローに関する情報を参照できます。
+
+*  xref:flow-metrics.adoc[フローメトリクス] –
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+アプリケーションの各フローのメトリクスの推移を表示します。
+
+
+== サーバの監視
+
+オンプレミスにデプロイされているアプリケーションでは、次のツールを使用して、サーバに関する情報を取得できます。
+
+* xref:alerts-on-runtime-manager.adoc#conditions-on-mule-servers[アラート] – image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+重要なイベントが発生したらメールアラートを送信します。これらのアラートがトリガされた日時の履歴にアクセスすることもできます。
+
+
+* xref:monitoring-dashboards.adoc#the-dashboard-for-a-server[ダッシュボードの監視] – image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"] サービス使用量と利用可能な処理能力に関するパフォーマンスの重要なメトリクスの推移を参照します。
+
+
+
+== 関連情報
+
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:cloudhub.adoc[CloudHub] の概要とその機能についての詳細
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:insight.adoc[インサイト]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:viewing-log-data.adoc[ログデータの表示]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

@@ -1,0 +1,63 @@
+= アラートの操作
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub api, get, post, put
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+このドキュメントでは CloudHub API のコール方法について説明します。Runtime Manager UI を使用してこれらの同じタスクをより簡単に実行する手順については、xref:cloudhub.adoc[「CloudHub」]を参照してください。
+
+アラート API ではアラートを作成することができます。種別を返すか受け入れるすべてのリソースまたはメソッドでは、アプリケーション JSON 種別が使用されます (特に注意書きがある場合を除く)。例として、次の `curl` コマンドでアラートを作成します。
+
+----
+curl --verbose -XPOST 'https://<USERNAME>:<PASSWORD>@anypoint.mulesoft.com/cloudhub/api/v2/alerts' -H "content-type: application/json" -d '{
+  "name": "failure",
+  "severity": "INFO",
+  "condition": {
+  	"resourceType": "cloudhub-application",
+    "type": "deployment-failed",
+    "resources": [
+      "<CLOUDHUB APPLICATION NAME>"
+    ]
+  },
+  "actions": [
+    {
+      "type": "email",
+      "emails": [
+        "me@example.com"
+      ],
+      "subject": "subject line",
+      "content": "deployment failed for ${resource}"
+    }
+  ]
+}' -H "content-type: application/json"
+----
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、予想される応答の対話型リファレンスについては、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/2321502/pages/107964[API ポータル]を参照してください。
+====
+
+== 関連情報
+
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:cloudhub.adoc[CloudHub] の概要とその機能についての詳細
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

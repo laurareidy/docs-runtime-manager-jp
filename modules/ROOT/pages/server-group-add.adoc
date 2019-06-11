@@ -1,0 +1,27 @@
+= サーバグループへのサーバの追加 (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+既存のアプリケーションを現在実行中のグループにサーバを追加する必要がある場合、サーバをグループに追加する前にそのアプリケーションを停止して削除する必要があります。
+
+サーバをサーバグループに追加する前に、次を確認してください。
+
+* Mule がインストールおよび設定されている。
+* Runtime Manager エージェントがインストールおよび設定されている。
+* Runtime Manager にサーバが作成されている。
+
+各サーバに https://www.mulesoft.com/platform/mule[Mule] の同じバージョンをダウンロードしてインストールし、xref:managing-servers.adoc#add-a-server[amc_setup] スクリプトを実行して、最初に各サーバを Runtime Manager に登録する必要があります。
+
+. *[Servers (サーバ)]* 画面から、サーバをクリックして追加メニューを表示し、*[Add Servers (サーバを追加)]* をクリックします。
++
+image::addserverstogroup.png[AddServersToGroup]
+
+. グループに追加するサーバを選択した後、*[Add to Group (グループに追加)]* をクリックします。
++
+image::addtogroup.png[AddToGroup]
+
+== 関連情報
+
+* xref:servers-create.adoc[サーバの作成 (ハイブリッド)]
+* xref:server-group-about.adoc[サーバグループについて (ハイブリッド)]

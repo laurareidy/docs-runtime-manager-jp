@@ -1,0 +1,153 @@
+= 継続的デプロイメントについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 管理, api, REST, ci/cd, cd, 継続的デプロイメント
+
+Runtime Manager REST API を使用して、独自のオンプレミスサーバまたは他のクラウドサーバ (CloudHub の外部) への継続的デプロイメントができます。Runtime Manager REST API を使用すると、Runtime Manager が提供する多くの機能にプログラムでアクセスできます。CloudHub への継続的デプロイメントを実装する場合は、xref:cloudhub-api.adoc[「CloudHub API」]を参照してください。
+
+ここで説明するプロセスを以下の方法で継続的デプロイメントパイプラインにタスクとして実装できます。
+
+* シェルとして (Microsoft PowerShell、Bash など)
+* スクリプトとして
+* Java で記述された Jenkins/Maven プラグインとして
+
+API を介してサポートされるすべての操作、リソース、メソッド、必須プロパティ、および予想される応答の詳細なリファレンスは、 https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[スタンドアロン Runtime Manager API リファレンス]または https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-application-manager/1.0.3/console/summary/[Runtime Fabric API リファレンス]を参照してください。
+
+同じ機能を提供する Mule Maven プラグインも使用できます。したがって、ここで説明するプロセスは、https://docs.mulesoft.com/mule-runtime/4.1/mmp-deployment-concept[Mule Maven プラグイン]を使用できない場合や、使用することが望まれない場合の代替方法として使用してください。
+
+デプロイおよび CI 関連のアクティビティ専用の Anypoint Platform アカウントを作成することをお勧めします。
+
+== オンプレミスサーバのワークフロー
+
+以下で説明するワークフローは、好みに応じてさまざまな方法で実行できますが、ステップは同じです。ステップの概要を以下に示します。
+
+* ユーザを Anypoint Platform にサインインします。
+* そのアカウントで登録されているサーバ、サーバグループ、およびクラスタに関する情報が取得されます。
+* アプリケーションがデプロイされます。
+* アプリケーションはアクセス管理および Runtime Manager の API とやり取りします。
+
+ワークフローは以下の入力パラメータを受け取る必要があります。
+
+* *Username (ユーザ名)* - Anypoint Platform アカウントのユーザ名
+* *Password (パスワード)* - Anypoint Platform ユーザ名のパスワード
+* *Environment (環境)* - デプロイ環境 (Dev (開発)、Test (テスト)、Prod (本番) など)
+* *Target Name (対象名)* - アプリケーションのデプロイ先の対象の名前
+* *Target Type (対象種別)* - 対象の種別 (Server (サーバ)、Cluster (クラスタ)、ServerGroup (サーバグループ)、Runtime Fabric)
+* *Artifact Name (アーチファクト名)* - デプロイする Mule アプリケーションの名前
+* *File (ファイル)* - デプロイする Mule アプリケーションのバイナリファイル
+
+ワークフローは以下の API コールを順番に実行します。
+
+image::arm-api-workflow.png[ワークフロー]
+
+https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/access-management-api/[Anypoint Platform アクセス管理] API の使用方法
+
+. 有効な Anypoint Platform ユーザ名とパスワードを使用して、アクセス管理 API の `/login` をコールし、後続のすべてのコールで使用する `access_token` と `token_type` を取得します。
+
++
+[TIP]
+Jenkins を使用する場合、タスク内で *[Username (ユーザ名)]* と *[Password (パスワード)]* を設定する必要があります。タスクでは、`token_type` と `access_token` を連結し、ワークフロープロセス全体の期間にわたってそれらを保存する必要があります。これらの項目は `token = token_type + " " + access_token` のように連結する必要があります (例: `"bearer 895d1a05-ba24-44f2-a9df-3675c1bde97b"`)。 +
+トークンはその連結された形式で、後続のすべての API コールでヘッダーとして渡す必要があります。
+
+. アクセス管理 API の `/accounts` をコールし、組織 `id` を取得します。
+
++
+[TIP]
+次に、タスクは「user.organisation.id」の場所から組織 ID を抽出し、これを後で使用する場合に備えて保存する必要があります。このステップは必須ではありません。組織 ID はその静的な性質のため、ローカルパラメータとしてタスクに渡される可能性があるためです。
+
+. 前のステップで取得した組織 `id` を渡し、関連する環境名 (`Dev`、`Test`、`Production` など) に基づいて正しい環境 `id` を選択して、アクセス管理 API の `/environments` をコールします。
+
++
+[TIP]
+ステップ 2 で取得した組織 `id` は API URI の一部として渡す必要があります。環境 `id` は、パス「data[i].id」から条件「data[i].name == inputEnvironment」を使用して抽出する必要があります (「Dev」、「Test」、「Production」、または Anypoint Platform でセットアップされた有効な環境名などの値が取得される可能性があります)。
+
+https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[スタンドアロン Runtime Manager] API の使用方法*
+
+. サーバ、クラスタ、またはサーバグループ名と、取得した組織 `id` および環境 `id` を渡して、Runtime Manager API の `/servers`、`/clusters`、または `/serverGroups` をコールします。このコールでは、`targetId` を含め、このサーバ、クラスタ、またはサーバグループに関するすべてのデータが返されます。
+
++
+[NOTE]
+このステップでは、後でデプロイの対象として使用する対象 `id` を取得します。このタスクでは、ワークフローの開始時に入力として設定された対象名に基づいて、適切なサーバ、サーバグループ、またはクラスタ ID を選択する必要があります。サーバ `id` は、`data[i].id` から条件 `data[i].name == inputTargetName` を使用して抽出する必要があります。
+
+. 組織の `id` と環境の `id` を渡して、Runtime Manager API の `/applications` をコールし、アプリケーションの `id` とそのデータの残りを取得します。
+
++
+[NOTE]
+このステップでは、アプリケーション `id` を取得し、次のステップが新規デプロイ (6a) または再デプロイ (6b) のどちらであるかを判別します。アプリケーション `id` は、「data[i].id」から条件「data[i].artifact.name == inputArtifactName」および「data[i].target.id == serverId」/「clusterId」/「serverGroupId」を使用して抽出する必要があります。
+
+. 組織の `id`、環境の `id`、「artifactName」、`targetId` (このセクションのステップ 1 で取得)、デプロイする Mule アプリケーションの .zip ファイル、および必要に応じてアプリケーション `id` を渡して、Runtime Manager API の `/applications` を POST します。
+
+[NOTE]
+このステップでは、実際の Mule アプリケーションアーチファクトを対象環境およびサーバ/クラスタ/サーバグループに初めてデプロイします。ステップ 2 でアプリケーション ID を取得していない場合、*POST* 要求を使用します。ステップ 2 でアプリケーション ID を取得した場合、*PATCH* を使用して、実際の Mule アプリケーションアーチファクトを対象環境およびサーバ/クラスタ/サーバグループに再デプロイします。
+
+== オンプレミス Runtime Fabric のワークフロー
+
+以下で説明するワークフローは、好みに応じてさまざまな方法で実行できますが、ステップは同じです。ステップの概要を以下に示します。
+
+* まず、ユーザを Anypoint Platform にログインインします。
+* そのアカウントで登録されている Runtime Fabric に関する情報が取得されます。
+* アプリケーションがデプロイされます。
+* アプリケーションは MuleSoft Anypoint Platform のアクセス管理および Runtime Manager の API とやり取りします。
+
+ワークフローは以下の入力パラメータを受け取る必要があります。
+
+* *Username (ユーザ名)* - Anypoint Platform アカウントのユーザ名
+* *Password (パスワード)* - Anypoint Platform ユーザ名のパスワード
+* *Environment (環境)* - デプロイ環境 (Dev (開発)、Test (テスト)、Prod (本番) など)
+* *Target Settings (対象設定)* - アプリケーションのデプロイ先の対象の種別 (MC) 名、および設定
+* *Exchange Reference (Exchange 参照)* - Exchange にデプロイする Mule アプリケーションの参照
+* *Application Configuration (アプリケーション設定)* - デプロイのアプリケーション設定
+
+ワークフローは以下の API コールを順番に実行します。
+
+*Maven ツールの使用*
+
+. https://docs.mulesoft.com/exchange/to-publish-assets-maven[Maven] を使用して、アーチファクトを Exchange アセットマネージャにパブリッシュします。
+
++
+[NOTE]
+対象で障害が発生し、回復のためにコントロールプレーンでアーチファクトを再デプロイする必要がある場合、このステップを実行して高可用性を確保する必要があります。
+
+https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/access-management-api/[Anypoint Platform アクセス管理] API の使用方法
+
+. 有効な Anypoint Platform ユーザ名とパスワードを使用して、アクセス管理 API の `/login` をコールし、後続のすべてのコールで使用する `access_token` と `token_type` を取得します。
+
++
+[TIP]
+Jenkins を使用する場合、タスク内で *[Username (ユーザ名)]* と *[Password (パスワード)]* を設定する必要があります。タスクでは、`token_type` と `access_token` を連結し、ワークフロープロセス全体の期間にわたってそれらを保存する必要があります。これらの項目は `token = token_type + " " + access_token` のように連結する必要があります (例: `"bearer 895d1a05-ba24-44f2-a9df-3675c1bde97b"`)。
+
+トークンはその連結された形式で、後続のすべての API コールでヘッダーとして渡す必要があります。
+
+. アクセス管理 API の `/accounts` をコールし、組織 `id` を取得します。
+
++
+[TIP]
+次に、タスクは「user.organisation.id」の場所から組織 ID を抽出し、これを後で使用する場合に備えて保存する必要があります。このステップは必須ではありません。組織 ID はその静的な性質のため、ローカルパラメータとしてタスクに渡される可能性があるためです。
+
+. 前のステップで取得した組織 `id` を渡し、関連する環境名 (`Dev`、`Test`、`Production` など) に基づいて正しい環境 `id` を選択して、アクセス管理 API の `/environments` をコールします。
+
++
+[TIP]
+ステップ 2 で取得した組織 `id` は API URI の一部として渡す必要があります。環境 `id` は、パス「data[i].id」から条件「data[i].name == inputEnvironment」を使用して抽出する必要があります (「Dev」、「Test」、「Production」、または Anypoint Platform でセットアップされた有効な環境名などの値が取得される可能性があります)。
+
+https://anypoint.mulesoft.com/exchange/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-deployment-target-registry/1.0.1/pages/home/[Runtime Manager 対象レジストリ] API の使用方法
+
+. プロバイダ `id` と、取得した組織 `id` および環境 `id` を渡して、対象レジストリ API の `/targets` をコールします。これにより、`targetId` を含め、組織で登録されているすべての対象が返されます。
+
++
+[NOTE]
+このステップでは、後でデプロイの対象として使用する対象 `id` を取得します。このタスクでは、ワークフローの開始時に入力として指定された対象名に基づいて、適切な対象 ID を選択する必要があります。対象 `id` は、「data[i].id」から条件「data[i].name == inputTargetName」を使用して抽出する必要があります。
+
+*Using the https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-application-manager/1.0.3/console/summary/[アプリケーションマネージャ] API の使用方法*
+
+. 組織の `id` と環境の `id` を渡して、アプリケーションマネージャ API の deployments をコールし、アプリケーションの `id` とそのデータの残りを取得します。
+
++
+[NOTE]
+このステップでは、アプリケーション `id` を取得し、次のステップが新規デプロイ (6a) または再デプロイ (6b) のどちらであるかを判別します。アプリケーション `id` は、`data[i].id` から条件 `data[i].artifact.name == inputArtifactName' and `data[i].target.targetId == `targetId`` を使用して抽出する必要があります。
+
+. 組織の `id`、環境の `id`、`applicationName`、`labels`、`target` デプロイ設定 (このセクションのステップ 1 で取得した対象 ID を含む)、デプロイするパブリッシュ済み Mule アプリケーション「application」の Exchange 参照、アプリケーション `configuration`、および必要に応じてアプリケーション `id` を渡して、アプリケーションマネージャ API の `/deployments` を POST します。
+
+[NOTE]
+このステップでは、実際の Mule アプリケーションアーチファクトを対象環境および Runtime Fabric に初めてデプロイします。ステップ 2 でアプリケーション ID を取得していない場合、`POST` 要求を使用します。ステップ 2 でアプリケーション ID を取得した場合、`PATCH` 要求を使用して再デプロイします。

@@ -1,0 +1,18 @@
+= メンテナンスおよびアップグレードポリシー
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, サポート, アップグレード, サブスクリプション
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+Runtime Manager コンソール、プラットフォームサービス、ワーカークラウド (xref:cloudhub-architecture.adoc[「CloudHub アーキテクチャについて」]参照) に対するすべてのメンテナンスは、 http://www.mulesoft.com/terms/msa/current[サブスクリプション契約]で指定されたメンテナンス実施時間中に行われます。ただし、重要なセキュリティ問題は例外で、これらは直ちに修正されます。
+
+MuleSoft のポリシーは、すべてのメンテナンスは透明性を持って実行し、ワーカークラウドで実行中のインテグレーションに可能な限りダウンタイムを発生させないというものです。コンソール、プラットフォームサービス、ワーカーのダウンタイムが避けられない場合は、MuleSoft はこれらのメンテナンス実施時間を少なくとも 8 時間前、通常は 7 日前にお知らせします。ただし、重要なセキュリティパッチは例外で、これらは直ちに修正されます。
+
+Runtime Manager コンソール、CloudHub プラットフォームサービス、CloudHub ワーカークラウドのライブ状況と詳細なサービス履歴は、 http://status.mulesoft.com/[status.mulesoft.com] で参照できます。
+
+バージョン設定ポリシーとサポートポリシーについては、 https://www.mulesoft.com/legal/versioning-back-support-policy[こちら]を参照してください。

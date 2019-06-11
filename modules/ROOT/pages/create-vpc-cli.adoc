@@ -1,0 +1,165 @@
+= チュートリアル: Anypoint Platform CLI を使用した Anypoint Virtual Private Cloud の作成
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:noindex:
+
+このセクションでは、Anypoint Platform CLI を使用して Anypoint Virtual Private Cloud (Anypoint VPC) を作成および設定する方法について説明します。
+
+組織にログインし、`vpc create` コマンドを使用して Anypoint VPC を作成します。
+
+----
+cloudhub vpc create // <1>
+vpc-tutorial // <2>
+us-east-1 // <3>
+10.111.0.0/24 // <4>
+--default
+----
+
+例について説明します。
+
+* Anypoint VPC の名前は `vpc-tutorial` です。
+* Anypoint VPC は `us-east-1` リージョンにバインドされます。
++
+[NOTE]
+--
+すべての Anypoint VPC を CloudHub リージョンに関連付ける必要があります。
+--
++
+* Anypoint VPC のサイズは `10.111.0.0/24` です。CIDR 通知では、これにより 10.111.0.0 ～ 10.111.0.255 の 256 個の IP アドレスが付与されます。 +
+** 作成された Anypoint VPC をサイズ変更することはできません。 +
+** この時点では、Anypoint VPC のサイズの設定方法を理解することが重要です。この設定方法がわからない場合は、xref:virtual-private-cloud.adoc#size-your-vpc[VPC のサイズ設定]ガイドに従うようにしてください。 +
+** Anypoint VPC 用の CIDR ブロックは、非公開 IP 空間から選択することをお勧めします。これを Anypoint VPC の他の CIDR ブロックや、社内ネットワーク内で使用されている CIDR ブロックと重複しないようにする必要があります。
+
+* Anypoint VPC はデフォルトとして設定されます。つまり、Anypoint VPC に関連付けられていない、このリージョン内のすべての環境は、デフォルトでこの Anypoint VPC に関連付けられます。
+
+[CAUTION]
+--
+この例では、以下の情報を渡しません。
+
+* 環境情報: +
+特定の環境を設定しないことで、US-EAST (米国東部) にデプロイされたすべてのアプリケーションは、デプロイ先の環境を無視してこの Anypoint VPC に関連付けられます。
+
+* ビジネスグループ情報: +
+これにより、この Anypoint VPC がメイン組織に関連付けられます。
+--
+
+操作が成功すると、Anypoint Platform CLI は、新しく作成された Anypoint VPC の詳細を表示します。
+
+[source,text,linenums]
+----
+┌──────────────────────────────┬───────────────────┐
+│ Name                         │ vpc-tutorial      │
+├──────────────────────────────┼───────────────────┤
+│ Region                       │ us-east-1         │
+├──────────────────────────────┼───────────────────┤
+│ CIDR Block                   │ 10.111.0.0/24     │
+├──────────────────────────────┼───────────────────┤
+│ Inherited                    │ No                │
+├──────────────────────────────┼───────────────────┤
+│ Organization default         │ Yes               │
+├──────────────────────────────┼───────────────────┤
+│ Special domains              │                   │
+├──────────────────────────────┼───────────────────┤
+│ DNS Servers                  │                   │
+├──────────────────────────────┼───────────────────┤
+│ Firewall rules               │                   │
+├──────────────────────────────┼───────────────────┤
+│ Environments                 │                   │
+├──────────────────────────────┼───────────────────┤
+│ Business groups              │                   │
+├──────────────────────────────┼───────────────────┤
+│ Load balancers               │                   │
+└──────────────────────────────┴───────────────────┘
+----
+
+== ファイアウォールルールの作成
+
+Anypoint VPC が作成されると、デフォルトで 4 つのファイアウォールルールが設定されます。xref:anypoint-platform-cli.adoc#cloudhub-vpc-firewall-rules-describe[vpc firewall-rules describe] コマンドを使用して、これらを確認できます。
+
+----
+cloudhub vpc firewall-rules describe vpc-tutorial
+----
+
+このコマンドは以下の情報を返します。
+
+[source,text,linenums]
+----
+┌───────┬────────────────────┬──────────┬────────────┬──────────┐
+│ Index │ CIDR Block         │ Protocol │ From port  │ To port  │
+├───────┼────────────────────┼──────────┼────────────┼──────────┤
+│ 0     │ 10.111.0.0/24      │ TCP      │ 8091       │ 8092     │
+├───────┼────────────────────┼──────────┼────────────┼──────────┤
+│ 1     │ 0.0.0.0/0          │ TCP      │ 8081       │ 8082     │
+└───────┴────────────────────┴──────────┴────────────┴──────────┘
+----
+
+[TIP]
+--
+ルール `0` では、ポート 8091 および 8092 でのローカル Anypoint VPC からのインバウンド接続が許可されます。ルール `1` では、任意のホストからのトラフィックがポート 8081 および 8082 を介してワーカーにアクセスすることが許可されます。
+--
+
+xref:anypoint-platform-cli.adoc#cloudhub-vpc-delete[`vpc firewall-rules delete`] コマンドを使用して任意のデフォルトルールを削除できます。また、xref:anypoint-platform-cli.adoc#cloudhub-vpc-firewall-rules-add[`vpc firewall-rules add`] コマンドを使用して新しいルールを作成できます。
+
+Anypoint VPC 内でポート 8090 を介した TCP トラフィックを有効にする必要があるとします。次の手順を実行する必要があります。
+
+----
+cloudhub vpc firewall-rules add
+// <1>
+vpc-tutorial // <2>
+10.111.0.0/24 // <3>
+tcp // <4>
+8090
+----
+
+. `vpc-tutorial` をこの新しいファイアウォールルールの対象 Anypoint VPC として設定します。
+. `10.111.0.0/24` を設定して、Anypoint VPC 内からのホストのみを許可するように IP 範囲を設定します。 +
+CIDR 通知では、`10.111.0.0` ～ `10.111.0.255` の範囲が許可されます。
+. ホワイトリストに登録されたプロトコルを `tcp` に設定します。
+. ポート番号 `8090` を許可します。
+
+新しいファイアウォールルールを作成すると、Anypoint Platform CLI は次の成功メッセージを表示します。
+
+----
+VPC firewall modified successfully
+----
+
+
+== 既存の Anypoint VPC の更新
+
+Anypoint Platform CLI を使用して Anypoint VPC の特定の値を更新することはできませんが、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955/pages/107964[Cloudhub API] を使用して Anypoint VPC をプログラムで管理および更新することはできます。
+
+. `+https://anypoint.mulesoft.com/accounts/login+` エンドポイントを介して、ログイン情報を渡して CloudHub サービスにログインします。
+. `organizations/{orgid}/vpcs/{vpcId}` エンドポイントを使用して、Anypoint VPC を更新します。
+
+[NOTE]
+API のリソースとやり取りする方法についての詳細は、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955/pages/107964[API リファレンス]を参照してください。
+
+たとえば、Anypoint VPC の環境を更新するには、`PUT` 要求を JSON ペイロードと共に `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/vpcs/{vpcId}` エンドポイントに送信する必要があります。
+
+[TIP]
+--
+xref:anypoint-platform-cli.adoc#account-business-group-list[account business-group describe] コマンドを使用して、`{orgid}` をクエリできます。
+
+xref:anypoint-platform-cli.adoc#cloudhub-vpc-describe-json[cloudhub vpc describe-json] コマンドを実行すると、`{vpcId}` 値のリストが表示されます。
+--
+
+[source,json,linenums]
+----
+{
+	"associatedEnvironments": [
+		"<EnvironmentId>"
+	]
+}
+----
+
+[NOTE]
+--
+`<EnvironmentId>` は、この Anypoint VPC を関連付ける環境の ID で置き換える必要があります。 +
+xref:anypoint-platform-cli.adoc#account-environment-list[account environment list] コマンドを実行して、環境の ID を取得できます。
+--
+
+== 関連情報
+
+* xref:dedicated-load-balancer-tutorial.adoc[ロードバランサチュートリアル]に従って、この Anypoint VPC にロードバランサを関連付ける方法を学習します。
+* xref:anypoint-platform-cli.adoc[Anypoint Platform CLI] についての詳細を学習します。

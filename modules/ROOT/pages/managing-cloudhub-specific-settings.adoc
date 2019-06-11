@@ -1,0 +1,62 @@
+= CloudHub 固有の設定の管理
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: Anypoint Platform, 権限, 設定, cloudhub
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+このドキュメントでは、CloudHub にデプロイされたアプリケーションに関する Anypoint Platform の設定について説明します。
+
+これらの設定は、Anypoint Platform の xref:access-management::index.adoc[*[Access Management (アクセス管理)\]*] から管理できます。
+
+[NOTE]
+アクセス管理設定を編集するには、アカウントに *Cloudhub administratrator (Cloudhub 管理者)* または *Organization Administrator (組織のシステム管理者)* のロールが必要です。
+
+== リージョンの管理
+
+アカウントでグローバルデプロイメントが有効になっている場合は、デフォルトのリージョンも設定できます。リージョンは、組織のユーザによってデプロイされたすべてのアプリケーションのデプロイメント画面設定で自動入力され、個々のデプロイメントで必要に応じてアプリケーションレベルで調節できます。 
+
+このメニューにアクセスするには、画面上部のユーザ名の横にあるギアアイコンをクリックし、左側のメニューの *[Settings (設定)]* で *[CloudHub]* リンクを選択します。
+
+image::geargeneral.png[GearGeneral]
+
+[NOTE]
+現在、アカウントでグローバルデプロイメントが有効になっていない場合に有効にするには、MuleSoft アカウントマネージャにお問い合わせください。
+
+使用可能なリージョンのリストについては、xref:cloudhub-architecture.adoc#global-worker-clouds[「CloudHub アーキテクチャについて」]を参照してください。
+
+== CloudHub のサブスクリプション
+
+最初に CloudHub にサインアップすると、自動的に無料プラン (サブスクリプションレベル) に追加されます。有料プランにアップグレードするには、MuleSoft アカウントマネージャにお問い合わせください。
+
+サブスクリプションレベルと使用状況を表示するには画面上部のギアアイコンをクリックし、*[Subscription (サブスクリプション)]* をクリックします。
+
+image::subscription.png[[Subscription (サブスクリプション)]]
+
+次の *[Subscription (サブスクリプション)]* の例では、本番環境では使用可能な 20 vCore のうち 13.1 vCore を使用しており、Sandbox 環境では使用可能な 20 vCore のうち 2 vCore を使用していることが表示されています。 +
+
+image::subscriptionlevel.png[SubscriptionLevel]
+
+[NOTE]
+--
+*ワーカーの数はアプリケーションの数と同じではありません* +
+ワーカーとアプリケーションの間には 1 対 1 の関係はありません。ワーカーのサイズ設定についての詳細は、xref:cloudhub-fabric.adoc[「CloudHub Fabric」]とxref:deploying-to-cloudhub.adoc#worker-sizing[「CloudHub へのデプロイ」]を参照してください。
+--
+
+vCore 処理使用状況には、実行中のアプリケーションのみがカウントされます。`Stopped` アプリケーションは、vCore の可用性をコンシュームしません。
+
+== プランの変更
+
+プランを変更するには、アカウントの担当者に問い合わせるか、サポートチケットを申請してください。
+
+== 関連情報
+
+* 環境の管理についての詳細は、xref:access-management::environments.adoc[「Environments (環境)」]を参照してください。
+
+* xref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
+
+* CloudHub の http://www.mulesoft.com/cloudhub/pricing[プランと価格設定]を確認してください。

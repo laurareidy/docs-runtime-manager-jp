@@ -1,0 +1,19 @@
+= Runtime Manager を使用した環境の切り替え
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+組織に複数の環境がある場合、環境を切り替えることができます。Anypoint Platform の任意のアプリケーションから別の環境に切り替えることができます。
+
+image::managing-deployed-applications-0e10f.png[]
+
+. Runtime Manager の左上隅の現在の環境をクリックします。
+. 切り替え先の環境を選択します。
+. *[Switch (切り替え)]* をクリックします。
+
+サーバとアプリケーションは必ず特定の環境に関連付けられ、作成される環境内でのみ表示されます。
+
+== 関連情報
+
+* xref:managing-servers.adoc[サーバ、サーバグループ、クラスタについて]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]

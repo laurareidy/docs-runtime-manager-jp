@@ -1,0 +1,92 @@
+= CloudHub のアプリケーションの開発
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, クラウド, Mule, api, Runtime Manager, arm
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+
+CloudHub にデプロイするための Mule アプリケーションでは、オンプレミスサーバにデプロイするためのアプリケーションとは異なる操作が必要な場合があります。ほとんどの場合、同じxref:3.8@mule-runtime::elements-in-a-mule-flow.adoc[フロー要素]とxref:3.8@mule-runtime::global-elements.adoc[グローバル要素]は同じように適用されますが、考慮すべき特定の事項がいくつかあります。両方のデプロイメント環境の主な違いについては、xref:deployment-strategies.adoc[「デプロイメント戦略」]で説明しています。このドキュメントでは、CloudHub にデプロイするときに採用すべきベストプラクティスをいくつか紹介します。
+
+xref:cloudhub.adoc[「CloudHub」]ガイドには、基本概念の説明と xref:general:getting-started:deploy-to-cloudhub.adoc[CloudHub へのデプロイ]の例が含まれていて、CloudHub でのアプリケーションの開発およびデプロイプロセスを理解するために役立ちます。
+
+
+
+== HTTP/HTTPS ホストの指定
+
+xref:3.8@mule-runtime::http-connector.adoc[HTTP コネクタ]を使用する場合は、CloudHub 設定内でホストアドレスを 0.0.0.0 と定義します。CloudHub は、アプリケーションドメイン URL からの要求をエンドポイントに転送します。複数のxref:cloudhub-faq.adoc[ワーカー]をデプロイした場合は、受信トラフィックはそれらのワーカーに自動的に負荷分散されます。アプリケーションが拡張されると、ワークロードは自動的にワーカーの間で分散されます。
+
+== 外部 HTTP/HTTPS ポートの指定
+
+メッセージの受信、イベントのトリガ、Web サービスやユーザインターフェースの公開のために外部からアクセス可能な HTTP ポートまたは HTTPS ポートがアプリケーションに必要な場合は、予約されているプロパティの `${http.port}` または `${https.port}` を使用して HTTP リスナポートを宣言します。CloudHub では、ポート `${http.port}` または `${https.port}` がプラットフォームサービスによって自動的に割り当てられます。アプリケーションドメインの URL へのポート 80 のトラフィックは、`${http.port}` に転送され、ポート 443 のトラフィックは `${https.port}` に転送されます。
+
+このポートでの複数の CloudHub サービスへのルーティングをサポートするには、公開されている URL 上でそれぞれに一意のパスを設定する必要があります。例:
+
+[source,console,linenums]
+----
+http://0.0.0.0:${http.port}/service/path/one
+http://0.0.0.0:${http.port}/service/path/two
+----
+
+== デプロイメント戦略の柔軟性
+
+同じ Mule アプリケーションをさまざまなxref:deployment-strategies.adoc[デプロイメント戦略] (オンプレミスサーバへのデプロイメントと CloudHub へのデプロイメントなど) によってデプロイするには、アプリケーションの一部のパラメータをxref:3.8@mule-runtime::mule-application-deployment-descriptor.adoc[アプリケーションプロパティ]に抽象化する必要があります。これによって、それぞれの場合で異なる値を設定できます。
+
+プロジェクトの `src/main/app` フォルダに `mule-app.properties` というアプリケーションプロパティファイルを作成します。これは、Anypoint Studio (Studio) で作業している場合でも、別の IDE で作業していて Studio の組み込みサーバにデプロイする場合でも行う必要があります。プロパティファイルを作成すると、変数 `http.port` や `https.port` にローカル値を定義できます。
+
+ローカルで実行するときに異なる設定にしたい他のランタイム設定がある場合には、それらもアプリケーションプロパティファイル内に置き、Mule アプリケーション設定で構文 `${propertyname}` を使用して参照できます。各アプリケーションは、デプロイされるときに一連の環境変数を宣言できるため、CloudHub にデプロイされるときに異なる値を指定できます。これらの環境変数は、xref:deploying-to-cloudhub.adoc[Runtime Manager コンソール]またはxref:anypoint-platform-cli.adoc[コマンドラインインターフェース]を使用して定義できます。
+
+== ログ記録
+
+アプリケーションからのすべてのログメッセージは、CloudHub ログサービスによってキャプチャされ、Runtime Manager コンソールのログ検索ツールで使用できます。診断や監査のためにログ内で追加情報を公開したい場合、Mule にはメッセージコンテンツの詳細なログのためのxref:3.8@mule-runtime::logger-component-reference.adoc[ロガー要素]が用意されています。
+
+[IMPORTANT]
+CloudHub では、アプリケーションを削除すると、コンソールからログデータにアクセスできなくなります。CloudHub では、古いログデータは一定期間アーカイブされた後、消去されます。そのため、必要に応じてデータを復元できます。詳細は、https://support.mulesoft.com[https://support.mulesoft.com] でサポートケースを開いてください。
+
+== サードパーティライブラリのパッケージ化
+
+CloudHub のプラットフォームには、さまざまなプロトコルでの接続やさまざまなデータ形式の変換をサポートするためのサービスがあります。すべての標準 Mule ライブラリは、アプリケーションに含まれていて、使用できます。別のサードパーティライブラリを含める必要がある場合には、そのライブラリをxref:3.8@mule-runtime::application-format.adoc[アプリケーションパッケージ]の `<mule application zip>/lib` フォルダにパッケージできます。Mule アプリケーションの `lib` フォルダにパッケージされたライブラリは、実行時にアプリケーションへのクラスパスで使用できます。
+
+== ファイアウォールの内側のリソースへのアクセス
+
+ファイアウォールの内側のリソースにアクセスする必要があるアプリケーションを開発するときには、xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud (Anypoint VPC)] を設定して xref:cloudhub-architecture.adoc#cloudhub-workers[CloudHub ワーカー]をホストし、アプリケーションにアクセスするための IPSec トンネルを設定します。
+
+
+== サードパーティ API およびサービスへのアクセス
+
+CloudHub には、Salesforce、NetSuite、Twitter など、多くのサードパーティアプリケーション用のコネクタが含まれています。Anypoint Studio には、特に一般的ないくつかのコネクタが CloudHub を使用した開発用に標準で含まれていて、xref:3.7@connector-devkit::index.adoc[Anypoint Connector DevKit] のドキュメントには、これらのコネクタを見つけてアプリケーションと共にデプロイする方法の詳細が記載されています。
+
+== セキュアプロパティ
+
+アプリケーションプロパティにセキュアフラグを設定して、その値が実行時にユーザに表示されず、サーバとコンソールの間でも渡されないようにすることができます。詳細は、xref:secure-application-properties.adoc[「アプリケーションプロパティの保護」]を参照してください。
+
+== アプリケーション用の UI の追加
+
+CloudHub にデプロイされたアプリケーションには、HTML と JavaScript を使用して Web UI を作成できます。AJAX モジュールによって、ブラウザからのアプリケーションの操作と静的コンテンツの提供がサポートされます。
+
+
+
+
+
+== 関連情報
+
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:6@studio::index.adoc[Anypoint Studio Essentials (Anypoint Studio の基礎)]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:cloudhub.adoc[CloudHub]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:viewing-log-data.adoc[ログデータの表示]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

@@ -1,0 +1,101 @@
+= キューの管理
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, 監視, seda, vm
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+CloudHub には左ナビゲーションメニューに *[Queues (キュー)]* タブが含まれています。このタブでは、仮想マシン (VM) または段階的なイベント駆動型アーキテクチャ (http://en.wikipedia.org/wiki/Staged_event-driven_architecture[SEDA]) のキューを、デプロイされたアプリケーションのフロー内で表示および制御できます。
+
+[NOTE]
+キューは、CloudHub ワーカーにデプロイされたアプリケーションのみで現在使用可能な機能です。Runtime Manager からローカルサーバにデプロイするアプリケーションでは使用できません。詳細は、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
+
+image::queuestab.png[QueuesTab]
+
+CloudHub では、フロー内から自動的にキューが検出され、[Queues (キュー)] タブにリストされます。各キューのキュー内およびインフライトメッセージ数の確認、過去 24 時間のキュースループットのスナップショットの表示、キュー内のすべての待機中メッセージのクリアを、すべて実行時に、基になるアプリケーションに一切変更を加えずに行うことができます。また、永続的なキューの保存データの暗号化を有効にすることもできます。これにより、永続的なキューに書き出される共有アプリケーションデータは必ず暗号化されます。
+
+== ユースケース
+
+*[Queues (キュー)]* タブは、次のようなユースケースで特に役立ちます。
+
+* アプリケーションのキューを実行時に可視化したい。
+* メッセージが期待どおりにキューを通過しているかどうかを確認するためにアプリケーションをテストする。
+* アプリケーションが特定のメッセージの処理で停滞しており、問題を解決するためにそのキューだけメッセージを消去したい。
+
+== キューの有効化
+
+キューを有効にする手順は、次のとおりです。
+
+.  1 つ以上の xref:3.8@mule-runtime::vm-transport-reference.adoc[VM エンドポイント]を含む、または queued-asynchronous (キューに登録された非同期) xref:3.8@mule-runtime::flow-processing-strategies.adoc[処理戦略]へのフローセットを含む CloudHub に、アプリケーションをデプロイします。
+.  Runtime Manager で、アプリケーションをクリックし、*[Manage Application (アプリケーションを管理)]* をクリックします。
+.  *[Persistent queues (永続的なキュー)]* のチェックボックスをクリックします。
+.  アプリケーションをデプロイするときにこの設定を有効する場合は、*[Deploy Application (アプリケーションをデプロイ)]* をクリックします。既存のアプリケーションを更新する場合は、*[Apply Changes (変更を適用)]* をクリックします。
++
+image::persistentqueuessetondeploy.png[PersistentQueuesSetOnDeploy]
+
+== キューの表示
+
+[Persistent queues (永続的なキュー)] を有効にした後、左ナビゲーションメニューの *[Queues (キュー)]* をクリックします。アプリケーション内のキューがアプリケーションに表示される順序でリストされます。
+
+image::chqconsole.png[CHQConsole]
+
+各キューの名前は、関連付けられた VM エンドポイントの `path` 属性によって、または SEDA キューの場合はフロー名から判断されます。
+
+*[Queued (キュー内)]* 列には、アプリケーションの各キューで現在待機中のメッセージ数が表示されます。*[In-Flight (インフライト)]* 列には、そのキューの後にフローで処理中のメッセージ数が表示されます。インフライトメッセージは厳密には処理が完了するまでまだキュー内にあり、完了後にキューから削除されます。*[Processed Messages (処理済みメッセージ)]* 列には、過去 24 時間に各キューを通過して処理されたメッセージ数を表すサムネイルグラフが表示されます。[Queued (キュー内)] 列と [In-Flight (インフライト)] 列は 5 秒ごとに更新され、[Processed Messages (処理済みメッセージ)] のグラフを 5 分ごとに更新されます。
+
+== キューのクリア
+
+1 つ以上のキューをクリアするには、クリアするキューの横にあるチェックボックスを 1 つ以上クリックし、*[Clear (クリア)]* をクリックします。
+
+image::chqclearq.png[CHQClearQ]
+
+Runtime Manager は、クリアするキューとこのプロセスの所要時間を確認する警告メッセージを表示します。*[Clear Queues (キューをクリア)]* をクリックして続行します。
+
+image::chqclear.png[CHQClear]
+
+確認した後、選択したキューにはクリアプロセスが完了するまで「Clearing queue in progress (キューをクリアしています)」メッセージが表示されます。
+
+image::chqclearinprogress.png[CHQClearInProgress]
+
+キューをクリアすると、キュー内の待機中メッセージとインフライトメッセージがすべて消去されます。キューのクリアプロセスが完了したら、キューは直ちにメッセージの受け入れを再開します。
+
+== 永続的なキュー内の保存データの暗号化
+
+すべての永続的なキューで保存時のデータの暗号化を有効にできます。この機能を有効にすると、永続的なキューに書き込まれる共有アプリケーションデータが暗号化され、セキュリティとコンプライアンスのニーズを満たすことができます。
+
+image::enable-encripting.png[有効化 + 暗号化]
+
+[IMPORTANT]
+暗号化を有効にし、その後無効にすると、以前に暗号化されたメッセージはそのまま変わらないので、読み取り不可になります。
+
+== 制限事項
+
+アプリケーションで永続的なキューを有効にする場合は、次の点に注意してください。
+
+* 永続的なキューでは 1 回のみのメッセージ配信は保証されません。重複するメッセージが送信される場合もあります。1 回のみのメッセージ配信が重要なユースケースの場合、永続的なキューを有効にしないでください。
+* コンソールの [Queues (キュー)] タブを使用してキューをクリアする場合、キューのクリアプロセス中にキューに送信された新しいメッセージは失われる可能性があります。
+* 永続的なキューを有効にすると、パフォーマンスへの影響があります。小さなメッセージ (50kb 以下) をキューに追加するには 10 ～ 20 ミリ秒 (ms) かかりますが、同じメッセージをキューから削除するのに 70 ～ 100ms かかることがあります。
+
+== 関連情報
+
+* xref:cloudhub-fabric.adoc[永続的なキュー]の利点についての詳細を確認してください。
+* 永続的なキューの利点を得るためにxref:cloudhub-fabric.adoc#CloudHubFabric-building[信頼性パターンでアプリケーションを設定]する方法を確認してください。
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:6@studio::index.adoc[Anypoint Studio の基礎]を確認してください。
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:cloudhub.adoc[CloudHub] の概要とその機能についての詳細
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

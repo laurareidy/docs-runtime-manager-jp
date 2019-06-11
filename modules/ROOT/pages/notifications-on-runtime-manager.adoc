@@ -1,0 +1,91 @@
+= Runtime Manager の通知
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, 分析, Runtime Manager, arm
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+== 概要
+
+*通知*​は、アプリケーションの状況に関する情報を提供するために、Runtime Manager コンソールに表示される標準メッセージです。通知には、コンソールの右上隅にあるベルアイコンを使用してアクセスできます。  新しい通知がある場合は、ベルが赤に変わります。
+
+
+[TIP]
+また、特定のイベントが発生した場合に警告するために、任意のメールアドレスに送信できるメールxref:alerts-on-runtime-manager.adoc[アラート]をセットアップすることもできます。通知は現在、CloudHub にデプロイされたアプリケーションのみで生成されます。オンプレミスにデプロイされたアプリケーションの場合はアラートを使用してください。
+
+
+== 通知の管理
+
+
+各通知には、優先度レベルと、関連付けられたメッセージがあります。通知が特定のアプリケーションに関連付けられている場合は、アプリケーション名も表示されます。
+
+image::alertmessage.png[AlertMessage]
+
+既読のものも含め、すべての通知を表示するには、*[Show All Notifications (すべての通知を表示)]* をクリックします。
+
+== 標準通知
+
+
+CloudHub にデプロイされたアプリケーションの場合、いずれかのアプリケーションに特定のイベントが発生することによって通知が自動的に生成されます。
+
+
+[%header,cols="30a,70a"]
+|===
+|Event (イベント) |Message (メッセージ)
+| Worker will restart (ワーカーが再起動します) | A worker `<ip>` has become unresponsive. Restarting the worker. (ワーカー `<ip>` が応答しなくなりました。ワーカーを再起動しています。)
+| Worker has restarted (ワーカーが再起動しました) | Restart SUCCEEDED for worker `<ip>`. (ワーカー `<ip>` の再起動に成功しました。)
+| Worker restart failed (ワーカーの再起動に失敗しました) | Restart FAILED for worker `<ip>`. (ワーカー `<ip>` の再起動に失敗しました。)
+| Maximum Restarts attempted for a worker (ワーカーの再起動を最大回数まで試行しました)| We've reached the maximum amount of restart attempts. (再起動の最大試行回数に達しました。)
+| Worker needs restarting, but restarts are disabled (ワーカーの再起動が必要ですが、再起動が無効になっています) | A worker `<ip>` has become unresponsive. Restarts are disabled. (ワーカー `<ip>` が応答しなくなりました。ワーカーの再起動が無効になっています。)
+|===
+
+
+
+== カスタム通知
+
+CloudHub にデプロイされたアプリケーションでは、アプリケーションにインストールされている必要がある CloudHub コネクタを使用して、カスタム通知を作成できます。
+
+. xref:exchange::index.adoc[Anypoint Exchange] から CloudHub コネクタをダウンロードしてください。
++
+image::cloudhub-connector.png[]
+
+. 何か意味のあることが起きるとトリガされるよう、CloudHub コネクタのインスタンスをプロジェクトのフローに配置します。
+. コネクタを設定します。*[Operation (操作)]* 項目で *[Create Notification (通知を作成)]* を選択し、*[Domain (ドメイン)]*、*[Message (メッセージ)]*、*[Priority (優先度)]* を設定します。
+
++
+これで通知を受信するようになります。
+
+. 必要に応じて、いずれかのカスタムイベントが発生したときに、そのことを知らせるメールアラートをセットアップします。メールアラートの設定方法は、xref:alerts-on-runtime-manager.adoc[Runtime Manager のアラート]を参照してください。カスタム通知に一致する *[Custom Notification Alert (カスタム通知アラート)]* 種別のアラートを作成する必要があります。
+
+チュートリアルを参照してください。
+
+== 通知の保持
+
+通知は、次の制限の (先に生じた) 範囲内で Anypoint Platform によって保持されます。
+
+* 30 日間
+* アプリケーションあたり最大 1000 個の通知
+
+
+
+== 関連情報
+
+* xref:custom-application-alerts.adoc[カスタムアプリケーションアラート]のチュートリアル。
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[[CloudHub にデプロイ]
+* xref:cloudhub.adoc[CloudHub の概要]
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

@@ -1,0 +1,47 @@
+= フロー管理
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 分析, 監視, インサイト, フローマネージャ, フロー管理, フローの開始, フローの停止
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[NOTE]
+====
+CloudHub アプリケーションと Anypoint Platform Private Cloud Edition (PCE) は、現在、フロー管理機能をサポートしていません。
+
+フローに対してアクションを実行するには、目的のアプリケーションで​*「Manage Applications (アプリケーションの管理)」*​権限が必要です。
+====
+
+Runtime Manager UI を使用して、デプロイされたアプリケーション内の特定のフローを個別に開始または停止できます。すべてのフローはデフォルトで有効です。
+
+== フローの開始と停止
+
+個々のフローは、*[Start (開始)]* ボタンと *[Stop (停止)]* ボタンを使用して有効または無効に設定できます。
+
+アプリケーション内の 1 つ以上のフローを選択し、*[Start (開始)]* ボタンまたは *[Stop (停止)]* ボタンをクリックします。
+
+image::flow-management-983fd.png[]
+
+[NOTE]
+フローを開始しても、エンドポイントをトリガしたことにはなりません。それ以前に無効に設定されていた場合に、有効になるだけです。
+
+== フローを未管理に設定
+
+特殊なケースでは、目的の条件に従って、アプリケーションのフローを自動的に開始および停止するように明示的にセットアップする場合があります。このような場合には、この動作は Mule 自体の内部で実行されるアプリケーションのロジックによって実行され、Runtime Manager はこれらの変更の基となるロジックを認識しません。
+
+*[Flow Management (フロー管理)]* タブ内のフローに対して *[Start (開始)]* または *[Stop (停止)]* をクリックすると、Mule が実行しようとする変更に関係なく、Runtime Manager は引き続き、有効または無効の状態をフローに適用します。
+
+Mule 内で実行されるアプリケーションのロジックでセットアップされた動作に従ってフローの有効と無効の状態を自由に切り替えるには、*[Unmanage (管理解除)]* をクリックして、フローを [Unmanaged (未管理)] に設定できます。これによって、フローはこのタブの *[Start (開始)]* ボタンと *[Stop (停止)]* ボタンの影響を受けなくなります。
+
+image::flow-management-unmanage.png[]
+
+== 関連情報
+
+* xref:flow-metrics.adoc[フローメトリクス]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-your-own-servers.adoc[独自のサーバでのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

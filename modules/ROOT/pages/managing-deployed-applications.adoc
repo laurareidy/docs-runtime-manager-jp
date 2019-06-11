@@ -1,0 +1,283 @@
+= デプロイ済みアプリケーションの管理
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, 監視, デプロイ, Runtime Manager, arm
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-active.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+Runtime Manager でアプリケーションをデプロイした後、コンソールを使用して、実行中にアプリケーションを監視および管理できます。使用するxref:deployment-strategies.adoc[デプロイメント戦略] (アプリケーションのデプロイ先とデプロイ元のコンソール) に応じて、実行可能なアクションセットが異なります。
+
+[TIP]
+使用している Anypoint Platform が https://anypoint.mulesoft.com[クラウドベース]であっても、Private Cloud Edition であっても、このページで説明する機能は同じ動作をします。Anypoint Platform Private Cloud Edition をリクエストすることに関心がある場合は、営業担当にお問い合わせください。
+
+このページでは、両種別のデプロイメントに共通するコンソールの基本的な管理ツールについて紹介します。
+
+* <<Start, アプリケーションの再起動、停止、削除>>
+* <<Status States>>
+* <<Updating Your Application>>
+* さまざまなxref:monitoring.adoc[監視]およびxref:troubleshooting.adoc[トラブルシューティング]機能
+
+
+xref:managing-applications-on-your-own-servers.adoc[独自のサーバ]にデプロイされたアプリケーションでは、次も可能です。
+
+* xref:managing-servers.adoc[サーバの管理]
+* xref:managing-servers.adoc[クラスタとサーバグループの作成]
+* xref:sending-data-from-arm-to-external-analytics-software.adoc[Runtime Manager から外部の分析ソフトウェアへのデータの送信]
+* xref:flow-management.adoc[個々のフローの管理]
+
+xref:managing-applications-on-cloudhub.adoc[CloudHub] にデプロイされたアプリケーションでは、次の要素を管理することもできます。
+
+* xref:notifications-on-runtime-manager.adoc[Notifications (通知)]
+* xref:insight.adoc[インサイト]
+* xref:managing-queues.adoc[キュー]
+* xref:managing-schedules.adoc[スケジュール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:viewing-log-data.adoc[アプリケーションログデータの表示]
+* xref:worker-monitoring.adoc[ワーカーの監視]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストア]
+
+
+== はじめに
+
+Anypoint Platform にサインインし、*[Runtime Manager]* をクリックします。
+
+image::deploying-to-your-own-servers-get-to-arm.png[]
+
+Runtime Manager には、*[Applications (アプリケーション)]* と *[Servers (サーバ)]* という 2 つのメインタブがあります。
+
+=== [Applications (アプリケーション)] タブ
+
+Runtime Manager では、アプリケーションとは Mule Runtime または API ゲートウェイランタイムインスタンスで実行中の Mule アプリケーションを指します。インスタンスは CloudHub、組織のオンプレミスサーバ、サーバのグループ、またはクラスタで実行されている場合があります。
+
+*[Applications (アプリケーション)]* メニューでは、アカウントにある現在デプロイ済みで実行中のアプリケーションを素早く参照できます。エントリをクリックして追加情報を表示するか (下図を参照)、*[Manage Application (アプリケーションを管理)]* をクリックしてアプリケーションのxref:monitoring-dashboards.adoc[ダッシュボート]および設定ページを参照します。
+
+image::amc-manageapplication.png[AMC_ManageApplication]
+
+アプリケーションを少なくとも 1 つ作成した後、ここにアプリケーションがリストされます。
+
+[TIP]
+サーバグループの場合、グループにデプロイされたアプリケーションはグループ内のすべてのサーバで実行されます。
+
+=== [Servers (サーバ)] タブ
+
+[NOTE]
+このタブは、オンプレミスのサーバへのデプロイにのみ関連します。CloudHub ワーカーはここに表示されません。
+
+Runtime Manager では、サーバとは CloudHub (オンプレミスまたは別のクラウドサーバ) 以外の場所にある Mule または API ゲートウェイインスタンスを指し、最初に Runtime Manager コンソールで登録する必要があります。このタブで登録および設定したら、*[Applications (アプリケーション)]* タブでアプリケーションをサーバにデプロイできます。
+
+image::amc-servers2.png[AMC_Servers]
+
+*[Servers (サーバ)]* タブから、次のオプションのいずれかを選択し、これらのタスクを実行します。
+
+* Add a Server (サーバを追加) (Runtime Manager コンソールでサーバを登録する)
+* Start Mule or API gateway (Mule または API ゲートウェイを開始)
+* Create a server group (サーバグループを作成)
+* Create a cluster (クラスタを作成)
+* Add and remove servers from a server group (サーバをサーバグループに追加および削除)
+* Add and remove servers from a cluster (サーバをクラスタに追加および削除)
+* Stop an application on a server (サーバ上のアプリケーションを停止)
+* Delete a server, server group or cluster (サーバ、サーバグループ、またはクラスタを削除)
+
+
+このタブのオプションについての詳細は、xref:managing-servers.adoc[「サーバの管理」]を参照してください。
+
+=== 環境の切り替え
+
+組織に複数の環境が追加された場合、環境を切り替えることができます。Runtime Manager の任意の画面から、画面の左上隅に表示される現在の環境をクリックして別の環境を選択し、異なる環境に切り替えることができます。
+
+image::managing-deployed-applications-0e10f.png[]
+
+. 左上隅の現在の環境をクリックします。
+. 切り替え先の環境を選択します。
+. *[Switch (切り替え)]* ボタンをクリックします。
+
+== アプリケーションの開始、再起動、停止、削除
+
+アプリケーションを開始、再起動、停止、削除するには、アプリケーションをクリックし、[Status (状況)] の下矢印をクリックします (メニューは状況によって異なります)。
+
+image::amc-restartapp.png[AMC_StopStartDeleteApp]
+
+必要に応じて *[Start (開始)]*、*[Restart (再起動)]*、*[Stop (停止)]*、*[Delete (削除)]* をクリックします。
+
+* *Start (開始)* - 停止中のアプリケーションを開始します。
+* *Restart (再起動)* - すでに開始されているアプリケーションをリセットします。アプリケーションがデプロイされていない場合はアプリケーションの ZIP ファイルをサーバに送信し、そのサーバでアプリケーションを開始します。
+* *Stop (停止)* - 実行中のアプリケーションを停止します。
+* *Delete (削除)* - アプリケーションを削除します。
+
+[IMPORTANT]
+CloudHub では、アプリケーションを削除すると、コンソールからログデータにアクセスできなくなります。CloudHub では、古いログデータはパージされる前に一定期間アーカイブされます。そのため、必要に応じてデータを復元できます。詳細は、 https://support.mulesoft.com[https://support.mulesoft.com] でサポートケースを開いてください。
+
+[NOTE]
+====
+PCF を使用してデプロイされたアプリケーションの場合:
+
+* *Restart (再起動)* - 仮想マシンにアプリケーションを再デプロイします。
+* *Stop (停止)* - アプリケーションを実行する仮想マシンを破棄しますが、ログを継続するために Runtime Manager にあるエントリは保持されます。
+* *Undeploy (アンデプロイ)* - アプリケーションを実行する仮想マシンを破棄し、アプリケーションのエントリを Runtime Manager から削除します。
+====
+
+
+== 状況の状態
+
+*[Status (状況)]* 列には、次の状態が表示されます。
+
+.アプリケーションの状況
+[%header,cols="10a,90a"]
+|===
+|アイコン |説明
+|image::managing-deployed-applications-a665b.png[] |アプリケーションは実行されていません。
+
+
+|image::managing-deployed-applications-515a4.png[] |アプリケーションはデプロイ中です。
+
+|image:console-overview-green-circle.png[] |アプリケーションは実行中です。
+
+|image:console-overview-red-circle.png[] |アプリケーションのデプロイメントが失敗しました。
+
+| image::managing-deployed-applications-ab70d.png[] |アプリケーションの更新が失敗しました。
+| image::managing-deployed-applications-de1b7.png[] |サーバがプラットフォームに応答しないので、アプリケーションの状況は不明です (オンプレミスデプロイメントの場合のみ)。
+
+|===
+
+=== アプリケーションの状況の状態
+
+* *Deployment Failed (デプロイメント失敗)* - 障害状態のため、アプリケーションの実行が停止しました。障害の原因がコンソールに表示されます。
+* *Partial (一部)* - アプリケーションは開始プロセスの最中です。
+* *Started (開始済み)* - アプリケーションは実行中です。
+* *Starting (開始中)* - アプリケーションは実行中状態に遷移中です。
+* *Stopped (停止済み)* - アプリケーションが停止しました。
+* *Undeploying (アンデプロイ中)* - アプリケーションはサーバから削除されました。
+* *Undeployed (アンデプロイ済み)* - アプリケーションはサーバに存在しません。
+* *Updated (更新済み)* - アプリケーションは更新されました。
+
+=== レプリカの状況の状態
+
+[Replica (レプリカ)] の状況は、Runtime Fabric にデプロイされたアプリケーションにのみ適用されます。これらの状況は、新規設定または変更した設定をデプロイ済みのアプリケーションに適用する場合に表示されます。詳細はxref:1.0@runtime-fabric::app-versioning.adoc[「アプリケーションデプロイメントのバージョン設定」]を参照してください。
+
+[Replica (レプリカ)] の状況は次のとおりです。
+
+* *Started (開始済み)* (緑) - レプリカはトラフィックを受信中です。
+* *Starting (開始中)* - レプリカでプロセスを開始中です。
+* *Deleting (削除中)* - レプリカの削除が進行中です。
+* *Deleted (削除済み)* - レプリカは削除されました。
+* *Stopping (停止中)* - レプリカは停止プロセスの最中です。
+* *Stopped (停止済み)* - レプリカが停止しました (トラフィックを受信していません)。
+* *Failed (失敗)* (赤) - 目的の設定のデプロイメントが失敗しました。
+
+=== サーバの状況の状態
+
+* *Connected (接続済み)* - サーバは使用可能です。
+* *Created (作成済み)* - サーバは最近システムに登録され、一度も接続されていません。
+* *Running (実行中)* - サーバは稼働中で、要求を受け入れています。
+* *Disconnected (切断済み)* - サーバは現在使用できませんが、登録済みで接続可能です。
+
+=== サーバグループの状況の状態
+
+* *Connected (接続済み)* - サーバグループ内のすべてのサーバが接続済みです。
+* *Created (作成済み)* - サーバグループが作成されました。この状態は、グループを作成してから [Empty (空)] 状態になるまで一時的に発生します。
+* *Disconnected (切断済み)* - サーバグループ内のすべてのサーバが使用不可です。この状態は、ネットワークがダウンするか、グループ内の 1 つ以上のサーバに障害がある場合に発生します。
+* *Empty (空)* - 現在このグループに割り当てらているサーバはありません。
+* *Partial (一部)* - グループ内の 1 つ以上のサーバの状態が異なります。
+* *Running (実行中)* - サーバグループ内のすべてのサーバが実行中です。
+
+=== クラスタの状況の状態
+
+
+[%header,cols="25a,75a"]
+|===
+|アイコン
+|説明
+| image:status-green.png[緑]
+| Running (実行中) - すべてのノードが実行中です。
+| image:status-yellow.png[黄]
+| Partial (x of y running) (部分 (x/y 実行中)) - 一部のノードは実行中で、一部はダウンしています。
+| image::managing-deployed-applications-a665b.png[]
+| Disconnected (切断済み) - すべてのノードが切断されています。
+| image:status-black.png[黒]
+| Created (作成済み) - サーバ/ノードはプラットフォームに登録されていますが、開始されませんでした。
+| image:status-yellow.png[黄]
+| Running with communication issue (実行中ただし通信問題あり) - すべてのノードが実行中です。ノード間に可視性の問題があります。
+| image:status-yellow.png[黄]
+| Partial (x of y running) with communication issue (部分 (x/y 実行中) ただし通信問題あり) - 一部のノードは実行中で、一部はダウンしています。ノード間に可視性の問題があります。
+|===
+
+== アプリケーションダッシュボード
+
+*[Applications (アプリケーション)]* タブで任意のアプリケーションを選択すると、右側にパネルが開きます。ここにアプリケーションに関する追加情報が表示され、アプリケーションの設定にアクセスできます。
+
+image::dashboard-ch.png[ダッシュボード]
+
+このダッシュボードに表示される内容は、アプリケーションが xref:managing-applications-on-cloudhub.adoc[CloudHub] と xref:managing-applications-on-your-own-servers.adoc[Mule] のどちらにデプロイされているかによって異なります。状況、最終変更日時、デプロイされたアプリケーション ZIP ファイルが常に表示されます。*[Choose File (ファイルを選択)]* ボタンをクリックして、アプリケーション ZIP ファイルを変更できます。
+
+CloudHub にあるアプリケーションには、アプリケーションが実行されている CloudHub ワーカーに関する情報が表示されます。
+
+クラスタおよびサーバグループにデプロイされているアプリケーションには、サーバのリストとそれぞれの状況が表示されます。
+
+*[Manage Application (アプリケーションを管理)]* ボタンをクリックして、追加のアプリケーション設定を表示および設定するメニューにアクセスできます。
+
+image::managing-deployed-applications-38b94.png[]
+
+そこからさらに​*ダッシュボード*​を表示して、アプリケーションの詳細なダッシュボードを参照できます。ここに表示される内容についての詳細は、xref:monitoring-dashboards.adoc[「ダッシュボードの管理」]を参照してください。
+
+image::managing-deployed-applications-107ad.png[]
+
+
+*[Insight (インサイト)]* ボタンをクリックすると、トランザクションレベルのデータを参照できます。ここに表示される内容についての詳細は、xref:insight.adoc[「インサイト」]を参照してください。
+
+image::managing-deployed-applications-76124.png[]
+
+[NOTE]
+ダッシュボードとインサイトは、Anypoint Platform Private Cloud Edition では現在使用できない機能です。xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。
+
+== アプリケーションの監視
+
+使用するxref:deployment-strategies.adoc[デプロイメント戦略] (アプリケーションのデプロイ先とデプロイ元のコンソール) に応じて、アプリケーションで発生するイベント、およびアプリケーションが実行されるサーバまたは仮想サーバを監視するさまざまなツールがあります。詳細は、xref:monitoring.adoc[「アプリケーションの監視」]を参照してください。
+
+
+== アプリケーションの更新
+
+アプリケーションに変更を加えた場合、新しいバージョンをアップロードする手順は次のとおりです。
+
+. そのアプリケーションの [Deployment (デプロイメント)] 画面で *[Choose file (ファイルを選択)]* をクリックします。 +
+新しいファイル名が斜体テキストで表示されます。
+. デプロイメントに新しいファイルを使用するには、*[Apply Changes (変更を適用)]* をクリックします。 +
+数秒以内にアプリケーションが再デプロイされます。再デプロイ中はアプリケーションの状況インジケータが青に変わり、デプロイメントが完了すると緑に変わります。
+. CloudHub にデプロイされたアプリケーションの場合は、*[Logs (ログ)]* をクリックするとアプリケーションの再デプロイメントをライブで確認できます。
+
+[TIP]
+アプリケーションをオンプレミスのクラスタにデプロイする場合、Runtime Manager は各サーバに新しいアプリケーションバージョンを徐々にインストールしていき、プロセス全体を通じてダウンタイムを発生させずにサービスを稼働し続けます。
+
+Runtime Fabric にデプロイされたアプリケーションを更新する場合は、xref:1.0@runtime-fabric::app-versioning.adoc[「アプリケーションデプロイメントのバージョン設定」]を参照してください。
+
+== アラート
+
+デプロイメントの失敗やアプリケーションの削除など、アプリケーションに特定のイベントが発生した場合に送信されるメールアラートをセットアップできます。これらのアラートは、特定のアプリケーションまたはすべてのアプリケーションにリンクすることができます。これの手順については、xref:alerts-on-runtime-manager.adoc[「アラート」]を参照してください。
+
+Anypoint Platform のすべてのユーザは、アラートを作成する権限がないユーザも含め、すでに作成済みのアラートを `active` (有効) または `inactive` (無効) 状態に切り替えることができます。これで、そのユーザにどのメールアラートが送信されるのかを指定します。
+
+
+[NOTE]
+このビューからアラートをオフに切り替えると、現在 (サインイン済み) のユーザに対してのみオフに切り替わります。他のユーザのアラートは有効のままです。
+
+
+== 関連情報
+
+アプリケーションを管理するための他のツールには次のものがあります。
+
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:managing-servers.adoc[「サーバの管理」]には、アプリケーションをデプロイできるようにサーバ、サーバグループ、クラスタを登録する方法とそれらを管理する方法に関する情報が記載されています。
+* xref:sending-data-from-arm-to-external-analytics-software.adoc[「Runtime Manager から外部の分析ソフトウェアへのデータの送信」]を参照してください。
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:monitoring.adoc[「アプリケーションの監視」]では、アプリケーション、ワーカー、またはサーバで特定のイベントが発生した場合のメールアラートをセットアップする方法が説明されています。
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]
+* xref:1.0@runtime-fabric::app-versioning.adoc[アプリケーションデプロイメントのバージョン設定]

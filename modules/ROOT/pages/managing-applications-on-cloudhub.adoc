@@ -1,0 +1,182 @@
+= CloudHub でのアプリケーションの管理
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, 監視, デプロイ, Runtime Manager, arm
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+xref:deploying-to-cloudhub.adoc[CloudHub] にアプリケーションをデプロイした後に、Runtime Manager を使用して実行時にアプリケーションを管理できます。
+
+アプリケーションが xref:deploying-to-cloudhub.adoc[CloudHub] またはxref:deploying-to-your-own-servers.adoc[独自サーバ]のどちらにデプロイされているかに応じて、デプロイ後に実行できる一連のアクションが異なります。
+
+[NOTE]
+このドキュメントは、クラウド Runtime Manager コンソールを使用して xref:cloudhub.adoc[CloudHub] にデプロイされたアプリケーションについてのものです。すべての種別のデプロイメントに共通する基本的な管理ツールについては、xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]を参照してください。プラットフォームで使用できるさまざまなデプロイメントシナリオを理解するには、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。
+
+
+
+xref:cloudhub.adoc[CloudHub] にデプロイされたアプリケーションでは、次の機能を処理できます。
+
+* xref:managing-queues.adoc[キュー]
+* xref:managing-schedules.adoc[スケジュール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストア]
+* xref:custom-application-alerts.adoc[カスタムアプリケーションアラート]
+
+== アプリケーションダッシュボード
+
+[Applications (アプリケーション)] タブでいずれかのアプリケーションを選択すると、右側にパネルが開きます。ここでは、アプリケーションに関する追加情報を参照し、その設定にアクセスできます。
+
+image::dashboard-ch.png[ダッシュボード]
+
+このダッシュボードに表示される内容は、アプリケーションが xref:cloudhub.adoc[CloudHub] と xref:managing-applications-on-your-own-servers.adoc[Mule] のどちらにデプロイされているかによって異なります。
+
+CloudHub にデプロイされているアプリケーションの場合は、状況、最終変更日時、デプロイされたアプリケーション ZIP ファイルが表示されます。ZIP ファイルは、このメニューから *[Choose File (ファイルを選択)]* ボタンを使用して変更できます。
+
+また、アプリケーションが実行されている CloudHub ワーカーに関する追加情報として、Mule バージョン、ワーカーサイズ、ワーカー数、リージョンも表示されます。さらに、ログとインサイトを表示するボタンと *[Manage Application (アプリケーションを管理)]* メニューを開くボタンも表示されます。
+
+
+== アプリケーション設定へのアクセス
+
+https://anypoint.mulesoft.com[Anypoint Platform] にサインインし、Runtime Manager の *[Applications (アプリケーション)]* タブを表示します。CloudHub で実行されているアプリケーションのいずれかを選択して、右側のパネルを開きます。パネルで、*[Manage Application (アプリケーションを管理)]* ボタンをクリックして、アプリケーションの設定を開きます。
+
+image::cloudhub-manage-application.png[[Manage Application (アプリケーションを管理)]]
+
+このメニューでは、デプロイ時に定義できる多くの設定を変更できます。CloudHub 上のアプリケーションの場合は、ログデータ、インサイト、アラート、キューにアクセスし、スケジュールとアプリケーションデータのセットアップと管理を実行できます。また、*[Alerts History (アラート履歴)]* タブも表示できます。このタブには、このアプリケーションでトリガされたアラートの記録が表示されます。詳細は、xref:alerts-on-runtime-manager.adoc[「Runtime Manager のアラート」]を参照してください。
+
+
+== アプリケーションの監視
+
+アプリケーションが CloudHub にデプロイされている場合は、アプリケーションで発生するイベントやアプリケーションが実行されている仮想サーバのパフォーマンスを監視するための充実したツール群があります。詳細は、xref:monitoring.adoc[「アプリケーションの監視」]を参照してください。
+
+
+== 異なるリージョンへの再デプロイ
+
+アカウントでグローバルデプロイメントが有効になっている場合は、CloudHub デプロイメントに異なるリージョンを選択できます。設定ページで、*[Runtime (ランタイム)]* セクションを選択し、ドロップダウンメニューから目的のリージョンを選択します。選択した後に *[Apply Changes (変更を適用)]* ボタンをクリックすると、新しいリージョンでアプリケーションが再起動されます。
+
+image::setregion.png[SetRegion]
+
+システム管理者は、[Account Settings (アカウント設定)] の *[Organization (組織)]* タブでxref:managing-cloudhub-specific-settings.adoc[デフォルトのリージョンを設定]できますが、アプリケーションがデプロイされると、その設定を必要に応じてここで上書きできます。
+
+[NOTE]
+ヨーロッパにデプロイされたアプリケーションのドメインは、自動的に `+http://myapplicationdomain.eu.cloudhub.io+` に更新されます。
+
+== アプリケーションの拡張
+
+*[Worker size (ワーカーサイズ)]* ドロップダウンからオプションを選択し、*[Apply Changes (変更を適用)]* ボタンをクリックすることで、アプリケーションを動的に拡張できます。アプリケーションでは、指定したワーカーサイズとワーカー数が使用されます。複数のワーカーのデプロイについての詳細は、xref:deploying-to-cloudhub.adoc#worker-sizing[「ワーカーのサイズ変更」]を参照してください。
+
+image::workersize.png[WorkerSize]
+
+[IMPORTANT]
+デフォルトでは、すべてのアプリケーションは任意のサイズの最大 4 つのワーカーに制限されており、無料アカウントと Professional アカウントでは、アプリケーションごとに 1 つのワーカーに制限されています。ワーカー数や vCore 容量を増やす必要がある場合は、サブスクリプションを変更してください。1 つのドメインに対して 5 つ以上のワーカーが必要な場合は、直接https://support.mulesoft.com[お問い合わせください]。
+
+== 環境変数とアプリケーションプロパティの更新
+
+CloudHub を使用してアプリケーションのxref:3.8@mule-runtime::configuring-properties.adoc[環境変数]を設定できます。これによって、デプロイする環境によって異なる可能性のある重要な設定項目を外部に置くことができます。たとえば、ローカルで Mule アプリケーションを使用している場合は、データベースホストを `0.0.0.0` に設定する可能性があります。一方、CloudHub を使用している場合は、Amazon RDS サーバに設定する可能性もあります。
+
+環境変数やアプリケーションプロパティを作成するには、*[Settings (設定)]* セクションで *[Properties (プロパティ)]* タブを選択します。変数を定義するには、テキストの `key=value` 形式を使用するか、2 つのテキストボックスを含むリスト形式を使用します。変更した後に、*[Apply Changes (変更を適用)]* をクリックします。テキスト形式を使用する例を次に示します。
+
+image::setproperties.png[SetProperties]
+
+リスト形式を使用する例を次に示します。
+
+image::setpropertieslist.png[SetPropertiesList]
+
+これらの環境変数は、Mule 設定内で使用できます。例:
+
+[source,xml,linenums]
+----
+<spring:bean id="jdbcDataSource" class="org.enhydra.jdbc.standard.StandardDataSource" destroy-method="shutdown">
+   <spring:property name="driverName" value="com.mysql.jdbc.Driver"/>
+   <spring:property name="url" value="${database.url}"/>
+</spring:bean>
+----
+
+[NOTE]
+アプリケーション内の `mule-app.properties` ファイルでも同じ変数が設定されている場合は、アプリケーションのデプロイ時に mule-app.properties で設定された値をコンソールで設定した環境変数が常に上書きします。
+
+既存の環境変数を削除するには、テキスト形式で行を削除するか、リスト形式でページ上の変数にマウスポインタを置いて右側の [X] ボタンを選択します。既存の変数を編集するには、ページ上で名前または値を選択して編集します。
+
+環境変数の追加、削除、編集が完了したら、*[Apply Changes (変更を適用)]* をクリックして変更を保存し、再デプロイします。
+
+[NOTE]
+====
+*セキュア環境変数*
+
+CloudHub では、機密情報を保護するためのxref:secure-application-properties.adoc[セキュア環境変数]もサポートされています。
+====
+
+== デプロイしたアプリケーションのコピーのダウンロード
+
+最後にデプロイしたアプリケーションは、常にコンソールからダウンロードできます。アプリケーションの *[Settings (設定)]* ページで *[Properties (プロパティ)]* タブを選択し、*[Choose File (ファイルを選択)]* をクリックします。ファイルを保存するコンピュータ上の場所を指定します。
+
+image::downloadappfile.png[DownloadAppFile]
+
+[NOTE]
+====
+*リンクがない場合*
+
+アプリケーション名が表示されるが、その名前が有効なリンクでない場合、システム管理者が開発者およびサポートアカウント種別のユーザによるアプリケーションのダウンロードを無効にしています。アプリケーションのコピーが必要な場合は、システム管理者にお問い合わせください。
+====
+
+
+
+== アプリケーションの更新
+
+アプリケーションに変更を加えた場合に新しいバージョンをアップロードするには、そのアプリケーションの [Deployment (デプロイメント)] 画面で *[Choose File (ファイルを選択)]* をクリックします。新しいファイル名が斜体テキストで表示されます。デプロイメントに新しいファイルを使用するには、*[Apply Changes (変更を適用)]* をクリックします。数秒以内に、アプリケーションは正常に再デプロイされます。再デプロイ中はアプリケーションの状況インジケータが青に変わり、デプロイメントが完了すると緑に変わります。*[Logs (ログ)]* をクリックすると、アプリケーションの再デプロイメントをライブで確認できます。
+アプリケーションの最新のバージョンを使用して新しいワーカーの開始に成功すると、前のバージョンは上書きされ、前のアーカイブをダウンロードしたり、アプリケーションの前のバージョンに戻したりすることはできません。
+
+
+=== CloudHub を使用したダウンタイムなしの更新
+
+CloudHub では、HTTP API のユーザにダウンタイムが発生しないアプリケーションの更新がサポートされています。アプリケーションの更新中は、実行しているアプリケーションの古いバージョンと新しいバージョンの両方が保持されます。新しいバージョンが完全に開始されるまで、ドメインはアプリケーションの古いバージョンを参照します。これにより、新しいバージョンのアプリケーションを開始している間も古いアプリケーションからの要求を引き続き処理できます。
+
+[%header,cols="2*a"]
+|===
+|アイコン |説明
+|image:image2014-10-24-16-3a43-3a57.png[image2014-10-24+16:43:57] |アプリケーションの更新をデプロイ中です。
+|image:image2014-10-24-16-3a44-3a47.png[image2014-10-24+16:44:47] |アプリケーションの更新済みバージョンは、正常に開始されませんでした。新しいバージョンはシャットダウンされ、古いアプリケーションが引き続き実行されます。
+|===
+
+
+== 静的 IP
+
+CloudHub では、アプリケーションの静的 IP の割り当てがサポートされるため、他のサービス用に静的 IP をホワイトリストに登録できます。アプリケーションの静的 IP を有効にするには、アプリケーションの設定ページで *[Static IPs (静的 IP)]* タブに移動し、*[Use Static IP (静的 IP を使用)]* チェックボックスをオンにします。静的 IP がアプリケーションに割り当てられ、下のテーブルに表示されます。アプリケーションが再起動されると、この静的 IP が使用されます。アプリケーションが実行中でない場合は、アプリケーションを開始する前に静的 IP を事前に割り当てることができます。詳細は、xref:deploying-to-cloudhub.adoc#static-ips-tab[「CloudHub へのデプロイ」]を参照してください。
+
+[CAUTION]
+アプリケーションが削除されると、静的 IP は失われるため、新しい IP を要求する必要があります。
+
+
+== アプリケーションの HTTP サービスの作成
+
+HTTP ベースのサービスをドメインで使用できるようにするには、設定内で `${http.port}` 変数を使用します。例:
+
+[source,xml,linenums]
+----
+<http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="${http.port}" .../>
+----
+
+このポートは CloudHub によって指定され、ドメインの負荷は指定した数のワーカーに自動的に分散されます。
+
+== 関連情報
+
+アプリケーションを管理するための他のツールには次のものがあります。
+
+
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:cloudhub.adoc[CloudHub] の概要とその機能についての詳細
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:monitoring.adoc[アプリケーションの監視]: アプリケーションやワーカーで特定のイベントが発生した場合のメールアラートをセットアップする方法を説明しています。
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

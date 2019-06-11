@@ -1,0 +1,223 @@
+= 内部ハンドラバッファ
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, esb, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+Runtime Manager エージェントでは、バッファをサポートする内部ハンドラを簡単な方法で実装できます。このドキュメントでは、Runtime Manager エージェントの内部ハンドラのバッファを実装し、設定する方法について説明します。
+
+== バッファ付き内部ハンドラの実装
+
+=== BufferedHandler 抽象クラス
+
+バッファ付き内部ハンドラを実装するには、`BufferedHandler<T>` 抽象クラスを拡張する必要があります。上書きするメソッドは次のとおりです。
+
+* `boolean canHandle(T message)`
+
+   メッセージが内部ハンドラによって処理可能であれば true を返します。
+
+* `boolean flush(Collection<T> collectionOfMessages)`
+
+   バッファに保存されているメッセージを外部サービスに送信する実装を提供します。
+
+=== 例
+
+[source,java,linenums]
+----
+@Named("com.mulesoft.agent.mypublisher")
+@Singleton
+public class MyPublisher extends BufferedHandler<List<Metric>>
+{
+    @Configurable(value = "mule")
+    String metricPrefix;
+
+    @Inject
+    public MyPublisher()
+    {
+        super();
+    }
+
+    public MyPublisher(OnOffSwitch enabledSwitch)
+    {
+        super();
+        this.enabledSwitch = enabledSwitch;
+    }
+
+    @Override
+    public boolean canHandle(@NotNull List<Metric> metrics)
+    {
+        // Evaluates if the message could be handled
+    }
+
+    @Override
+    public boolean flush(@NotNull Collection<List<Metric>> listOfMetrics)
+    {
+        // Send messages to external service
+    }
+}
+----
+
+== 内部ハンドラのバッファの設定
+
+=== バッファ設定オブジェクト
+
+内部ハンドラにバッファサポートが含まれる場合は、`mule-agent.yml` ファイル内でバッファを設定できます。次の表は、使用可能な設定パラメータを示しています。
+
+[%header,cols="34,33,33"]
+|===
+|項目 |説明 |デフォルト値
+|`type` |バッファ種別。有効な値は、`MEMORY` (メモリ) または `DISK` (ディスク) です。. |
+|`retryCount` |フラッシュメソッドで例外が発生した後に再試行する回数。 |
+|`maximumCapacity` |バッファに保持するイベントの最大数。 |
+|`flushFrequency` |フラッシュメソッドを実行する頻度 (ミリ秒)。 |
+|`filePath` |バッファファイルへのパス。種別が `DISK` (ディスク) のバッファにのみ有効です。. |`PATH/bufferFile`
+|`whenExhausted` |バッファが枯渇したときに従う戦略。指定しない場合、バッファは自動的に拡張されます。有効な値は、`FAIL` (失敗) と `FLUSH.` (フラッシュ) です。 |なし
+|`flushThreadsNumber` |`whenExhausted` で定義した戦略が `FLUSH` (フラッシュ) (上記参照) である場合に、バッファが枯渇したときに FlushThreadExecutor によって使用されるスレッド数。 |`60`
+|`discardMessagesOnFlushFailure` |true の場合、フラッシュが成功しなかったときにはメッセージがバッファに返されません。 |`false`
+|===
+
+[IMPORTANT]
+====
+バッファの最大容量は、バイト数ではなくイベント数に基づいて設定されます。イベントのサイズが大きく、`maximumCapacity` を低い値に設定していない場合は、ヒープに負荷がかかり、アプリケーションのパフォーマンスに影響する可能性があります。
+====
+
+`DISK` (ディスク) バッファを設定した場合は、I/O 操作のパフォーマンスを改善するために、メモリ内バッファもインスタンス化されます。デフォルトでは、メモリバッファのイベント数は 10000 で、500 ミリ秒ごとにディスクにフラッシュし、各バッチには 10000 件のイベントが含まれます。これらの値は、それぞれシステムプロパティ `agent.disk.buffering.cache.size`、`agent.disk.buffering.cache.flush.frequency`、`agent.disk.buffering.max.flushing.size` で設定できます。
+
+[NOTE]
+ディスクから外部システムへの 10000 件ずつのバッチのフラッシュと、`agent.disk.buffering.max.flushing.size` プロパティは、Mule エージェントプラグインの 2.1.9 および 1.11.3 以降でサポートされています。
+
+=== サンプルの `mule-agent.yml` ファイル
+
+==== パブリッシャでのバッファの設定
+
+[source,yaml,linenums]
+----
+
+---
+muleInstanceUniqueId: validId
+organizationId: organizationId
+
+transports:
+    websocket.transport:
+        security:
+            keyStorePassword: mykeystorePassword
+            keyStoreAlias: agent
+            keyStoreAliasPassword: agentpassword
+
+    rest.agent.transport:
+        security:
+            keyStorePassword: mykeystorePassword
+            keyStoreAlias: agent
+            keyStoreAliasPassword: agentpassword
+        port: 9997
+
+services:
+    mule.agent.application.service:
+        enabled: true
+
+    mule.agent.domain.service:
+        enabled: true
+
+    mule.agent.jmx.publisher.service:
+        enabled: true
+        frequency: 15
+        frequencyTimeUnit: MINUTES
+        beans:
+            -   beanQueryPattern: java.lang:type=Runtime
+                attribute: Uptime
+                monitorMessage: Monitoring memory up-time
+            -   beanQueryPattern: java.lang:type=MemoryPool,*
+                attribute: Usage.used
+                monitorMessage" : Used Memory
+
+internalHandlers:
+    domaindeploymentnotification.internal.message.handler:
+        enabled: true
+
+    applicationdeploymentnotification.internal.message.handler:
+        enabled: false
+
+    com.mulesoft.agent.test.buffering.jmx.internal.handler:
+        enabled: true
+        buffer:
+            type: DISK
+            retryCount: 1
+            flushFrequency: 10000
+            maximumCapacity: 30
+            filePath: publisher-buffer.log
+
+externalHandlers:
+    applications.request.handler:
+        enabled: true
+
+    domains.request.handler:
+        enabled: true
+----
+==== イベント追跡でのバッファの設定
+
+[source,yaml,linenums]
+----
+---
+muleInstanceUniqueId: validId
+organizationId: organizationId
+
+transports:
+    websocket.transport:
+        security:
+            keyStorePassword: mykeystorePassword
+            keyStoreAlias: agent
+            keyStoreAliasPassword: agentpassword
+
+    rest.agent.transport:
+        security:
+            keyStorePassword: mykeystorePassword
+            keyStoreAlias: agent
+            keyStoreAliasPassword: agentpassword
+        port: 9997
+
+services:
+    mule.agent.application.service:
+        enabled: true
+
+    mule.agent.domain.service:
+        enabled: true
+
+    mule.agent.jmx.publisher.service:
+        enabled: true
+        frequency: 15
+        frequencyTimeUnit: MINUTES
+        beans:
+            -   beanQueryPattern: java.lang:type=Runtime
+                attribute: Uptime
+                monitorMessage: Monitoring memory up-time
+            -   beanQueryPattern: java.lang:type=MemoryPool,*
+                attribute: Usage.used
+                monitorMessage" : Used Memory
+
+internalHandlers:
+    domaindeploymentnotification.internal.message.handler:
+        enabled: true
+
+    applicationdeploymentnotification.internal.message.handler:
+        enabled: false
+
+    tracking.notification.internal.message.handler:
+        enabled: true
+        buffer:
+            type: MEMORY
+            retryCount: 1
+            flushFrequency: 10000
+            maximumCapacity: 30
+
+externalHandlers:
+    applications.request.handler:
+        enabled: true
+
+    domains.request.handler:
+        enabled: true
+----

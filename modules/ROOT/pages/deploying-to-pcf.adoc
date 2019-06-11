@@ -1,0 +1,233 @@
+= Pivotal Cloud Foundry へのデプロイ
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, クラウド, デプロイ, 管理, Runtime Manager, arm
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-active.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+ローカルインフラストラクチャに Pivotal Cloud Foundry スペースが含まれている場合、動的に割り当てられたローカルリソース上で実行されている仮想サーバに Mule アプリケーションをデプロイできます。そのしくみと現在の制限事項についての詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。
+
+Pivotal Cloud Foundry を介してxref:1.x@api-manager::setting-up-an-api-proxy.adoc[プロキシアプリケーションをデプロイ]することもできます。これによって、Mule 以外のアプリケーションへのすべてのトラフィックを仲介し、それを通じてランタイムポリシーを適用できます。
+
+このページでは、Anypoint Platform Private Cloud Edition の Runtime Manager UI での *[Deploy Application (アプリケーションをデプロイ)]* パネルのオプションについて説明します。
+
+== [Deploy Application (アプリケーションをデプロイ)] 画面へのアクセス
+
+アプリケーションをデプロイする手順は、次のとおりです。
+
+. サインオンページで、 https://anypoint.mulesoft.com[Anypoint Platform] にサインオンするか、*[Sign Up (サインアップ)]* をクリックします。
+. *[Runtime Manager]* アイコンにマウスポインタを置いてクリックするか、*[Open (開く)]* をクリックします。
++
+image::deploying-to-cloudhub-5f383.png[]
++
+. *[Deploy application (アプリケーションをデプロイ)]* をクリックします。
++
+image::deploying-to-cloudhub-3dcbb.png[]
++
+.  [Deploy Application (アプリケーションをデプロイ)] ページが開きます。
++
+image::deploying-to-pcf-start.png[]
+
+
+== アプリケーション名の作成
+
+すべてのアプリケーションには一意のアプリケーションドメイン名が必要です。アプリケーションドメインによって、Runtime Manager 内でアプリケーションが識別されます。
+
+*[Deploy Application (アプリケーションをデプロイ)]* ダイアログで、一意のアプリケーション名を入力します。有効な名前には英数字とダッシュが含まれ、最大長は 42 文字です。名前が有効であれば、その名前が使用可能か、またはすでに別のユーザによって予約されているかを示すアラートが表示されます。
+
+image::deploying-to-pcf-appname.png[]
+
+
+== デプロイメント対象
+
+*[Deployment Target (デプロイメント対象)]* 項目では、アプリケーションをデプロイする場所を指定できます。
+
+* Pivotal Cloud Foundry (PCF)
+* オンプレミスサーバ、サーバグループ、またはクラスタ
+
+このドキュメントでは、Pivotal Cloud Foundry へのデプロイに焦点を絞ります。サーバ、サーバグループ、クラスタへのデプロイについての詳細は、xref:deploying-to-your-own-servers.adoc[「独自のサーバへのデプロイ」]を参照してください。
+
+
+
+== アプリケーションファイル
+
+デプロイメント用の新しいファイルをアップロードします。*[Choose File (ファイルを選択)]* ボタンをクリックし、アプリケーションファイルを選択し、*[Open (開く)]* をクリックします。
+
+*注意:* アプリケーションファイルのサイズ制限は 90 MB です。
+
+
+image::applicationfile.png[ApplicationFile]
+
+
+== アプリケーション設定
+
+=== ランタイムバージョン
+
+ドロップダウンメニューを使用して、デプロイする *[Runtime version (ランタイムバージョン)]* (Mule バージョン) を選択します。
+
+image::runtimeversion2.png[RuntimeVersion2]
+
+[IMPORTANT]
+====
+* Mule バージョンが、アプリケーションの開発に使用したのと同じバージョンであることを確認します。
+
+* アプリケーションをデプロイしたときに設定した Mule バージョンを確認するには、*[Applications (アプリケーション)]* タブをクリックし、アプリケーションをクリックします。右側の拡張ビューで、*[Manage Application (アプリケーションを管理)]* をクリックします。*[Settings (設定)]* をクリックすると、デプロイの値が表示されます。
+====
+
+=== Replication Factor (複製係数)
+
+
+この項目では、アプリケーションをデプロイするインスタンスの数を設定できます。実際のコンピューティング性能に関して、これらの各インスタンスが何を表すかは、具体的な PCF 設定によって異なります。
+
+image::deploying-to-pcf-repli.png[]
+
+
+1 つのアプリケーションに複数のインスタンスを割り当てる場合は、1 つのロードバランサがすべてのインスタンスにアクセスします。このロードバランサは、PCF によって自動的に作成され、受信トラフィックをインスタンスに分散させます。
+
+[NOTE]
+複数のインスタンスがクラスタとして互いに通信を行うようにするには、それらを <<Binding to Hazelcast,Hazelcast サーバにバインド>>する必要があります。
+
+
+== [Properties (プロパティ)] タブ
+
+必要に応じて、アプリケーションに必要なプロパティを指定することもできます。これによって、デプロイする環境によって異なる可能性のある重要な設定項目を外部に置くことができます。たとえば、ある環境で Mule アプリケーションを使用しているときに、データベースホストをローカルホストに設定するとします。一方、それを別の環境で使用するときには、Amazon RDS サーバに設定する可能性もあります。
+
+
+アプリケーションプロパティを追加するには、*[Properties (プロパティ)]* タブをクリックし、次の形式を使用してテキストボックスにキー/値ペアを追加します。
+
+----
+-Dkey=value
+----
+
+`-D` フラグは、これが Mule アプリケーション内で認識できるシステムプロパティであることを示すために必要です。プロパティを追加したら、*[Apply Changes (変更を適用)]* をクリックします。
+
+image::deploying-to-pcf-properties.png[]
+
+
+=== プロパティの上書き
+
+CloudHub とオンプレミス Mule Runtime デプロイメントのように、PCF にデプロイするアプリケーションでも固有のプロパティプレースホルダファイルやセキュアプロパティプレースホルダファイルをデプロイ可能なアーカイブファイル内にバンドルできます。これらのプロパティはアプリケーションの起動時に Mule によってアプリケーションに代入されます。
+
+
+アプリケーション内の mule-app.properties ファイルやバンドルされたプロパティプレースホルダファイルで設定されたプロパティ名がある場合は、アプリケーションがデプロイされると、[Properties (プロパティ)] タブ内の同じ名前のエントリはアプリケーションにバンドルされた一致する値を上書きします。
+
+////
+[NOTE]
+It is possible to change the behavior of the application to not allow CloudHub properties to override properties bundled with the deployable archive. You do this by changing options in the Property Placeholder element in the Mule application. See http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html[Spring documentation on Property Placeholder options] for more information on non-default property placeholder options.
+////
+
+////
+==== Overriding Secure Properties
+
+Note that you can flag application properties as secure so that their values are not visible to users at runtime or passed between the server and the console. You can also include an 'applications.properties' file in your application bundle, which can include properties that are marked as secure, and they will be automatically treated as such. These properties can also be overriden by new values you can set via the Runtime Manager console at runtime. See xref:secure-application-properties.adoc[Secure Application Properties] for more information.
+////
+
+
+== [Service Bindings (サービスバインド)] タブ
+
+任意の外部サービスをデプロイメントにバインドし、このサービスに送信されたプロパティをこのバインドに入力できます。たとえば、データベースサービスをデプロイメントにバインドすることができます。そうすることで、(既存の) データベースサーバによって、デプロイされたアプリケーションに合わせたデータベースインスタンスが作成されます。その場合、通常はデータベースサービスにログイン情報を送信する必要があります。これらは、そのサービスバインドに固有のプロパティを介して送信できます。
+
+Pivotal Operations Manager で、サービスとして利用できるようにするさまざまなアプリケーションを登録できます。たとえば、Hazelcast または MySQL の複数のインスタンスをそれぞれ異なるデータベースサーバに登録できます。登録後、Runtime Manager UI で *[Select a Service (サービスを選択)]* ドロップダウンメニューを開いたときにそれらが表示されます。
+
+image::deploying-to-pcf-services.png[]
+
+いずれかを選択し、*[Add Service (サービスを追加)]* ボタンをクリックします。その後、そのサービスに固有のプロパティを追加できます。
+
+
+=== サービスバインドのプロパティ
+
+*[Properties (プロパティ)]* タブと同じように、対応するサービス固有のプロパティに `key:value` ペアを定義できます。*[Properties (プロパティ)]* タブのプロパティは完全なデプロイメントのグローバルレベルで機能するのに対して、このタブのプロパティは指定されたサービスの範囲でのみ機能します。
+
+image::deploying-to-pcf-properties.png[]
+
+[#Binding to Hazelcast]
+=== Hazelcast へのバインド
+
+([<<Replication Factor>> (複製係数)] 項目の設定によって) 複数のインスタンスにアプリケーションをデプロイする場合に、これらのインスタンスがクラスタとして互いに通信するようにするには、これらを 1 つの Hazelcast サービス (または複数の Hazelcast サービス。その場合は、Hazelcast インスタンスごとに 1 つのサービス) にバインドする必要があります。
+
+
+まず、xref:1.5@anypoint-platform-pcf::pcf-mule-hazelcast.adoc[「To Configure a Mule Hazelcast Server (Mule Hazelcast サーバの設定方法)」]の手順に従ってサービスを使用可能にする必要があります。
+
+使用可能になると、サービスは <<Service Binding Tab>> のドロップダウンに表示され、UI を使用して簡単にアプリケーションをこのサービスにバインドできます。すべての必要な Hazelcast ノードサービスにアプリケーションをバインドする必要があります。
+
+Mule buildPack は、Mule アプリケーションと Hazelcast クラスタの間のバインドを自動的に認識し、Mule サーバをクラスタモードで起動します。
+
+すでにデプロイされている Mule アプリケーションを拡張するには、[<<Replication Factor>> (複製係数)] 項目を設定するだけです。新しい Mule ノードは他のノードと同じサービスにバインドされます。Mule アプリケーションを拡張することで、Hazelcast クラスタへの負荷が大きくなり、Hazelcast クラスタも拡張する必要がある可能性があることを考慮してください。
+
+////
+in case the UI doesn't serve for binding Hazelcast:
+
+To scale Mule applications that are already deployed, just use the cf scale command as you would do usually with any other application.
+
+////
+
+=== バインド成功の確認
+
+サービスバインドが成功したことを確認するには、アプリケーションを PCF に転送した後にアプリケーションのログを確認します。ログのエントリは次のようになります。
+
+----
+INFO  2016-09-30 16:11:34,430 [WrapperListener_start_runner] com.mulesoft.mule.cluster.hazelcast.HazelcastManager: Configuring cluster in client mode
+INFO  2016-09-30 16:11:34,430 [WrapperListener_start_runner] com.mulesoft.mule.cluster.hazelcast.HazelcastManager: Configuring cluster with custom hazelcast client configuration
+INFO  2016-09-30 16:11:34,430 [WrapperListener_start_runner] com.mulesoft.mule.cluster.hazelcast.HazelcastManager: Hazelcast cluster nodes: 127.0.0.1:5701
+INFO  2016-09-30 16:11:34,430 [WrapperListener_start_runner] com.mulesoft.mule.cluster.hazelcast.HazelcastManager: Hazelcast cluster id: #hazelcastClusterId#
+INFO  2016-09-30 16:11:34,443 [WrapperListener_start_runner] com.mulesoft.mule.cluster.hazelcast.HazelcastClientInstanceBuilder: Configuring cluster nodes 127.0.0.1:5701
+INFO  2016-09-30 16:11:34,481 [WrapperListener_start_runner] com.hazelcast.core.LifecycleService: HazelcastClient[hz.client_0_clusterOnAmazonHazelcast][3.6.2] is STARTING
+INFO  2016-09-30 16:11:34,724 [WrapperListener_start_runner] com.hazelcast.core.LifecycleService: HazelcastClient[hz.client_0_clusterOnAmazonHazelcast][3.6.2] is STARTED
+INFO  2016-09-30 16:11:34,812 [hz.client_0_clusterOnAmazonHazelcast.user-1] com.hazelcast.core.LifecycleService: HazelcastClient[hz.client_0_clusterOnAmazonHazelcast][3.6.2] is CLIENT_CONNECTED
+----
+
+== デプロイの実行
+
+上記の手順を実行した後に、*[Create (作成)]* をクリックすると、PCF は必要な仮想リソースを作成し、Mule Runtime インスタンスが含まれたイメージを読み込み、アプリケーションをこの Mule Runtime にデプロイします。
+
+[NOTE]
+PCF は最初にイメージをインスタンス化する必要があるため、このステップには数分かかる場合があります。
+
+
+デプロイメントが完了すると、アプリケーション状況インジケータが緑に変わり、アプリケーションが正常にデプロイされたことがログで通知されます。ログには次のメッセージが含まれます。
+
+----
+Successfully deployed [mule application name]
+----
+
+== デプロイ済みアプリケーションの設定
+
+
+上記の手順で説明したすべての設定は、アプリケーションがデプロイされた後に編集できます。そのためには、以下の手順を実行する必要があります。
+
+
+. [Applications (アプリケーション)] タブで、アプリケーションエントリを選択し、*[Manage Application (アプリケーションを管理)]* をクリックします。
++
+image::amc-manageapplication.png[AMC_ManageApplication]
++
+. アプリケーションの *[Settings (設定)]* タブが表示されます。
++
+image::deploying-to-pcf-setup.png[]
+
+
+== API Manager からのプロキシの自動デプロイ
+
+
+Mule アプリケーションとして開発されていないアプリケーションの API を API Manager に登録するには、コマンドラインを使用できます。
+
+これによって、プロキシとして機能する簡単な Mule アプリケーションが作成され、それが Runtime Manager と API Manager の両方に登録されます。API Manager を使用して、xref:1.x@api-manager::applying-custom-policies.adoc[ポリシー]を適用し、使用状況データを表示できます。
+
+image::infrastructure-pcf-api.png[API PCF]
+
+xref:1.x@api-manager::setting-up-an-api-proxy.adoc[プロキシの設定]を参照してください。
+
+
+== デプロイエラー
+
+エラーが発生し、アプリケーションをデプロイできない場合、アプリケーションの状況インジケータは `Failed` に変わります。エラーが発生したことを示すアラートが状況領域に表示されます。ログの詳細を参照し、アプリケーションのデプロイエラーがないかどうかを確認します。エラーを修正し、アプリケーションをアップロードして、再度デプロイする必要があります。
+
+== 関連情報
+
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:deploying-to-your-own-servers.adoc[独自のサーバへのデプロイ]
+* https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[Runtime Manager API]

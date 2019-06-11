@@ -1,0 +1,25 @@
+= ロードバランサの作成方法 (Anypoint Platform CLI)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+Anypoint Platform CLI を使用して専用ロードバランサを作成できます。
+
+== 前提条件
+
+ロードバランサを作成するには、次のことを実行します。
+
+* 自分のプロファイルが、ロードバランサを作成する組織のシステム管理者ロールのメンバーであることを確認する。
+* ロードバランサを作成する組織で Anypoint Virtual Private Cloud (Anypoint VPC) を作成する。
+* 少なくとも 1 つの証明書と証明書用の非公開鍵を作成する。
+
+== ロードバランサの作成
+
+CLI からロードバランサを作成するには、`cloudhub load-balancer create` を使用します。このコマンドでは、ロードバランサが作成される VPC を指定できます。また、そのロードバランサによって使用される証明書と非公開鍵も指定できます。
+
+== 関連情報
+
+* xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[cloudhub load-balancer create]
+* xref:lb-cert-upload.adoc[証明書のアップロードについて]
+* xref:access-management::index.adoc[アクセス管理]
+* xref:index.adoc[ロードバランサの作成方法 (Runtime Manager)]

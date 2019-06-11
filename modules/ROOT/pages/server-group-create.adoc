@@ -1,0 +1,50 @@
+= サーバグループの作成 (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+サーバグループを作成する前に、次を確認してください。
+
+* Mule がインストールおよび設定されている。
+* Runtime Manager エージェントがインストールおよび設定されている。
+* Runtime Manager にサーバが作成されている。
+
+
+
+Runtime Manager でサーバグループを作成する手順は、次のとおりです。
+
+. サイト内の 2 つ以上の物理サーバまたは仮想サーバに https://www.mulesoft.com/platform/enterprise-integration[Mule Runtime] をダウンロードしてインストールします。
+. Anypoint Platform にサインインし、*[Runtime Manager]* をクリックします。
+
+. *[Servers (サーバ)]* タブをクリックし、コマンドラインで<<Add a Server,各サーバをプラットフォームに登録>>するトークンを使用します。
+
++
+image::serverstatus-no-cluster-allonline.png[すべてのサーバ]
+
+. *[Servers (サーバ)]* タブにすべてのサーバを登録し表示されたら、*[Create Group (グループを作成)]* をクリックします。
+
++
+image::creategroup.png[CreateGroup]
+
++
+新しいグループに含めるサーバを選択し、名前を付けることができる設定ページが表示されます。
+
++
+image::amc-createservergroup.png[AMC_CreateServerGroup]
+
+. サーバグループに名前を付けます。
+
++
+[TIP]
+グループ名は、先頭と末尾にダッシュを使用できず、文字、数字、ダッシュのみを含む 3 文字以上 40 文字以下の一意にする必要があります。
+
+. グループに含める各サーバのチェックボックスをクリックし、*[Create Group (グループを作成)]* をクリックします。
+
++
+[NOTE]
+サーバグループ内のすべてのサーバは、同じ Mule バージョンおよび同じ Runtime Manager エージェントバージョンを実行している必要があります。また、すべてのサーバが `Running` または `Disconnected` 状況を示すサーバグループを作成できますが、これらのサーバと `Created` 状況を示すサーバを混在させることはできません。すべてのサーバが `Created` 状況を示すサーバグループを作成できます。
+
+== 関連情報
+
+* xref:servers-create.adoc[サーバの作成]
+* xref:server-group-about.adoc[サーバグループについて]

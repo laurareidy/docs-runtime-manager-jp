@@ -1,0 +1,179 @@
+= Runtime Manager エージェント通知
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, esb, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+Runtime Manager エージェントは、Mule インスタンスで発生するイベントに関する通知を JSON 形式でパブリッシュします。これによって、通知を受信および処理する独自のシステムを実装できます。通知は、REST と WebSocket の両方のトランスポート経由で送信されます (トランスポートについての詳細は、Runtime Manager エージェントのアーキテクチャに関するドキュメントを参照してください)。
+
+== Mule エージェント通知のコールバック URL の設定
+
+指定された URL で通知を受信するには、次に示すように、`mule-agent.yml` ファイルの REST トランスポートのセクションで `callback` URL を最初に設定する必要があります。
+
+[TIP]
+送信される通知を有効にするには、`rest.agent.transport` セクションを有効にする必要があります。設定する URL の末尾はスラッシュ (`/`) にする必要があります。これは、エージェントによって URL にパスが追加されるので必要です。
+
+[source,yaml,linenums]
+----
+  rest.agent.transport:
+    enabled: true
+    callback:
+      url: http://localhost:8080/
+    port: 8888
+----
+
+== アプリケーションデプロイメントの通知
+
+アプリケーションのデプロイ中またはアンデプロイ中に状態が変化するたびに、Runtime Manager エージェントから通知が送信されます。通知は `PUT` 要求によって `applications/<appname>/deployment` パスに送信されます。
+
+----
+PUT <callback URL>/applications/<application name>/deployment HTTP/1.1
+----
+
+=== 通知の例
+
+[source,json,linenums]
+----
+{
+  "application": {
+    "name": "applicationName",
+    "domain": "domainName",
+    "state": "STARTED"
+  },
+  "status": "DEPLOYED",
+  "message": "Application successfully deployed."
+}
+----
+
+=== 通知の項目
+
+各アプリケーションデプロイメントの通知の項目は次のとおりです。
+
+[%header,cols="2*"]
+|===
+|項目 |説明
+|`application` a|
+アプリケーションに関する次の情報が含まれます。
+
+* アプリケーション名
+* アプリケーションがデプロイされるドメインの名前
+* アプリケーションの現在の状態
+
+アプリケーションの全状態のリストは、「<<Application States and Deployment Status>>」セクションを参照してください。
+
+|`status` a|
+デプロイメントの現在の状況。デプロイメント操作の完了後、メッセージは `DEPLOYED` のまま変わりません。アンデプロイメント操作の後、メッセージは `UNDEPLOYED` のまま変わりません。
+
+メッセージの全状況のリストは、「<<Application States and Deployment Status>>」セクションを参照してください。
+
+|`message` |現在のデプロイメントフェーズについての情報メッセージ。デプロイメントが失敗した場合、失敗の理由についての情報がこのメッセージ含まれます。
+|===
+
+== ドメインデプロイメントの通知
+
+ドメインのデプロイ中またはアンデプロイ中に状態が変化するたびに、Runtime Manager エージェントから通知が送信されます。
+
+通知は PUT 要求によって `domains/<domainname>/deployment` パスに送信されます。
+
+----
+PUT <callback URL>/domains/<domain name>/deployment HTTP/1.1
+----
+
+=== 通知の例
+
+[source,json,linenums]
+----
+"domain": {
+    "name": "domainName",
+    "applications": [
+      {
+        "name": "application1",
+        "domain": "domainName",
+        "state": "STARTED"
+      },
+      {
+        "name": "application2",
+        "domain": "domainName",
+        "state": "STOPPED"
+      },
+    ]
+  },
+  "status": "DEPLOYED",
+  "message": "Domain successfully deployed."
+}
+----
+
+=== 通知の項目
+
+各ドメインデプロイメントの通知の項目は次のとおりです。
+
+[%header,cols="2*"]
+|===
+|項目 |説明
+|`domain` a|
+ドメインに関する次の情報が含まれます。
+
+* ドメイン名
+* 次を含む、ドメインにデプロイされたアプリケーションのリスト。
+** アプリケーション名
+** ドメイン名
+** アプリケーションの状況
+
+|`status` a|
+デプロイメントの現在の状況。デプロイメント操作の完了後、メッセージは `DEPLOYED` のまま変わりません。アンデプロイメント操作の後、メッセージは `UNDEPLOYED` のまま変わりません。
+
+メッセージの全状況のリストは、「<<Application States and Deployment Status>>」セクションを参照してください。
+
+|`message` |現在のデプロイメントフェーズについての情報メッセージ。デプロイメントが失敗した場合、失敗の理由についての情報がこのメッセージ含まれます。
+|===
+
+== キープアライブ通知
+
+Runtime Manager エージェントは、定期的にキープアライブ通知を送信し、Mule インスタンスがまだ実行中であることを確認します。通知は、`POST` 要求に空の本文を含めて `keepAlive` パスに送信されます。
+
+----
+POST <callback URL>/keepAlive HTTP/1.1
+----
+
+== アプリケーションの状態とデプロイメントの状況
+
+=== アプリケーション状態
+
+アプリケーションの状態は、Mule アプリケーションのライフサイクルのさまざまなフェーズを表します。
+
+有効なアプリケーションの状態は次のとおりです。
+
+* `CREATED`
+* `INITIALISED`
+* `STARTED`
+* `STOPPED`
+* `DEPLOYMENT_FAILED`
+* `DESTROYED`
+
+=== デプロイメントの状況
+
+デプロイメントの状況は、アプリケーションまたはドメインの正常なデプロイメントまたはアンデプロイメントのさまざまなステップを表します。
+
+有効なデプロイメントの状況はとおりです。
+
+* `DEPLOYMENT_STARTED`
+* `DEPLOYED`
+* `CONTEXT_CREATED`
+* `CONTEXT_INITIALISING`
+* `CONTEXT_INITIALISED`
+* `CONTEXT_STARTING`
+* `CONTEXT_STARTED`
+* `CONTEXT_CONFIGURED`
+* `CONTEXT_STOPPING`
+* `CONTEXT_STOPPED`
+* `CONTEXT_DISPOSING`
+* `CONTEXT_DISPOSED`
+* `UNDEPLOYING`
+* `UNDEPLOYED`
+* `DEPLOYMENT_FAILED`
+* `UNDEPLOYMENT_FAILED`

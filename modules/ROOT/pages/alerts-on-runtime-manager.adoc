@@ -1,0 +1,316 @@
+= Runtime Manager を使用したアラートの設定について
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, 分析, Runtime Manager, arm
+
+特定のイベントが発生したときにメール通知を送信するアラートをセットアップできます。これらは、アプリケーションまたはサーバのイベントになります。Runtime Manager には、次のような一般的なイベントの通知をトリガするいくつかの​*標準アラート*​タイプが用意されています。
+
+* 一定期間内に特定の数を超えるイベントがアプリケーションで処理された。
+* デプロイメントが成功または失敗で完了した。
+* ワーカー監視システムを介するアプリケーションで CloudHub のワーカーに問題が発生した。
+* サーバが切断または削除された。
+
+CloudHub では、アプリケーションのカスタムアラートを作成することもできます。カスタムアラートは、CloudHub コネクタを使用してアプリケーションから Runtime Manager コンソールに送信される通知によってトリガされます。詳細は、xref:custom-application-alerts.adoc[「カスタムアプリケーションアラート」]を参照してください。カスタムアラートは、CloudHub にデプロイされているアプリケーションでのみ使用できます。顧客がホストしているランタイムにデプロイされているアプリケーションではアラートを設定できません。
+
+== アラートへのアクセス
+
+Runtime Manager では、いくつかの方法でアラートを表示できます。
+
+* Runtime Manager で、*[Alerts (アラート)]* タブをクリックし、アカウントのアラートの完全なリストを表示する。
+* 左側のメニューで *[Applications (アプリケーション)]* タブをクリックし、アプリケーションをクリックしてxref:managing-deployed-applications.adoc#applications-dashboard[アプリケーションダッシュボード]を開き、*[View Associated Alerts (関連付けられたアラートを表示)]* リンクをクリックする。
+* 左側のメニューで *[Servers (サーバ)]* タブをクリックし、サーバをクリックしてxref:managing-servers.adoc#servers-dashboard[サーバダッシュボード]を開き、*[View Associated Alerts (関連付けられたアラートを表示)]* リンクをクリックする。
+
+== アラートのレート制限
+
+Anypoint Platform では、アラートをトリガする頻度を決定するレート制限が適用されます。これらの制限により、過度なメール送信を回避できます。レート制限は、次のようないくつかの要素によって決まります。
+
+* CloudHub: CloudHub コネクタを使用して、通知およびアラートをトリガする場合、IP アドレスあたりのカスタムアプリケーションアラートは 5 件/秒に制限されます。制限は IP ごとに適用されるため、アプリケーションで複数のワーカーが使用されている場合、制限はアプリケーションに割り当てられているワーカーの数で乗算されます。 +
+メールをトリガするカスタム通知は、次に示すメール通知のレート制限の影響も受けます。
+* アラートメール: 標準アラートとカスタムアラートの両方にレート制限があります (2.5 秒ごとに 1 つのアラート通知メールのみが送信される)。この制限は、組織、環境、アラート (名前/ID)、リソース (アプリケーション、サーバ、サーバグループ、クラスタ) の組み合わせで適用されます。
+
+
+== アラートの作成
+
+上記のいずれかのパスで [alerts (アラート)] 画面にアクセスする場合、アラートがまだセットアップされていないと,次の画面が表示されます。
+
+image::create-first-alert.png[最初のアラート]
+
+. *[Create your first alert (最初のアラートを作成)]* 項目の横にあるプラス記号をクリックします。
++
+image::create-alert.png[]
+
+. 必須項目を入力します。
+
+* *Name (名前)* - アラートの一意のわかりやすい名前。
+* *Severity Level (重要度レベル)* - (Critical (重大)、Warning (警告)、Info (情報))
++
+[NOTE]
+現在、各重要度レベルはアラートに影響しませんが、今後、追加機能がリリースされたときに影響するようになります。
+
+* *Source (ソース)* - このアラートがアプリケーションに関連付けられているのか、サーバに関連付けられているのかを決定します。Anypoint Platform アカウントでxref:managing-servers.adoc[ローカルサーバ]がサポートされていない場合、この項目は表示されない可能性があります。
+* *Application Type (アプリケーション種別)* - xref:deployment-strategies.adoc[CloudHub またはローカルサーバ]にデプロイされているアプリケーションにアラートを関連付けます。
++
+[NOTE]
+CloudHub にデプロイされているアプリケーションとローカルサーバにデプロイされているアプリケーションにまたがる 1 つのアラートは作成できません。両方の種別に到達する 2 つの個別のアラートを作成する必要があります。
++
+* *Server Type (サーバ種別)* - サーバの管理対象 (1 つのサーバ、サーバグループ、クラスタ) を決定します。メニューでサーバが使用できない場合、xref:managing-servers.adoc[「サーバの管理」]を参照してください。
+* *[Application(s) (アプリケーション)]* または *[Server(s) (サーバ)]* - アラートを適用するアプリケーションまたはサーバを選択します。
+* *Condition (条件)* - アラートをトリガする条件。オプションは、アラートのリンク先 (サーバ、CloudHub で実行されているアプリケーション、ローカルで実行されているアプリケーション) によって異なります。特定のオプションでは、<<Alert Conditions,以下のセクション>>で説明されている追加データが必要になります。
+* *Subject (件名)* - 送信されるメールの件名。件名には変数 (<<Alert Properties>>) を含めることができます。
+* *Message (メッセージ)* - メールの本文テキストを入力します。メッセージには変数 (<<Alert Properties>>) を含めることができます。
+* *Recipients (受信者)* - このメールの受信者をリストします。プラットフォームのユーザを選択したり、組織にいないユーザのメールアドレスを入力したりできます。
+
+. *[Create Alert (アラートを作成)]* をクリックします。
+
+. アラート条件を満たすイベントが発生すると、次のようなメールが送信されます。
++
+image::alertemailmsg.png[AlertEmailMsg]
+
+
+各アラートソースで使用できるアラート条件についての詳細は、以下を参照してください。
+
+== アラート条件
+
+アラートのソースに応じて、各種イベント種別を選択できます。イベント種別には、簡単な成功または失敗の通知 (「Application Deployment Success (アプリケーションのデプロイメントに成功しました)」など) や、フォームに新しい項目として表示されるパラメータを定義する必要のあるより複雑な通知があります。
+
+=== CloudHub にデプロイされているアプリケーションの条件
+
+CloudHub にデプロイされているアプリケーションの場合、次のいずれかのアラート条件を選択できます。
+
+* *CPU Usage (CPU 使用量)* - アプリケーションを実行する CloudHub ワーカーの CPU 使用量。
++
+image::cpu-usage.png[cpu]
++
+この条件を有効にするには、アラートをトリガする容量のしきい値と期間を指定する必要があります。
+
+* *Memory Usage (メモリ使用量)* - アプリケーションを実行する CloudHub ワーカーに割り当てられている合計メモリの割合 (JVM 自体でコンシュームされるメモリも含む)。
++
+image::memory-usage.png[メモリ]
++
+この条件を有効にするには、アラートをトリガする容量のしきい値と期間を指定する必要があります。
+
+* *Custom Notification alert (カスタム通知アラート)* – 指定したテキストが含まれる場合、カスタム通知およびアラートが参照されます。
++
+image::custom-alert.png[カスタム]
++
+この条件を有効にするには、CloudHub コネクタの出力となる通知を指定する必要があります。このコネクタは、Mule アプリケーションに存在している必要があります。アラートは、いずれかの通知のテキストが *[Contains (次の値を含む)]* 項目に入力した文字列に一致するか、テキストにその文字列が含まれる場合に発生します。詳細は、xref:custom-application-alerts.adoc[「カスタムアプリケーションアラート」]を参照してください。
++
+*[Custom Notification Alerts (カスタム通知アラート)]* では、より多くのコンテキストを提供するために通知メッセージにコンパイルできる一連のアラートプロパティにアクセスできます。
+
+
+* *Exceeds event traffic threshold (イベントトラフィックしきい値を超過しています)*
++
+image::alert-traffic.png[トラフィック]
++
+この条件を有効にするには、アラートをトリガする容量のしきい値と期間を指定する必要があります。このしきい値は、すべてのイベント種別に適用されます。
+特定期間中に N 件を超えるイベントが発生すると、アラートが表示されます。
+この意味は、アプリケーションで追跡しているイベントによって異なります。
+イベント追跡についての詳細は、 http://docs.mulesoft.com/mule-user-guide/v/3.7/business-events[「ビジネスイベントについて」]を参照してください。
+
+
+
+* *Secure data gateway disconnected (ソースデータゲートウェイが切断されました)*
+* *Secure data gateway connected (ソースデータゲートウェイが接続されました)*
+* *Worker not responding (ワーカーが応答していません)*
+* *Deployment success (デプロイメントに成功しました)*
+* *Deployment failure (デプロイメントに失敗しました)*
+
+=== ローカルにデプロイされているアプリケーションの管理
+
+ローカルサーバにデプロイされているアプリケーションで、xref:deployment-strategies.adoc#deployment-scenarios[クラウドコンソールまたは Anypoint Platform Private Cloud Edition] を介して、次のいずれかのアラート条件を選択できます。
+
+* *Number of errors (エラー数)*
+
++
+image::alerts-on-runtime-manager-387e2.png[]
+
++
+アラートをトリガするエラー数を指定する必要があります。
+時間単位は 1 分あたりです。アラームは、エラー数が 1 分間の時間枠のしきい値を超えたときにトリガされます。
++
+[NOTE]
+このアラートは、現在 xref:deployment-strategies.adoc#deployment-scenarios[Anypoint Platform Private Cloud Edition] で使用できません。
+
+* *Number of Mule messages (Mule メッセージ数)*
+
++
+image::alerts-on-runtime-manager-51033.png[]
+
++
+アラートがトリガされる、アプリケーションが開始されてからの Mule メッセージ数を指定する必要があります。
+
++
+[NOTE]
+このアラートは、現在 xref:deployment-strategies.adoc#deployment-scenarios[Anypoint Platform Private Cloud Edition] で使用できません。
+
+* *Response time (応答時間)*
++
+image::alerts-on-runtime-manager-45785.png[]
+
++
+最大許容応答時間を指定する必要があります。この値を超えると、アラートがトリガされます。
+
++
+[NOTE]
+このアラートは、現在 xref:deployment-strategies.adoc#deployment-scenarios[Anypoint Platform Private Cloud Edition] で使用できません。
+
+* *Application Deployment success (アプリケーションのデプロイメントに成功しました)*
+* *Application Deployment failure (アプリケーションのデプロイメントに失敗しました)*
+* *Application undeployed (アプリケーションがデプロイされていません)*
+
+
+=== Mule サーバの条件
+
+
+使用可能なアラートイベントは、*[Server Type (サーバ種別)]* 項目によって異なります。以下で説明されているアラートは、すべての対象種別 (サーバ、サーバグループ、クラスタ) で使用できます。
+
+
+* *CPU Usage (CPU 使用量)* - サーバの CPU 使用量。
++
+image::cpu-usage.png[cpu]
++
+この条件を有効にするには、超過したときにアラートをトリガする容量のしきい値と期間のパラメータ値を指定する必要があります。 
+
+
+
+* *Memory Usage (メモリ 使用量)* - サーバの合計メモリ使用量 (MB)。
++
+image::memory-usage.png[メモリ]
++
+この条件を有効にするには、超過したときにアラートをトリガする容量のしきい値と期間のパラメータ値を指定する必要があります。 
+
+* *Server Load Average (サーバの平均負荷)* - 特定期間の平均処理。
+
++
+image::alerts-on-runtime-manager-load-average.png[]
+
++
+[NOTE]
+Windows 環境では、この情報が提供されないため、このメトリクスを使用できません。
+
+* *Server Thread Count (サーバスレッド数)* - JVM のスレッド数。
+
++
+image::alerts-on-runtime-manager-thread-count.png[]
+
+
+
+[NOTE]
+上記にリストされていないアラートは、現在 xref:deployment-strategies.adoc#deployment-scenarios[Anypoint Platform Private Cloud Edition] できません。
+
+次のアラートは、対象種別 (サーバ、サーバグループ、クラスタ) によって異なり、追加パラメータが必要になります。
+
+==== サーバ
+
+* *Server up (サーバが稼働しています)*
+* *Server disconnected (サーバが切断されました)*
+* *New server registered (新しいサーバが登録されました)*
+* *Agent's version changed (エージェントのバージョンが変更されました)*
+* *Runtime's version changed (ランタイムのバージョンが変更されました)*
+* *Server deleted (サーバが削除されました)*
+
+==== サーバグループ
+
+* *Server added to a Server Group (サーバグループにサーバが追加されました)*
+* *Server removed from a Server Group (サーバグループからサーバが削除されました)*
+* *Server added to a Server Group (サーバグループにサーバが追加されました)*
+* *Server removed from a Server Group (サーバグループからサーバが削除されました)*
+* *Server group is up (サーバグループが稼働しています)*
+* *Server group is partially up (some servers are not running) (サーバグループの一部が稼働しています (一部のサーバは実行されていません))*  !!!!!!
+* *Server group is down (サーバグループがダウンしています)*
+* *A server group's node came up (サーバグループのノードが稼働しました)*
+* *A server group's node went down (サーバグループのノードがダウンしました)*
+
+==== クラスタ
+
+* *Cluster Created (クラスタが作成されました)*
+* *Cluster Deleted (クラスタが削除されました)*
+* *Server added to a Cluster (サーバがクラスタに追加されました)*
+* *Server removed from a Cluster (サーバがクラスタから削除されました)*
+* *Cluster is up (クラスタが稼働しています)*
+* *Cluster is down (クラスタがダウンしています)*
+* *A cluster's node came up (クラスタのノードが稼働しました)*
+* *A cluster's node went down (クラスタのノードがダウンしました)*
+* *Cluster presents visibility issues (クラスタに表示の問題が発生しました)*
+
+
+
+== アラートプロパティ
+
+次のプロパティは、アラートの [Email to (メール先)]、[Subject (件名)]、[body (本文)] 項目で使用できます。
+
+[%header%autowidth.spread]
+|===
+|変数 |説明 |該当するアラート
+
+|`${app}` |アラートをトリガするアプリケーションの名前 |すべてのアプリケーションアラート
+|`${name}` |アラートをトリガする対象 (サーバ、サーバグループ、クラスタ) の名前 |すべてのサーバアラート
+|`${severity}` | アラートの重要度 |すべて
+|`${period}` |測定する期間 |条件付き
+|`${periodTimeUnit}` |期間の時間単位 |条件付き
+|`${currentValue}` |アラートをトリガするメトリクスの現在の値 |条件付き
+|`${threshold}` |アラートをトリガする期間内の数 |条件付き
+|`${message}` |アラートをトリガする通知のメッセージ |カスタムアプリケーション通知
+|`${priority}` |アラートをトリガする通知の優先度 |カスタムアプリケーション通知
+|===
+
+== 既存のアラートの編集
+
+アプリケーションまたはサーバのアラートを表示するには、そのアプリケーションまたはサーバのパネルの *[View Alerts (アラートを表示)]* リンクをクリックします。左側のパネルの *[Alerts (アラート)]* リンクをクリックして、すべてのアラートのリストを表示することもできます。
+
+image::view-alerts.png[アラート]
+
+
+このメニューから、表示されるアラートを絞り込んだり、アラート名をクリックして直接編集したり、横にあるアイコンをクリックしてパネルを開いて設定を表示したりできます。このパネルから、名前の横にある​*編集*​アイコンをクリックして、新規アラートの作成時と同じオプションを編集できます。
+
+image::edit-alert.png[編集]
+
+
+
+=== アラートのオン/オフの切り替え
+
+アラートの状態を変更するには、1 つ以上のアラートを選択し、スイッチをクリックして *[on (オン)]* または *[off (オフ)]* にします。
+
+image::alert-on.png[オン]
+
+Anypoint Platform のすべてのユーザは、アラートを作成する権限がなくても、各アラートの状態を *[Active (アクティブ)]* または *[Inactive (非アクティブ)]* に設定して、メールアラートを送信するかどうかを制御できます。
+
+[NOTE]
+アラートが無効または有効になると、そのアラートのメール通知を受信するすべてのユーザにその変更が適用されます。
+
+=== アラートの複製
+
+1 つ以上のアラートを選択し、アラートパネルから​*複製*​アイコンをクリックします。その後、新規アラートを編集できます。
+
+image::duplicate-alert.png[複製]
+
+
+=== アラートの削除
+
+1 つ以上のアラートを選択し、アラートパネルから​*削除*​アイコンをクリックします。
+
+image::delete-alert.png[複製]
+
+
+== アラート履歴の表示
+
+
+*[Alerts (アラート)]* ページから、アラート名をクリックし、対応するパネルを開きます。このパネルから、<<Editing Existing Alerts,アラートを編集>>したり、その状況や設定を表示したり、アラートがトリガされたすべての時間の全履歴を表示したりできます。
+
+image::alerts-history.png[履歴]
+
+
+デプロイされている個々のサーバやアプリケーションのアラート履歴レコードを表示することもできます。 
+
+. *[Applications (アプリケーション)]* タブの xref:managing-deployed-applications.adoc#applications-tab[*[Manage Application (アプリケーションを管理)\]* ボタン] (アプリケーションがオンプレミスでデプロイされている場合) か、*[Servers (サーバ)]* タブの xref:managing-servers.adoc#settings-page[*[Manage Server (サーバを管理)\]* ボタン] をクリックします。 
+. *[Alerts History (アラート履歴)]* タブをクリックします。 +
+アラートの履歴レコードが表示されます。 
+
+image::alerts-on-runtime-manager-3afb7.png[]
+
+== 関連情報
+
+* xref:custom-application-alerts.adoc[カスタムアプリケーションアラート]
+* xref:monitoring-dashboards.adoc[ダッシュボードの監視]
+* xref:monitoring.adoc[アプリケーションの監視]

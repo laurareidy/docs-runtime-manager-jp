@@ -1,0 +1,113 @@
+= CloudHub API
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 管理, api, REST
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+CloudHub REST API は、Runtime Manager で実行できる多くの操作にプログラムでアクセスする方法を提供します。次の操作を行うことができます。
+
+* CloudHub のアプリケーションを作成する
+* アプリケーションプロパティ (ワーカーの数や環境変数など) を変更する
+* アプリケーションの新しいバージョンをデプロイする
+* アプリケーションを削除する
+* アプリケーションに関する統計を取得する
+* CloudHub 通知を作成する
+* アプリケーションによってトリガされるメールアラートを作成する
+
+アプリケーションの操作に精通してから、特定の操作を開始してください。
+
+[NOTE]
+====
+この API は、クラウドベースバージョンの Runtime Manager を介したクラウドデプロイメントにのみ対応します。さまざまなデプロイメントシナリオについての詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。API を介したオンプレミスアプリケーションの管理については、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/ae639f94-da46-42bc-9d51-180ec25cf994/apis/38784/versions/5567732[Runtime Manager API Portal] を参照してください。
+====
+
+== データ形式
+
+型を返すまたは受け入れるリソースやメソッドはすべて、データ形式として JSON を使用します。次に、アプリケーションの取得要求への応答で JSON 形式で受信するデータの例を示します。
+
+[source,json,linenums]
+----
+{
+  "domain":"hello",
+  "fullDomain":"hello.cloudhub.io",
+  "workers":1,
+  "hasFile":false,
+  "muleVersion": "3.1.2",
+  "properties": {
+    "foo":"bar"
+  },
+  "status":"STARTED",
+  "workerStatuses":[
+     {
+       "id":"",
+       "host":"xxx.xxx.xxx.xxx",
+       "port":8081,
+       "status":"STARTED"
+     }
+   ]
+}
+----
+
+== API の使用開始と API による認証
+
+API を使用する場合、任意の https://jersey.github.io/[JSON をデータ形式]として使用できます。https://jersey.github.io/[Java を使用する場合、JSON 用の https://github.com/codehaus/jackson[Jackson] がサポートされている https://jersey.github.io/[Jersey クライアント]または http://hc.apache.org/httpclient-3.x/index.html[HttpClient] を使用することをお勧めします。
+
+// commented out per Kane Sun 2.28.2017 kris All APIs require HTTP basic authentication.
+
+ユーザ名 (「user@enviornment」形式) でアクセスする環境を制御します。たとえば、ユーザ名が jane で「Development」という環境がある場合、ユーザ名は「jane@Development」になります。環境を指定しない場合、本番環境がデフォルトに設定されます。
+
+== 状況コードとエラー処理
+
+REST API をコールする場合、次の状況コードが返されます。
+
+[%header,cols="10a,50a"]
+|===
+|Status Code |説明
+|200 |操作に成功した。
+|201 |リソース (アプリケーションなど) が作成された。場所ヘッダーには、リソースの場所が含まれています。
+|404 |リソースが見つからなかった。
+|409 |リソース (サーバ、サーバグループ、デプロイメントなど) の作成時に同じ名前のリソースがすでに存在していた。
+|500 |操作に失敗した。詳細は、HTTP 本文を参照してください。
+|===
+
+エラーが発生した場合 (500 状況コードなど)、HTTP 応答には JSON 応答とエラーメッセージが含まれます。例:
+
+[source,json,linenums]
+----
+500
+Content-Type: application/json
+Server: Apache-Coyote/1.1
+Date: Mon, 10 Aug 2015 00:12:55 GMT
+
+{
+  message : "Some error message."
+}
+----
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/cloudhub-api/[API Portal] を確認してください。
+====
+
+== 関連情報
+
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:cloudhub.adoc[CloudHub について]
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

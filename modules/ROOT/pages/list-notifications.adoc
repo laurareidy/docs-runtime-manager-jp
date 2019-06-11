@@ -1,0 +1,78 @@
+= すべての通知のリスト
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 例, get, json, arm, Runtime Manager
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+このドキュメントでは、xref:cloudhub-api.adoc[CloudHub API] のコールについて説明します。Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] とその下位ページを参照してください。
+
+GET 操作で /api/notifications リソースを指定すると、アカウントのすべての通知のリストが返されます。結果の JSON には、通知オブジェクトのリストが含まれています。
+
+次のクエリパラメータがサポートされています。
+
+[%header,cols="34a,33a,33a"]
+|===
+| Name (名前) | Default (デフォルト) | 説明
+|limit (制限) |25 |返す通知の数。
+|offset (オフセット) |0 |通知メッセージのリストを開始する行。
+|ドメイン |  |通知を検索する対象のアプリケーション。
+|status (状況) |  |read (既読)、unread (未読)、all (すべて)
+|search (検索) |  |通知のメッセージで、指定したテキストを検索します。
+|tenantId |  |通知を検索する対象のテナントの ID。
+|===
+
+*要求の例:*
+
+[source,json,linenums]
+----
+GET https://anypoint.mulesoft.com/cloudhub/api/notifications
+----
+
+*応答の例:*
+
+[source,json,linenums]
+----
+200 OK
+Content-Type: application/json
+Date: Sun, 18 Jan 2015 00:12:55 GMT
+
+{
+  "data" :
+  [
+    {
+      "domain": "myapp",
+      "username": "joecloud",
+      "priority": "INFO",
+      "message": "Something happened",
+      "createdAt": "2015-01-10T23:42:53.010Z",
+      "read": false,
+      "href": "https://prod.anypoint.mulesoft.com/cloudhub/api/notifications/518d85fde4b00795a6ec3394"},
+      "transactionId": "2a097804-f0d5-11e2-b4d2-9dd46521a02d",
+      "properties": {
+         "recordId" : "1234"
+      }
+  ],
+  "total": 1
+}
+----
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+== 関連情報
+
+* xref:index.adoc[Runtime Manager]
+* xref:cloudhub.adoc[CloudHub]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

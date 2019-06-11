@@ -1,0 +1,74 @@
+= トラブルシューティング
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, 監視, トラブルシューティング, Runtime Manager, arm, アプリケーション, サーバ
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-active.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+
+デプロイされたアプリケーションで問題が発生した場合、Runtime Manager には、その根本的原因を突き止めるのに役立つツールがいくつか用意されています。
+
+[NOTE]
+使用するxref:deployment-strategies.adoc[デプロイメント戦略]に応じて、使用可能なトラブルシューティングリソースセットが異なります。この機能の差は、一方で欠如している機能を新しいリリースで実装することで徐々に小さくなります。
+
+Runtime Manager の監視ツールについての詳細は、xref:monitoring.adoc[「監視」]を参照しくてださい。これも問題の診断に役立つことがあります。
+
+== アプリケーションのトラブルシューティング
+
+次のツールを使用して、アプリケーションに関する情報にアクセスできます。
+
+* xref:insight.adoc[インサイト] – image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"] 重要なメトリクスを表示するダッシュボードにアクセスし、詳細の個々のトランザクションレベルでイベントを参照します。
+
+
+* xref:api-functional-monitoring::index.adoc[API 機能監視] – image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-active.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"] API 機能監視を使用して、テストを自動化し、テストレポートを取得できます。本番環境へのデプロイによってコードをリポジトリにプッシュする前にテストできます。テストでは、API 機能を確認し、API から生成される結果を検証できます。ソフトウェア開発ライフサイクルの各フェーズと本番環境で API を監視できます。
+
+
+* xref:viewing-log-data.adoc[アプリケーションログデータの表示] –  image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"] アプリケーション、およびアプリケーションが実行されるサーバまたは CloudHub ワーカーで発生するイベントのログにアクセスします。
+
+
+* xref:worker-monitoring.adoc[ワーカーの監視] – image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"] アプリケーションおよびアプリケーションが実行されている仮想サーバの状況に関する情報にアクセスします。
+
+[NOTE]
+独自のサーバにデプロイされたアプリケーションの場合は、サードパーティソフトウェアにログデータをエクスポートして参照できます。xref:deploying-to-pcf.adoc[Pivotal Cloud Foundry] にデプロイされたアプリケーションの場合は、Pivotal のコンソールでもログを参照できます。
+
+== サーバのトラブルシューティング
+
+xref:managing-applications-on-your-own-servers.adoc[独自のサーバ]にデプロイされたアプリケーションでは、次のツールを使用して情報にアクセスできます。
+
+* xref:sending-data-from-arm-to-external-analytics-software.adoc[外部の分析ソフトウェアへのデータの送信] – image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"] Splunk や ELK などの外部ツールにデータを送信して参照します。
+
+
+
+== 関連情報
+
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:cloudhub.adoc[CloudHub の概要]
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:alerts-on-runtime-manager.adoc[アラート]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

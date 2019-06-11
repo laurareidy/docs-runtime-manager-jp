@@ -1,0 +1,48 @@
+= 侵入テストポリシー
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, テスト, 監査, workers (ワーカー)
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+xref:index.adoc[Runtime Manager] または xref:api-manager::index.adoc[API Manager] の API にアプリケーションをデプロイする場合、また会社のセキュリティポリシーによりアプリケーションの侵入テストを行う必要がある場合、これらを実行するための方法があります。そのようなテストは他のテナントの妨げとなる可能性があるので、侵入テストは自分のワーカーのみで行うことが許されています。Anypoint Platform のその他のサービスでは許可されていません。
+
+PCI 標準の 11.2.2 項に記載されている、Approved Scanning Vendor (ASV: 認定スキャンベンダー) による外部脆弱性スキャンは、自由に行うことができ、事前承認は必要ありません。PCI 標準の 11.3.1 項に記載されている侵入テストは、MuleSoft からの事前承認が必要です。
+
+CloudHub ワーカーはデフォルトで静的 IP を使用していないので、IP が変わる可能性があり、適切にテストすることができません。xref:deploying-to-cloudhub.adoc#static-ips-tab[「CloudHub へのデプロイ」]の説明に従って、静的 IP を有効にしてください。
+
+このテストを行うには、5 営業日前に下記と併せて書面による申請を security@mulesoft.com まで提出する必要があります。
+
+* テストの開始および終了日時。
+* テストに含めるホスト。
+* ソース IP アドレスまたは範囲。
+* テストを行うチームまたは個人の電話番号とメールアドレスを含む連絡先。
+* CloudHub ワーカーのみを監査し、すべてのテナントに共通するその他のプラットフォームサービスは監査しないことに同意する。
+* 共有ワーカーは監査しないことに同意する。
+* テスト開始時および終了時に security@mulesoft.com にメールを送信してください。
+* 脆弱性が検出されたら直ちに security@mulesoft.com に連絡してください。
+* 監査は四半期に一度だけ行うことができます。
+
+申請後、MuleSoft チームから書面による承認を受信します。この時点で、提案した計画に従ってテストを開始することができます。
+
+== 関連情報
+
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:cloudhub.adoc[CloudHub について]
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]

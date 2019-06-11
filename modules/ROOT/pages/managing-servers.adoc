@@ -1,0 +1,24 @@
+= サーバ、サーバグループ、クラスタについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, アプリケーション, サーバ, サーバグループ, オンプレミス, Runtime Manager, arm, クラスタ, クラスタ
+
+Runtime Manager を使用して、オンプレミスのサーバ、サーバグループ、クラスタのプロパティを登録しセットアップできます。サーバをセットアップした後、アプリケーションのデプロイメント対象として選択できます。
+
+== サーバグループの状況の状態
+
+サーバグループとクラスタでは、両方とも複数の分散ノードでアプリケーションが実行されます。  サーバグループを使用する場合、アプリケーションの各インスタンスは完全に相互分離しています。クラスタ設定では、ノードは相互に認識され、共通情報を共有し、状態が同期されます。
+
+== アラート
+
+サーバが切断されたり、クラスタから削除されるなど、サーバに特定のイベントが発生した場合に送信されるメールアラートをセットアップできます。これらのアラートは、特定のサーバまたはすべてのサーバにリンクすることができます。これの手順については、xref:alerts-on-runtime-manager.adoc[「アラート」]を参照してください。
+
+== 関連情報
+
+* xref:runtime-manager-switch-env.adoc[Runtime Manager を使用した環境の切り替え方法]
+* xref:deploying-to-your-own-servers.adoc[独自のサーバへのアプリケーションのデプロイ]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-your-own-servers.adoc[独自のサーバでのアプリケーションの管理]
+* xref:3.8@mule-runtime::mule-high-availability-ha-clusters.adoc[Mule 高可用性クラスタ]
+* https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[Anypoint Platform の REST API]

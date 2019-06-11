@@ -1,0 +1,196 @@
+= CloudHub ロードバランサ
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, Runtime Manager, arm, 負荷分散, バニティ url, ssl, 双方向 tls,
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+== 概要
+
+CloudHub は、インフラストラクチャコンポーネントのプロビジョニングを自動化するように設計されたバックエンド負荷分散サービスを特徴としています。
+
+このサーバを使用して、CloudHub にデプロイされたアプリケーションをプロキシすることで、以下のことができます。
+
+* 双方向 SSL 認証を適用する
+* カスタム証明書を使用した SSL 認証を適用する
+* カスタムドメインにアプリケーションをマップするプロキシルールを容易に設定し、たとえば、1 つのバニティドメイン下のすべてをホストできるようにする
+* アプリケーションを実行するさまざまな CloudHub ワーカー内で負荷分散を処理する
+
+[NOTE]
+--
+ロードバランサは、クラウドインフラストラクチャへの省略可能な追加機能です。デフォルトでは、どの CloudHub プランにも含まれていません。これを有効にするには、まず xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud (Anypoint VPC)] を所有する必要があります。
+このサービスは Anypoint VPC ごとに 1 つのロードバランサを持つように設計されています。各 Anypoint VPC でサポートされるドメインは 1 つのみですが、同じネットワーク内で複数の環境を持つことができます。つまり、さまざまな環境で同じロードバランサを使用できます。
+--
+
+== ロードバランサの使用
+
+現在、この機能は、xref:anypoint-platform-cli.adoc[Anypoint コマンドラインインターフェース]で使用できるサービスとして使用するか、エンドポイント `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/vpcs/{vpcId}/loadbalancers` および `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/vpcs` を介して xref:cloudhub-api.adoc[Cloudhub API] を使用してのみ使用できます。
+
+[NOTE]
+====
+Anypoint Platform CLI コマンドの完全なリストおよび各コマンドの使用方法は、xref:anypoint-platform-cli.adoc#List-of-commands[リファレンスページ]を参照してください。 +
+`loadbalancers` および `vpcs` エンドポイントの詳細は、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal]を参照してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+=== マッピング
+
+ロードバランサ設定は、入力 URL をさまざまな CloudHub アプリケーションへのコールに変換する方法を記述する<<mapping rules>>のリストにより定義されます。
+シンプルな一致ルールを作成する場合、1 つの入力アドレスがそのまま定義済みの出力 (いずれかのアプリケーションのエンドポイント) に一致します。
+リテラル一致の代わりにパターンを使用して、変数のような入力テキストをエンドポイントに対して照合することもできます。<<Pattern matching>>セクションを参照してください。
+
+プロキシルールを使用して、CloudHub で実行されている Mule アプリケーションのいずれかにドメインまたはサブドメインをマップできます。
+
+=== パターン一致
+
+パターンは、入力テキストを照合するためのテンプレートを定義する文字列です。中括弧 (`{   }`) に挿入されたものはすべて変数として処理されます。
+この変数に文字 (a-z) を含めることはできますが、その他の文字 (数字、スラッシュなど) を含めることはできません。変数の値には `a-z0-1.&-_?_` の文字を含めることはできますが、スラッシュを含めることはできません。
+
+==== 例
+
+===== 簡単なルールの定義
+
+[source,text,linenums]
+----
+‘app.example.com’ -> ‘app/example’
+----
+
+上記の例では、リダイレクト用のこの 2 つのアドレスの文字を連結します。
+
+===== パターンを含むルールの定義
+
+[source,text,linenums]
+----
+‘{mypattern}.example.com’ -> `app/{mypattern}`
+----
+
+上記の例では、`bookings.example.com` と `sales.example.com` の両方がそれぞれ `app/bookings` と `app/sales` に一致します。変数 `mypattern` にそれぞれの値が保持されているためです。
+`input=”bookings.example.com”` の場合、`_mypattern_=”bookings”` を割り当てることでパターンを解決できます。input='sales.example.com' の場合、mypattern="sales" を割り当てることでパターンを解決します。
+
+設計に応じて、パターンまたはリテラルマッピングを使用して、エンドポイントへの内部リダイレクトを活用できます。
+
+=== マッピングルール
+
+マッピングルールは、<<input URL>> パターンを定義する一連の項目 (以下を参照) と、上述のパターンに関して <<output URL>> を記述する一連の項目です。
+
+最初に定義されたルールには、それ以降に定義された他のルールよりも高い優先度が与えられます。つまり、最初に一致したルールが適用されます。
+既存のルールの作成、参照、削除ができます。
+
+==== ルールの例
+
+いくつかのルールの例を以下の表に示します。
+
+[%header,cols="10a,20a,20a,20a,20a,10a"]
+|===
+|ルール番号 3+^|入力 URL 2+^| 出力 URL
+|  | *サブドメイン* |  *ドメイン*   |        *URI*        |       *appName*       |   *appURI*
+| 1 | `qaparm`    | `services.com`   | `{appname}/{region}/` | `{appname}`             | `{region}`
+| 2 | `api`       | `mcd.com`        |                       | `internal-router-proxy` |
+| 3 | `{app}.api` | `mcd.com`        |                       | `{app}-mcd `            |
+| 4 | `api.cce`   | `mule.com`       | `/{group}/{version}/` | `{group}`               | `/{version}/`
+| 5 |             | `example.com` ,, | `/{app}/`             | `{app}`                 | `/`
+| 6 | `default`   | `example.com`    |                   nn  | `default-app`           |
+|===
+
+===== 入力 URL
+
+入力パラメータは、ユーザが指定できる以下のパラメータで構成されます。
+
+. Subdomain (サブドメイン) - ロードバランサのドメインのサブドメインの値を定義する文字列またはパターン。
+. Domain (ドメイン) - ロードバランサのドメイン。この値は、同じロードバランサでは一定のままにする必要があります。
+. URI - 入力 URI を記述する文字列またはパターン。
+
+[source,text,linenums]
+----
+subdomain={app}
+domain=example.com
+URI=/v1/
+----
+
+入力の `echo.example.com/v1/api` は上の項目 (この場合は変数 `app=echo`) に一致します。入力の `echo.example.com/v2/api` は上のパターンに一致することはできません。`v2` がパターンに含まれないためです。
+
+===== 出力 URL
+
+出力 URL は以下の項目で構成されます。ユーザは入力 URL の変数パターンを使用できます。
+
+. `appName` - 要求の転送先の出力アプリケーション名。
+. `appURI` - 解決したアプリケーションに渡される URI 文字列。
+
+[source,text,linenums]
+----
+appName={app}
+URI=/hello
+----
+
+==== リダイレクト URL
+
+プロキシされたサーバの応答の `Location` および `Refresh` ヘッダー項目に追加する必要がある URI テキスト部分を設定します。プロキシされた、アプリケーションのサーバがヘッダー項目 `Location: http://example.com/two/some/uri/` を返したとします。ディレクティブ `redirectURI=”/hello”` は location ヘッダーを `Location: https://example.com/hello/two/some/uri/` に変更します。
+
+=== ルールの順序
+
+ルールは、同じサブドメイン名によっていくつかのグループにまとめられます。より長いサブドメイン名を持つグループが最初にチェックされます。つまり、短いサブドメイン名 (数字または記号) を持つルールの優先度は低くなります。空のサブドメイン名を持つグループが最後にチェックされます。
+
+グループ (同じサブドメインを持つ複数のルール) 内で、より長い inputURI 式を持つルールが最初にチェックされ、一致しない場合、より短い URI 式を持つルールがチェックされます。
+
+
+[WARNING]
+--
+ルールの順序は最も重要です。
+ルールを編集することはできないため、ルールを作成するときはルールの順序に注意してください。
+--
+
+==== ルールの優先順序の設定
+
+順序を設定するには、Anypoint Platform CLI で xref:anypoint-platform-cli.adoc#cloudhub-add-lb-rule[`cloudhub-add-lb-rule`] コマンドを使用してルールを作成するときにインデックス値を指定します。
+
+API を使用する場合、優先順序を指定できませんが、`PUT` 要求をエンドポイント `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/vpcs/{vpcId}/loadbalancers/{loadbalancerId}` に送信し、上述の順序ロジックに基づいて、ニーズに一致するようにルール式を更新できます。同じサブドメイン内でより長い URI が最初にチェックされます。
+
+[NOTE]
+--
+ロードバランサ ID は、作成時にロードバランサに提供されます。
+また、エンドポイント `/organizations/{orgid}}/vpcs/{vpcId}/loadbalancers` に対して `GET` 要求を実行し、ID を取得することもできます。
+--
+
+=== 証明書の管理
+
+==== 証明書の検証
+
+Cloudhub ロードバランサは双方向 SSL クライアント認証を提供します。
+これを使用すると、`.pem` ファイルの証明書をロードバランサに提供し、クライアントの要求を検証できます。
+
+ロードバランサは、以下の http ヘッダーを使用して、証明書データを API に渡します。
+
+===== X-SSL-Client-Verify
+
+このヘッダーは、`SUCCESS`、`FAILED`、`NONE` のいずれかを返します。`SUCCESS` の場合にのみクライアントが検証されます。 +
+証明書が存在しない場合は `NONE` を返し、他の検証の問題が発生した場合は `FAILED` を返します。
+
+===== X-SSL-Client-DN
+
+クライアント証明書の完全な識別名が含まれます。
+
+===== X-SSL-Issuer
+
+発行元証明書の完全な識別名が含まれます。
+
+===== X-SSL-Client-Serial
+
+クライアントを識別するために CA で使用されるシリアル番号が含まれます。
+
+==== 失効リストの追加
+
+OCSP を使用して取り消しリストを管理する場合、アップロードする証明書で取り消しが定義されるため、その他の手順を実行する必要はありません。
+
+CRL を使用して取り消しを管理する場合、ロードバランサを作成するときに JSON の `crlCert` 項目の下に `certificates` 項目を追加し、そこで取り消しを指定できます。
+
+
+== 関連情報
+
+* xref:anypoint-platform-cli.adoc[Anypoint Platform CLI]
+* xref:cloudhub-api.adoc[CloudHub API]
+* https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal]

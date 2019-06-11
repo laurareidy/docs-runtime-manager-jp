@@ -1,0 +1,186 @@
+= JMX サービス
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, esb, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+Runtime Manager エージェント JMX サービスを使用すると、特定の JMX メトリクスを追跡し、それらを外部サービスにパブリッシュできます。サービスを設定して、特定の bean を追跡したり、値をパブリッシュする頻度を変更したりできます。
+
+さらに MuleSoft は、いくつかのオープンソースの監視パブリッシャを個別のエージェントモジュールとして提供しています。これらは無保証で提供されており、MuleSoft からサポートを受けることはできません。詳細は、下記の「<<Open Source Agent Modules>>」を参照してください。 +
+
+
+
+== JMX パブリッシャ
+
+JMX サービスは、収集したすべてのメトリクスをパブリッシャに送信し、パブリッシャはメトリクスを外部監視ツールにパブリッシュします。サービス自体に、一般的に使用されるツール用のパブリッシャ例がいくつか用意されています。さらに、ニーズに合わせて独自のパブリッシャを作成できます。
+
+== JMX サービスの設定
+
+=== 操作: 設定の取得
+
+JMX サービス設定を取得します。
+
+*要求:*
+
+----
+GET <Runtime Manager Agent URL>/mule/agent/mule.agent.jmx.publisher.service HTTP/1.1
+----
+
+*例:*
+
+----
+GET http://localhost:9999/mule/agent/mule.agent.jmx.publisher.service HTTP/1.1
+----
+
+*応答:*
+
+[source,json,linenums]
+----
+{
+    "serviceHandlerTypes": [
+        "java.util.List<com.mulesoft.agent.domain.monitoring.Metric>"
+    ],
+    "injectedHandlers": [
+        {
+            "name": "com.mulesoft.agent.monitoring.publisher.CloudwatchMonitorPublisher",
+            "path": "/mule/agent/cloudwatch.agent.monitor.publisher/configuration",
+            "type": "java.util.List<com.mulesoft.agent.domain.monitoring.Metric>"
+        },
+        {
+            "name": "com.mulesoft.agent.monitoring.publisher.GraphiteMonitorPublisher",
+            "path": "/mule/agent/mule.agent.graphite.jmx.internal.handler/configuration",
+            "type": "java.util.List<com.mulesoft.agent.domain.monitoring.Metric>"
+        },
+        {
+            "name": "com.mulesoft.agent.monitoring.publisher.NagiosMonitorPublisher",
+            "path": "/mule/agent/mule.agent.nagios.jmx.internal.handler/configuration",
+            "type": "java.util.List<com.mulesoft.agent.domain.monitoring.Metric>"
+        },
+        {
+            "name": "com.mulesoft.agent.monitoring.publisher.ZabbixMonitorPublisher",
+            "path": "/mule/agent/mule.agent.zabbix.jmx.internal.handler/configuration",
+            "type": "java.util.List<com.mulesoft.agent.domain.monitoring.Metric>"
+        }
+    ],
+    "configurableFields": [
+        {
+            "name": "frequency",
+            "valueType": "java.lang.Integer",
+            "value": 15,
+            "configurableType": "DYNAMIC"
+        },
+        {
+            "name": "frequencyTimeUnit",
+            "valueType": "java.util.concurrent.TimeUnit",
+            "value": "MINUTES",
+            "configurableType": "DYNAMIC"
+        },
+        {
+            "name": "beans",
+            "valueType": "[Lcom.mulesoft.agent.services.monitoring.JMXBean;",
+            "value": [],
+            "configurableType": "DYNAMIC"
+        }
+    ]
+}
+----
+
+応答には、現在読み込まれているパブリッシャのリストに加え、サービスの設定可能な項目とその値が含まれています (サービスの設定についての詳細は、「管理サービス」を参照してください)。
+
+=== 操作: 設定の変更
+
+次の操作は、サービスの現在の設定を変更します。
+
+*要求:*
+[source,json,linenums]
+----
+PATCH <Runtime Manager Agent URL>/mule/agent/mule.agent.jmx.publisher.service HTTP/1.1
+
+{
+  "<parameter>": "<value>",
+}
+----
+
+*例:*
+[source,json,linenums]
+----
+PATCH http://localhost:9999/mule/agent/myservice HTTP/1.1
+
+{
+  "frequencyTimeUnit": "SECONDS",
+  "frequency": "150"
+}
+----
+
+*応答 (成功した場合):*
+
+----
+HTTP 200
+----
+
+=== 新しい JMX パブリッシャの追加
+
+新しい JMX パブリッシャを追加するには、Runtime Manager エージェントの `InternalMessageHandler` インターフェースを実装する必要があります。
+
+カスタム JMX パブリッシャは、次の要件を満たす必要があります。
+
+* スレッドセーフである。
+* `InternalMessageHandler` で定義されたハンドラメソッドのすべてのパブリッシュロジックを実装している。
+
+==== JMX パブリッシャの記述
+[source,java,linenums]
+----
+@Named("my.company.jmx.publisher")
+@Singleton
+public class MyJMXPublisher<T> extends InternalMessageHandler<List<Metric>>{
+
+    boolean handle(List<Metric> metrics){
+          // TODO handle message
+    }
+
+    @Override
+    public void enable(boolean state) throws AgentEnableOperationException {
+        // TODO: enable the Handler
+    }
+
+    @Override
+    public boolean isEnabled() {
+        // TODO: return Handler status
+    }
+}
+----
+
+メトリクスクラスは次の項目を含む POJO です。
+
+[source,java,linenums]
+----
+/**
+ * Time stamp when the metric was taken
+ */
+long timestamp;
+
+/**
+ * Name of the metric. In the case of a JXM metric it is the bean that was tracked + message
+ */
+String name;
+
+/**
+ * The numeric value of the metric
+ */
+Number value;
+----
+
+新しい JMX パブリッシャを追加するには、クラスを含む JAR を Runtime Manager エージェントプラグイン内の `lib` フォルダに置きます。
+
+== オープンソースエージェントモジュール
+
+MuleSoft は Runtime Manager エージェント用のいくつかのモジュールを提供しており、Nagios、Zappix などの JMX パブリッシャも含まれています。これらのモジュールはオープンソースプロジェクトで、MuleSoft によってサポートされません。
+
+Runtime Manager エージェントモジュールにアクセスするには、GitHub リポジトリを確認します。
+
+* https://github.com/mulesoft/mule-agent-modules[agent Modules (エージェントモジュール)]

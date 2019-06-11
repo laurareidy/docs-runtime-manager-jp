@@ -1,0 +1,14 @@
+= 専用ロードバランサのホワイトリストについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+IP アドレスをロードバランサのホワイトリストに登録するには、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-whitelist-add[`load-balancer whitelist add`] コマンドを使用してそれらの IP アドレスを CIDR 表記で渡します。
+
+ホワイトリストは、CN 証明書レベルではなく、ロードバランサレベルのインバウンド接続で動作します。IP アドレスのみを渡してください。
+
+== 関連情報
+
+* xref:lb-cert-upload.adoc[証明書のアップロードについて]
+* xref:lb-whitelists.adoc[ホワイトリストについて]
+* xref:lb-mapping-rules.adoc[マッピングルールについて]

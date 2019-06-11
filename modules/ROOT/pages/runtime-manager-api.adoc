@@ -1,0 +1,15 @@
+= Runtime Manager REST API について
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 管理, api, REST
+
+Runtime Manager REST API を使用して、Runtime Manager によって提供される大半の機能にプログラムでアクセスできます。Runtime Manager REST API を使用して Mule アプリケーションをデプロイするには、 https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[「REST API」] を参照してください。
+
+API によってサポートされるすべての操作の詳細なリファレンスは、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/ae639f94-da46-42bc-9d51-180ec25cf994/apis/38784/versions/5567732/pages/182845[「API Reference 1.26 (API リファレンス 1.26)」]を参照してください。
+
+また、アプリケーションを CloudHub にデプロイできる xref:cloudhub-api.adoc[CloudHub API] があります。
+
+== 関連情報
+
+xref:continuous-deployment.adoc[継続的デプロイメント]

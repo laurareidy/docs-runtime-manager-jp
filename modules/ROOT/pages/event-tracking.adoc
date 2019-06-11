@@ -1,0 +1,355 @@
+= イベント追跡
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, esb, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+== 概要
+
+イベント追跡を使用すると、特定のフローによって処理されているメッセージに関するリアルタイムの情報を表示できます。処理前、処理中、処理後のメッセージペイロードを表示できるのに加えて、フロー内のメッセージプロセッサやメッセージメタデータに関する情報も表示できます。
+
+イベント追跡を使用することで、Mule サーバ上でのビジネストランザクションやイベントを可視化することができ、特定のメッセージのフローと処理を追跡して分析できます。たとえば、このデータを使用して、ビジネストランザクション内の障害の根本原因分析を実行したり、メッセージ処理のボトルネックを特定したりできます。
+
+== 通知種別
+
+Mule では、次のようなフローのコンポーネントの実行に関する通知が提供されます。
+
+image::event-tracking.png[event_tracking]
+
+使用可能な通知種別
+
+* Pipeline Message (パイプラインメッセージ) 通知
+* Endpoint Message (エンドポイントメッセージ) 通知
+* Component Message (コンポーネントメッセージ) 通知
+* Event (イベント) 通知 (カスタムイベント)
+* Message Processor (メッセージプロセッサ) 通知
+* Async Message (非同期メッセージ) 通知
+* Transaction (トランザクション) 通知
+* Exception (例外) 通知
+* Exception Strategy (例外戦略) 通知
+
+== 転送イベント情報
+
+各通知について、Runtime Manager エージェントは、次の情報をイベント追跡サービスに転送します。
+
+* `timestamp` (タイムスタンプ): イベントのタイムスタンプ
+* `notificationType`: イベント種別 (メッセージプロセッサイベント、インバウンドエンドポイントイベントなど)
+* `action` (アクション): イベントアクション (開始、終了、完了、ロールバックなど)
+* `resourceIdentifier`: (フロー名など)
+* `muleMessage`: 設定されている場合は、シリアル化された Mule メッセージを転送します。不可能な場合は、エラーメッセージを転送します。
+
+次の情報は、Runtime Manager エージェントによって送信されません。
+
+* Mule Message ID (Mule メッセージ ID)
+* Exception (例外): 例外が発生した場合のメッセージとスタック追跡
+* Path (パス): コンポーネントの Mule パス
+* Annotations (アノテーション): コンポーネントのアノテーション (ある場合)
+* Application (アプリケーション)
+
+== イベント追跡レベルと通知コンテンツの設定
+
+イベント追跡通知は、Mule アプリケーションに代わって Runtime Manager エージェントに保存され、イベント追跡サービスにストリーミングされます。ネットワークトポロジと Mule アプリケーションの設計によっては、イベント追跡通知を Runtime Manager エージェントからオンラインイベント追跡サービスにネットワーク上でコピーすることでパフォーマンスに大きな影響が出る場合があります。
+
+これらの通知によってパフォーマンスの影響があるため、追跡レベルをさまざまな粒度で制御できます。
+
+イベント追跡レベルはグローバルに指定して、その後、特定の指定した Mule アプリケーションごとに上書きすることができます。さらに、特定の Mule アプリケーション内の特定の指定したフローごとにイベント追跡レベルを上書きできます。
+
+イベント追跡レベル以外に、メッセージ再生機能を使用して、後で再生するためにすべてのメッセージを保存できます。これは、メッセージ処理の重複につながる可能性もありますが、再生機能によって、運用チームが失敗したトランザクションを復元して再生できるメカニズムを提供できます。追跡レベルと同じように、再生レベルはグローバルに設定し、特定の Mule アプリケーションに対して詳細に上書きし、さらに Mule アプリケーション内の特定のフローに対して上書きできます。
+
+== イベント追跡レベル
+
+使用できるイベント追跡レベルは次のとおりです。
+
+* `None` (なし) - デバッグしません。
+* `BE` (ビジネスイベント) - ビジネスイベントに関連するイベントのみが追跡されます。
+* `Tracking` (追跡) - `BE` レベル + エンドポイント、例外戦略、トランザクション関連の通知。
+* `Debug` (デバッグ) - Tracking (追跡) レベル + 追加コンポーネントとメッセージプロセッサ通知。
+
+次の表は、各デバッグレベルで有効な通知の種別を示しています。Mule 種別は、通知種別を定義する `org.mule.api.context.notification.ServerNotification` サブクラス (`org.mule.context.notification` パッケージ内) です。
+
+[%header%autowidth.spread]
+|===
+|通知 | Mule 種別 | None (なし) |BE (ビジネスイベント) |Tracking (追跡) |Debug (デバッグ)
+|Pipeline Message (パイプラインメッセージ) | PipelineMessageNotifications |  |√ |√ |√
+|Async Message (非同期メッセージ) | AsyncMessageNotifications |  |√ |√ |√
+|例外 | ExceptionStrategyNotifications |  |√ |√ |√
+|Event (イベント) | EventNotifications |  |√ |√ |√
+|Exception Strategy (例外戦略) | ExceptionStrategyNotifications |  |  |√ |√
+|Transaction (トランザクション) | TransactionNotifications |  |  |√ |√
+|Endpoint Message (エンドポイントメッセージ) | EndpointMessageNotifications |  |  |√ |√
+|Message Processor (メッセージプロセッサ) | MessageProcessorNotification |  |  |  |√
+|Component Message (コンポーネントメッセージ) | ComponentMessageNotifications |  |  |  |√
+|===
+
+
+== イベント追跡の設定
+
+追跡レベルをグローバル、アプリケーションごと、フローごとに設定できます。 
+
+追跡レベルを設定するには、設定ファイル `mule-agent.yml` を編集するか、リアルタイムでエージェント API を使用します。
+
+[NOTE]
+イベント追跡レベルに応じて、パフォーマンスに影響が出る可能性があります。
+
+=== `mule-agent.yml` でのイベント追跡の設定
+
+グローバルデフォルト設定では、Mule Runtime にデプロイされたすべての Mule アプリケーションがどのように追跡されるかを設定できます。また、グローバル設定を Mule アプリケーションごとに上書きし、さらに、特定の Mule アプリケーション内のフローごとに上書きできます。
+
+==== すべての Mule アプリケーションの追跡のグローバル設定
+
+追跡設定レベルは、`mule-agent.yml` ファイルの `services/mule.agent.tracking.service` セクションで設定されます。このセクションを手動で編集して、追跡レベルを変更できます。
+
+グローバル設定は、Mule インスタンス内のすべてのアプリケーションとそのフローに影響します。
+
+設定の例を次に示します。追跡レベルは `TRACKING` (追跡) に設定されています。これらの追跡レベルについての詳細は、上の表を参照してください。
+
+`mule-agent.yml` 内
+[source,yaml,linenums]
+----
+services:
+ mule.agent.tracking.service:
+ globalTrackingLevel: TRACKING
+----
+
+[NOTE]
+`globalTrackingLevel` が指定されていない場合、デフォルト値は `NONE` (なし) です。
+
+==== Mule アプリケーションごとの追跡の設定
+
+すべてのアプリケーションに対するデフォルトのグローバル追跡レベルの設定に加えて、Mule アプリケーションごとに追跡レベルを上書きできます。
+
+Mule アプリケーションレベルの追跡領域には、trackingLevel、replayLevel、trackedFlows の 3 つがあります。
+
+* `trackingLevel` では、前の表で説明した 4 つの追跡レベル (`NONE` (なし)、`BE`、`TRACKING` (追跡)、`DEBUG` (デバッグ)) のいずれかを指定します。この追跡レベルは、Mule アプリケーションのすべてのフローに適用されます。
+* `replayLevel` では、Mule アプリケーションのすべてのフローを通過する各メッセージを後で再生するために保存するかどうかと、その保存方法を指定します。可能な値は、`NONE` (なし)、`SOURCED` (ソースあり)、`ALL` (すべて) です。
+
+[%header%autowidth.spread]
+|===
+|再生レベルオプション | 説明
+|`NONE` |  メッセージの再生に関するデータを保存せず、これらのフローに対して再生機能を無効にします。
+|`SOURCED` | メッセージソースで始まる Mule アプリケーション内の各フローのメッセージのみを後で再生するために保存します。
+|`ALL` |  Mule アプリケーションのすべてのフローのメッセージを後で再生するために保存します。
+|===
+
+次の例では、アプリケーション `mule-flights` とそのフローの追跡レベルが `TRACKING` (追跡) に設定され、メッセージ再生機能はこの Mule アプリケーションに対して無効になっています。`mule-flights` アプリケーションは、一部の通知をイベント追跡サービスに送信しますが、受信した各メッセージはコピーせず、`mule-flights` アプリケーション内のフローはイベント追跡サービスから再生できません。
+
+また、`globalTrackingLevel` はデフォルト値 `NONE` (なし) を上書きするように設定されているため、他の Mule アプリケーションも追跡されますが、その追跡は `BE` (ビジネスイベント) レベルのみで行われます。
+
+`mule-agent.yml` 内
+[source,yaml,linenums]
+----
+services:
+ mule.agent.tracking.service:
+ globalTrackingLevel: BE
+ trackedApplications:
+    - appName: mule-flights
+      trackingLevel: TRACKING
+      replayLevel: NONE
+----
+Mule アプリケーションの `trackingLevel` と `replayLevel` を変更できるのに加えて、リストされている Mule アプリケーション内のフローに対するこれらの設定も `trackedFlows` 値を追加することによって変更できます。
+
+`trackedFlows` 要素に含まれている追加要素では、フローに対して追跡する内容の詳細な調整とメッセージ再生の動作方法を指定できます。フローが設定されると、その設定はグローバルレベルと Mule アプリケーションレベルの設定から継承した設定を上書きします。
+
+==== Mule アプリケーションのフローごとの追跡の設定
+
+Mule アプリケーションレベルの `trackingLevel` と `replayLevel` の設定に加えて、1 つ以上のフローをリストして、各フローのグローバルおよびアプリケーションレベルの設定を上書き/カスタマイズできます。
+
+フロー追跡オプションを次の表に示します。
+
+[%header%autowidth.spread]
+|===
+|フロー追跡オプション | 説明
+|`flow name` |  Mule アプリケーションの XML 設定ファイルでコード化されているフローの名前。
+|`tracking level` |  前の表で説明した値 `NONE` (なし)、`BE` (ビジネスイベント)、`TRACKING` (追跡)、`DEBUG` (デバッグ) のいずれか。
+|`replayLevel` |  値 `NONE` (なし)、`SOURCED` (ソースあり) (フローがメッセージソースで始まる場合のみメッセージを保存する)、`ALL` (すべて) のいずれか。
+|`payloadExcluded` |  `replayLevel` が `SOURCED` (ソースあり) または `ALL` (すべて) の場合に、メッセージペイロードも後で再生するために保存するか、メッセージメタデータのみを保存するかを指定します。
+|===
+
+前の Mule アプリケーション `mule-flights` の設定に、フローレベルの追跡設定を追加した例を次に示します。グローバルおよび Mule アプリケーションレベルの追跡には、デフォルト値 (`NONE` (なし)) を使用しています。
+
+`mule-agent.yml` 内
+[source,yaml,linenums]
+----
+services:
+  mule.agent.tracking.service:
+    trackedApplications:
+      - appName: mule-flights
+        trackedFlows:
+          - flowName: purchaseFlight
+            trackingLevel: DEBUG
+            replayLevel: ALL
+----
+
+
+
+=== 複雑な追跡設定の定義
+
+下の例では、追跡レベルと設定がグローバル、Mule アプリケーション、フローの 3 つすべてのレベルで上書きされています。
+
+`globalTrackingLevel` は `OFF` (オフ) に設定されています。これはデフォルトです。`globalTrackingLevel` 行を削除しても、Runtime Manager エージェントの設定は変わりません。
+
+ `mule-flights` アプリケーションに対しては追跡レベル `TRACKING` (追跡) が設定されていますが、`purchaseFlight` フローに対しては追跡レベル `DEBUG` (デバッグ) が設定されており、`replayLevel` は `ALL` (すべて) に設定されています。
+
+* アプリケーション `mule-flights`
+** trackingLevel: アプリケーションに対して `TRACKING` (追跡) レベル。
+** replayLevel: アプリケーションに対して `OFF` (オフ)。メッセージは保存されず、再生は無効です。
+*** フロー `purchaseFlight`
+**** trackingLevel: この 1 つのフローに対して `DEBUG` (デバッグ) レベル (`TRACKING` (追跡) レベルを上書き)。
+**** replayLevel: この 1 つのフローに対して `ALL` (すべて)。フローにメッセージソースがない場合でも、すべてのメッセージを再生のために保存します。
+* アプリケーション `mule-ticketing`
+** trackingLevel: アプリケーションに対して `BE` (ビジネスイベント)
+** replayLevel: アプリケーションに対して `SOURCE` (オフ)。メッセージは保存されず、再生は無効です。
+*** フロー `confirmReservation`
+**** trackingLevel: この 1 つのフローに対して `DEBUG` (デバッグ) レベル (`TRACKING` (追跡) レベルを上書き)。
+**** replayLevel: この 1 つのフローに対して `ALL` (すべて)。フローにメッセージソースがない場合でも、すべてのメッセージを再生のために保存します。
+* Mule インスタンス内のその他のすべてのアプリケーションとそのフロー: +
+** trackingLevel: `OFF` (オフ) (デフォルト)
+
+`mule-agent.yml` 内
+[source,yaml,linenums]
+----
+services:
+  mule.agent.tracking.service:
+    globalTrackingLevel: OFF
+    trackedApplications:
+      - appName: mule-flights
+        trackingLevel: TRACKING
+        replayLevel: OFF
+        trackedFlows:
+          - flowName: purchaseFlight
+            trackingLevel: DEBUG
+            replayLevel: ALL
+          - flowName: help
+            trackingLevel: OFF
+            replayLevel: NONE
+      - appName: mule-ticketing
+        trackingLevel: BE
+        replayLevel: SOURCE
+        trackedFlows:
+          - flowName: confirmReservation
+            trackingLevel: DEBUG
+            replayLevel: ALL
+----
+
+=== エージェント API を使用した実行中の設定
+
+エージェント API を使用すると、実行中にエージェント追跡設定を変更できます。
+
+==== 現在の設定の取得
+
+次の例では、追跡サービスに関する情報を取得します。取得される情報には、設定可能な項目とその現在の値が含まれています。
+
+要求:
+[source,json,linenums]
+----
+GET <Runtime Manager Agent URL>/mule/agent/mule.agent.tracking.service
+----
+
+応答:
+[source,json,linenums]
+----
+"configurableFields": [
+    {
+      "name": "globalTrackingLevel",
+      "valueType": "com.mulesoft.agent.services.tracking.TrackingLevel",
+      "value": "NONE",
+      "configurableType": "DYNAMIC",
+      "description": ""
+    },
+    {
+      "name": "trackedApplications",
+      "valueType": "[Lcom.mulesoft.agent.services.tracking.TrackedApplication;",
+      "value": [],
+      "configurableType": "DYNAMIC",
+      "description": ""
+    }
+  ],
+  "injectedHandlers": [
+    {
+      "name": "com.mulesoft.agent.handlers.internal.InternalTrackingNotificationHandler",
+      "path": "/mule/agent/tracking.notification.internal.message.handler/configuration",
+      "type": "class com.mulesoft.agent.domain.tracking.AgentTrackingNotification"
+    }
+  ],
+  "serviceHandlerTypes": [
+    "class com.mulesoft.agent.domain.tracking.AgentTrackingNotification"
+  ]
+}
+----
+
+==== 現在の設定の変更
+
+実行中に現在の設定を変更するには、変更した設定の JSON 表現を使用して要求を送信します。この表現は、現在の設定を上書きします。JSON 表現に含まれていない項目では、現在の値が保持されます。
+
+次の例では、`globalTrackingLevel` 項目と `trackedApplications` 項目の上書きを要求します。その他のすべての項目は変更されません。
+
+要求:
+[source,json,linenums]
+----
+PATCH <Runtime Manager Agent URL>/mule/agent/mule.agent.tracking.service HTTP/1.1
+
+{
+  "globalTrackingLevel": "BE",
+  "trackedApplications": [
+  {
+    "appName": "mule-flights",
+    "trackingLevel": "DEBUG",
+    "trackedFlows": [
+    {
+      "flowName": "purchaseFlight",
+      "trackingLevel": "TRACKING"
+    }
+    ]
+  }
+  ]
+}
+----
+
+応答:
+[source,json,linenums]
+----
+{
+  "configurableFields": [
+  {
+    "name": "globalTrackingLevel",
+    "valueType": "com.mulesoft.agent.services.tracking.TrackingLevel",
+    "value": "BE",
+    "configurableType": "DYNAMIC",
+    "description": ""
+    },
+    {
+      "name": "trackedApplications",
+      "valueType": "[Lcom.mulesoft.agent.services.tracking.TrackedApplication;",
+      "value": [
+      {
+        "appName": "mule-flights",
+        "trackingLevel": "DEBUG",
+        "trackedFlows": [
+        {
+          "flowName": "purchaseFlight",
+          "trackingLevel": "TRACKING"
+        }
+        ]
+      }
+      ],
+      "configurableType": "DYNAMIC",
+      "description": ""
+    }
+    ],
+    "injectedHandlers": [
+    {
+      "name": "com.mulesoft.agent.handlers.internal.InternalTrackingNotificationHandler",
+      "path": "/mule/agent/tracking.notification.internal.message.handler/configuration",
+      "type": "class com.mulesoft.agent.domain.tracking.AgentTrackingNotification"
+    }
+    ],
+    "serviceHandlerTypes": [
+    "class com.mulesoft.agent.domain.tracking.AgentTrackingNotification"
+    ]
+  }
+----

@@ -1,0 +1,151 @@
+= コマンドラインツール
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, クラウド
+
+[WARNING]
+====
+これらのツールは今後のバージョンではサポートされなくなります。
+
+コンソールから操作する他の最新のツールセットについては、xref:anypoint-platform-cli.adoc[コマンドラインインターフェースシェル]を参照してください。
+====
+
+CloudHub は、コマンドラインからアプリケーションをシームレスにデプロイおよび管理するのに役立つ一連のツールを提供します。
+
+コマンドの概要を次に示します。
+
+[%header,cols="2*a"]
+|===
+|コマンド |説明
+|<<cloudhub-list>> |CloudHub 上のすべてのアプリケーションとその状況を一覧表示します。
+|<<cloudhub-create>> |CloudHub に新しいアプリケーションを作成します。
+|<<cloudhub-update>> |アプリケーションとそのワーカーおよび環境変数を更新します。
+|<<cloudhub-delete>> |アプリケーションを削除する
+|<<cloudhub-logs>> |アプリケーションから出力されたログの最後の数行 (末尾) を表示します。
+|===
+
+== インストール
+
+ツールのインストール方法
+
+. コンピュータに http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html[Java Development Kit] をインストールします。JAVA_HOME 環境変数を、コンピュータ上の Java のインストール先の場所に設定します。
+. CloudHub 配布ファイル (https://docs.mulesoft.com/downloads/runtime-manager/cloudhub-cli-1.0.1.zip[cloudhub-cli-1.0.1.zip]) をダウンロードします。
+. ローカルマシンの任意の場所に配布を解凍/抽出します。
++
+[source,console]
+----
+$ unzip cloudhub-cli-1.0.1.zip
+----
++
+この zip ファイルにより `cloudhub-cli-18-SNAPSHOT` ディレクトリが作成されます。
++
+. Mac または Linux コンピュータを使用している場合、`chmod 700 cloudhub-*` などのコマンドを使用して、`cloudhub-` コマンドが実行可能であることを確認します。
+. bin ディレクトリを PATH に追加します。
++
+[source,console]
+----
+$ export PATH=/path/to/cloudhub-cli-18-SNAPSHOT/bin:$PATH
+----
++
+. 必要に応じて、以下の環境変数を設定し、コマンドの呼び出しを容易にします。
++
+[%header,cols="2*a"]
+|===
+|環境変数 |説明
+|CLOUDHUB_USERNAME |Anypoint Platform ユーザ名
+|CLOUDHUB_PASSWORD |Anypoint Platform パスワード
+|CLOUDHUB_DOMAIN |アプリケーションドメイン
+|===
+
+これにより、以下のコマンドでドメイン、ユーザ名、およびパスワードの引数が省略可能になります。
+
+*注意*: コマンドで `--help` パラメータを使用すると、使用可能なオプションが表示されます。
+
+
+== さまざまな環境へのアクセス
+
+ユーザ名により、アクセスする環境が制御されます。ユーザ名の形式は `user@environment` です。たとえば、ユーザ名が「joe」で、「Development」という環境がある場合、ユーザ名は `joe@Development` になります。環境を指定しない場合、デフォルトの `production` になります。
+
+== cloudhub-list
+
+例:
+
+[source,console]
+----
+$ cloudhub-list
+hello: STARTED
+----
+
+// Click for Help
+
+== cloudhub-create
+
+アプリケーションを初めて作成したときに、追加のすべてのパラメータ (ファイルの場所、ワーカーの数、およびすべてのシステムプロパティ) を使用して `cloudhub.properties` ファイルが作成されます。アプリケーションを更新するたびに、これらのプロパティはこの `cloudhub.properties` ファイルから自動的に読み込まれます。
+
+例:
+
+[source,console,linenums]
+----
+$ cloudhub-create -d test -f ../web/target/test-classes/hello.zip -w 1 -D foo:bar hello:test
+Creating application...
+Creating properties file...
+Application created!
+Uploading application...
+Application uploaded!
+----
+
+// Click for Help
+
+== cloudhub-update
+
+例:
+
+[source,console]
+----
+cloudhub-update
+----
+
+// Click for Help
+
+== cloudhub-delete
+
+例:
+
+[source,console]
+----
+$ cloudhub-delete -d app
+----
+
+// Click for Help
+
+== cloudhub-logs
+
+アプリケーションから出力されたログ結果の最後の数行 (末尾) を表示します。CTRL-C を押すまで、出力はログの末尾に継続的に表示されます。
+
+例:
+
+[source,console]
+----
+$ cloudhub-logs
+...
+INFO    11-04-05 07:21:41   [ApplicationServiceImpl] Successfully deployed [test]
+----
+
+== 関連情報
+
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:cloudhub.adoc[CloudHub]
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

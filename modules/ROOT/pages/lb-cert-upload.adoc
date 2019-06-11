@@ -1,0 +1,31 @@
+= 専用ロードバランサへの証明書のアップロードについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+ロードバランサにアップロードする証明書は、PEM でエンコードされ、暗号化されていない 1 つのファイルに格納されている必要があります。
+このファイルには、次の例で示すように、連続する順序の証明書チェーン全体が含まれている必要があります。
+
+[%header,cols="30a,70a"]
+|===
+| Certificate (証明書) | 例
+| プライマリ証明書 | -----BEGIN CERTIFICATE----- +
+(プライマリ SSL 証明書: .crt) +
+-----END CERTIFICATE-----
+| 中間証明書 | -----BEGIN CERTIFICATE----- +
+(中間証明書: DigiCertCA.crt) +
+-----END CERTIFICATE-----
+|===
+
+証明書チェーンにルート証明書を含める必要はありません。ただし、各証明書に ASCII armor を含める必要があります。
+
+
+ロードバランサを作成するときに、Runtime Manager を使用するか、CLI から `cloudhub load-balancer create` コマンドを使用して、SSL エンドポイントを含めることができます。
+
+ロードバランサの作成後、Runtime Manager を使用するか、CLI から `cloudhub load-balancer ssl-endpoint add` コマンドを使用して、SSL エンドポイントをアップロードできます。
+
+== 関連情報
+
+* xref:lb-create-arm.adoc[ロードバランサの作成方法 (Runtime Manager)]
+* xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[cloudhub load-balancer create]
+* xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-ssl-endpoint-add[cloudhub load-balancer ssl-endpoint add]

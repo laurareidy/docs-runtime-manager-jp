@@ -1,0 +1,41 @@
+= ネットワークとの Anypoint VPC 接続の申請
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+ネットワークとの Anypoint Virtual Private Cloud (Anypoint VPC) 接続を申請する方法は、接続方法と Anypoint VPC の作成日によって異なります。 
+
+[%header]
+|===
+|VPC 接続方法|方法
+|IPsec トンネル
+|IPsec トンネルを使用する接続方法は、VPC を最初にいつ設定したのかによって異なります。
+
+2018 年 11 月より前の Anypoint VPC の場合は、<<request_vpc_connectivity,「ネットワークとの VPC 接続の要求」>>を参照してください。
+
+2018 年 11 月以降の新しい Anypoint VPC の場合は、xref:vpn-about.adoc[「Anypoint VPN」]を参照してください。
+
+2018 年 11 月以降に接続された Anypoint VPC に静的ルートを追加するには、 https://support.mulesoft.com/s/article/How-to-add-an-additional-Static-route-to-an-Anypoint-VPN-tunnel[「Adding Additional Static Routes Using the API (API を使用した静的ルートの追加)」]を参照してください。
+|VPC ピアリング
+|<<request_vpc_connectivity,ネットワークへの VPC 接続の要求>>
+|CloudHub 直接接続
+|<<request_vpc_connectivity,ネットワークへの VPC 接続の要求>>
+|===
+
+[request_vpc_connectivity]
+== VPC 接続の申請
+
+VPN トンネル、ピアリング、または直接接続を使用して Anypoint VPC を内部ネットワークに接続する必要がある場合は、次を行う必要があります。
+
+. link:{attachmentsdir}/VPC-form-v9.3-template.xlsx[Anypoint VPC 検出フォーム]をダウンロードします (MS Excel 2007 以降でマクロを有効にする必要があります)。
+. 接続方法に関する必須の詳細情報を伝えるデータを入力します。複数の Amazon 地域のサポートが必要な場合は、サポートが必要な地域ごとに検出フォームのコピーを 1 部提出します。
+. 具体的な要件についてのご相談は、MuleSoft アカウント担当者にお問い合わせください。 +
+MuleSoft サポートチームがフォームを受信し、残りの質問に回答した後、安全にキーを交換し、ルータの設定方法についての指示が提供されます。
+
+Anypoint VPC の設定の SLA は、記入した Anypoint VPC 検出フォームを返送しサポートによる承認を受けてから 5 営業日です。ただし、それより早く Anypoint VPC の設定が完了する場合があります。
+
+
+== 関連情報
+
+* xref:vpn-about.adoc[Anypoint VPN]
+* xref:vpc-connectivity-methods-concept.adoc[Anypoint VPC 接続方法について]

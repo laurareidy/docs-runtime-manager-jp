@@ -1,0 +1,175 @@
+= CloudHub アーキテクチャについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, クラウド, 管理, mmc, api, ワーカー, Runtime Manager, arm
+
+一から構築された xref:cloudhub.adoc[CloudHub] は、マルチテナントのセキュアで拡張性と可用性の高いサービスとしてインテグレーションプラットフォーム (iPaaS) を企業に提供します。このドキュメントでは、これらの目標を達成するために CloudHub プラットフォームの基盤となるメカニズムのしくみを理解する方法について説明します。
+
+CloudHub は、Anypoint Platform の Runtime Manager コンソールで管理します。Anypoint Studio、xref:cloudhub-api.adoc[CloudHub API] または xref:anypoint-platform-cli.adoc[Anypoint Platform コマンドラインインターフェース (Anypoint CLI)] からxref:deploying-to-cloudhub.adoc[デプロイ]することもできます。
+
+[NOTE]
+====
+オンプレミスや Anypoint Platform Private Cloud Edition (Anypoint PCE) などのさまざまなデプロイメントシナリオについての詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。
+====
+
+== CloudHub アーキテクチャ
+
+セキュリティや可用性に対する CloudHub のアプローチを理解するには、CloudHub の背後にあるアーキテクチャを理解することが重要です。  CloudHub には、2 つの主要なコンポーネント (Anypoint プラットフォームサービスとワーカークラウド) があります。これらの 2 つのコンポーネントと、それらのコンポーネントへのアクセスに使用する Runtime Manager コンソールは、連携してインテグレーションアプリケーションを実行します。
+
+image::architecture-diagram.png[]
+
+[cols="10a,45a,45a"]
+|===
+|  |<<Integration Applications>> |インテグレーションアプリケーションは、作成して CloudHub にデプロイするアプリケーションで、ビジネスのインテグレーションロジックを実行します。
+|image:blue-1.png[] |<<Runtime Management Console>> |Runtime Manager コンソールは、CloudHub のインターフェースで、特にインテグレーションのデプロイと監視およびアカウントの設定を行うことができます。
+
+|image:blue-2.png[] |<<Platform Services>> |この共有 CloudHub プラットフォームサービスと API のセットには、アラート管理、ログ管理、アカウント管理、Virtual Private Cloud/セキュアデータゲートウェイ、負荷分散などを提供する CloudHub Insight が含まれます。
+
+|image:blue-3.png[] |<<Global Worker Clouds>> |これは、インテグレーションアプリケーションを実行する Mule インスタンスの拡張性の高いクラウドです。
+
+|===
+
+[NOTE]
+(米国でホストされる) デフォルトコントロールプレーンの https://status.mulesoft.com/[`status.mulesoft.com`] および EU コントロールプレーンの https://eu1-status.mulesoft.com/[`eu1-status.mulesoft.com`] では、Runtime Manager コンソール、プラットフォームサービス、CloudHub ワーカークラウドのライブ状況と詳細なサービス履歴を表示できます。
+
+=== インテグレーションアプリケーション
+
+インテグレーションアプリケーションは、xref:general:getting-started:build-a-hello-world-application.adoc[Anypoint Studio] を使用して作成したインテグレーションです。これらのアプリケーションは、Salesforce からデータベースへのデータの同期、SOAP または REST API のパブリッシュ、ビジネスプロセスの複雑なオーケストレーションの作成など、あらゆる作業を実行できます。
+
+インテグレーションアプリケーションの作成やデプロイについての詳細は、xref:cloudhub.adoc[「CloudHub」]およびxref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
+
+=== Runtime Manager コンソール
+
+Runtime Manager コンソールは、https://anypoint.mulesoft.com[Anypoint Platform] に統合されています。実行時にインテグレーションアプリケーションをアップロードおよび管理するには、Anypoint Platform ログイン情報を使用してサインインします。コンソールには、プラットフォームサービスの有益な監視情報が表示されます。また、コンソールはアプリケーションレベルとアカウントレベルの両方の管理に対応する包括的なダッシュボードとしても機能します。
+
+このコンソールで xref:deploying-to-cloudhub.adoc[CloudHub にデプロイ]したり、xref:deploying-to-your-own-servers.adoc[他の登録済みサーバ]にデプロイしたりできます。また、xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションを管理]することもできます。
+
+システム管理者アカウントを所持しているユーザは、Anypoint Platform を使用して、xref:access-management::managing-permissions.adoc[組織の他のユーザを追加および管理したり、ユーザロールを定義]したり、Sandbox 環境を作成および管理したりできます。
+
+CloudHub についてのその他の一般情報は、xref:managing-deployed-applications.adoc[「CloudHub」]を参照してください。
+
+=== プラットフォームサービス
+
+CloudHub のプラットフォームサービスは、プラットフォームのあらゆる側面の調整を担当します。アプリケーションのデプロイメントの調整、インテグレーションの監視、分析データの提供、アプリケーションデータの保存、スケジュール済みジョブの実行などを行います。また、これらのサービスの多くは、xref:cloudhub-api.adoc[CloudHub REST API] を介して公開されています。
+
+=== CloudHub ワーカー
+
+CloudHub のアプリケーションは、*ワーカー*という 1 つ以上の Mule インスタンスで実行されます。ワーカーには、次の特性があります。
+
+* *容量*: 各ワーカーには、データを処理するための特定の容量があります。ワーカーのサイズは、アプリケーションの設定時に選択できます。
+* *分離*: 各ワーカーは、他のすべてのアプリケーションから隔離されたコンテナで実行されます。
+* *管理*: 各ワーカーは個別にデプロイおよび監視されます。
+* *地域*: 各ワーカーは、特定のワーカークラウド (米国、EU、アジア太平洋) で実行されます。
+
+各ワーカーは、インテグレーションアプリケーションを実行する専用の Mule インスタンスです。ワーカーのメモリ容量と処理能力は、アプリケーションレベルの設定方法によって異なります。使用可能ないずれかのワーカーサイズを選択して、ワーカーを垂直方向にスケールできます。
+
+*ワーカーサイズ:*
+
+* 0.1 vCore + 500 MB ヒープメモリ
+* 0.2 vCore + 1 GB ヒープメモリ
+* 1 vCore + 1.5 GB ヒープメモリ
+* 2 vCore + 3.5 GB ヒープメモリ
+* 4 vCore + 7.5 GB ヒープメモリ
+* 8 vCore + 15 GB ヒープメモリ
+* 16 vCore + 32 GB ヒープメモリ
+
+
+[NOTE]
+使用可能なメモリが少なくなるほど、https://aws.amazon.com/ec2/instance-types/#burst[vCore の一部]を使用するワーカーの CPU と IO の制限が大きくなります。通常、これはワークロードが小さい場合にのみ適しています。
+
+xref:cloudhub-fabric.adoc[CloudHub Fabric] では、複数のワーカーを追加して各キューで負荷を分散することで、アプリケーションを水平方向にスケールすることもできます。ワーカーのスケーリングについての詳細は、xref:cloudhub-fabric.adoc[「ワーカーのスケールアウト」]を参照してください。CloudHub での永続的なキューの使用についての詳細は、xref:cloudhub-fabric.adoc[「永続的なキュー」]を参照してください。
+
+[TIP]
+xref:worker-monitoring.adoc[ワーカーを監視]したり、すべてのワーカーが正常に動作していることを確認したりできます。また、ワーカーに問題が発生した場合に備えて自動再起動を有効にすることもできます。
+
+=== グローバルワーカークラウド
+
+CloudHub は、世界の 12 の異なるリージョン (北米、南米、欧州、アジア太平洋) でワーカークラウドを提供しています。このグローバルな分散により、各自のサービスに最も近い場所でインテグレーションをホストできるため、遅延が減少します。また、EU データ保護指令などの地域の法律に準拠することもできます。管理コンソールとプラットフォームサービスは、米国でホストされます。
+
+サポートされているリージョンの完全なリストは次のとおりです。
+
+[%header]
+|===
+|リージョン|サブドメイン
+|米国東部 (北バージニア)| `us-e1.cloudhub.io`
+|米国東部 (オハイオ)| `us-e2.cloudhub.io`
+|米国西部 (オレゴン)| `us-w2.cloudhub.io`
+|米国西部 (北カリフォルニア)| `us-w1.cloudhub.io`
+|カナダ (中央部)| `ca-c1.cloudhub.io`
+|ブラジル (サンパウロ)| `br-s1.cloudhub.io`
+|欧州 (アイルランド)| `ir-e1.cloudhub.io`
+|欧州 (フランクフルト)| `de-c1.cloudhub.io`
+|英国 (ロンドン)| `uk-e1.cloudhub.io`
+|アジア太平洋 (東京)| `jp-e1.cloudhub.io`
+|アジア太平洋 (シドニー)| `au-s1.cloudhub.io`
+|アジア太平洋 (シンガポール)| `sg-s1.cloudhub.io`
+|===
+
+アプリケーション向けに提供されるドメインは、アプリケーションがデプロイされるリージョンに基づきます。たとえば、`myapp` という名前のアプリケーションをカナダ (中央部) にデプロイする場合、アプリケーションにアクセスするために使用されるドメインは `myapp.ca-c1.cloudhub.io` になります。要求のルーティングに使用されるロードバランサは、アプリケーションと同じリージョンに存在します。
+
+別のリージョンへのアプリケーションのデプロイについての詳細は、xref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。CloudHub のセキュリティおよびコンプライアンスについての詳細は、 https://www.mulesoft.com/lp/whitepaper/saas/cloud-security[「Anypoint Cloud Security & Compliance (Anypoint クラウドセキュリティおよびコンプライアンス)」ホワイトペーパー]を参照してください。
+
+=== ワーカーとマルチテナンシー
+
+サービスに応じてさまざまなレベルのセキュリティと分離が必要になるため、プラットフォームでは 2 つの異なるレベルのマルチテナンシーが提供されます。
+
+* 第 1 に、ワーカークラウドは、仮想マシンのマルチテナントクラウドです。これらの VM は、他に影響を与えずにインテグレーションでカスタムコードを実行するために必要なセキュリティと分離を提供します。
+* 第 2 に、管理コンソールとプラットフォームサービスは、すべてのテナントで同じ Web UI、監視サービス、ロードバランサなどを共有する「すべてを共有する」アーキテクチャで構成されています。これらのサービスは、データの処理や転送を行いません。
+
+== CloudHub の可用性と拡張性
+
+CloudHub は、冗長性、インテリジェントな回復、ダウンタイムなしの更新などにより、可用性と拡張性が高くなるように設計されています。また、xref:cloudhub-fabric.adoc[CloudHub Fabric] を使用すると、顧客はスケーリングと信頼性の向上を実現できます。
+
+=== 冗長性のあるプラットフォーム
+
+CloudHub のすべてのプラットフォームサービス (負荷分散や API レイヤなど) には 1 つ以上の冗長性レイヤが組み込まれており、常に 2 つ以上のデータセンターで使用できます。どのデータセンターも 60 マイル以上離れています。この冗長性により、1 つのデータセンターが停止しても、プラットフォームを引き続き使用できます。
+
+=== インテリジェントな回復
+
+CloudHub は、ワーカークラウドのあらゆる種別の問題を監視し、問題から回復する自己回復メカニズムを提供します。基盤となるハードウェアに障害が発生すると、プラットフォームによって自動的にアプリケーションが新しいワーカーに移行されます。アプリケーションがクラッシュすると、カスタムコードの問題が原因でも、基盤となるスタックのバッグが原因でも、プラットフォームでクラッシュを認識し、xref:worker-monitoring.adoc#enabling-automatic-restarts[自動的にワーカーを再起動]できます。
+
+アプリケーションの監視と自動再起動についての詳細は、xref:worker-monitoring.adoc[「ワーカーの監視」]を参照してください。
+
+=== ダウンタイムなしの更新
+
+CloudHub では、アプリケーションを実行時に更新できるため、HTTP API のエンドユーザのダウンタイムはありません。CloudHub は、アプリケーションの更新をデプロイしている間も古いバージョンのアプリケーションを引き続き実行します。ドメインは、新しくアップロードされたバージョンが完全に開始されるまで古いバージョンのアプリケーションを参照します。これにより、新しいバージョンのアプリケーションを開始している間も古いアプリケーションからの要求を引き続き処理できます。
+
+=== CloudHub Fabric
+
+CloudHub Fabric を使用すると、CloudHub のアプリケーションで拡張性、ワークロードの分散、信頼性の向上を実現できます。これらの機能は、CloudHub の拡張性の高い負荷分散サービス、xref:cloudhub-fabric.adoc#worker-scaleout[CloudHub Fabric ワーカーのスケールアウト]、xref:cloudhub-fabric.adoc#persistent-queues[永続的なキュー]機能によって提供されます。
+
+==== ワーカーのスケールアウトとデータセンターの冗長性
+
+xref:cloudhub-fabric.adoc[CloudHub Fabric] では、複数のワーカーをアプリケーションに追加して、水平方向にスケールできます。これにより、信頼性も向上します。CloudHub は、自動的に同じアプリケーションで複数のワーカーを 2 つ以上のデータセンターで分散し、最大限の信頼性を確保します。
+
+アプリケーションを 2 つ以上のワーカーにデプロイすると、HTTP 負荷分散サービスはこれらのワーカーで要求を分散します。これにより、サービスを水平方向にスケールできます。要求は、ラウンドロビンベースで分散されます。
+
+==== 永続的なキュー
+
+永続的なキューにより、メッセージの損失がなくなり、HTTP 以外のワークロードを一連のワーカーで分散できます。たとえば、アプリケーションを複数のワーカーにデプロイする場合、永続的なキューを使用すると、ワーカー間の通信とワークロードの分散を実現できます。大きなファイルがキューに配置された場合、ワーカーはこれを分割して並列で処理できます。
+
+また、永続的なキューでは、1 つ以上のワーカーまたはデータセンターがダウンしても、メッセージが確実に配信されます。永続的なキューにより、障害回復が促進され、ハードウェアまたはアプリケーションの障害に対する回復力を得られます。
+
+ワーカーのスケールアウトと永続的なキューについての詳細は、xref:cloudhub-fabric.adoc[「CloudHub Fabric」]を参照してください。
+
+== セキュリティ
+
+CloudHub アーキテクチャは、インテグレーションのセキュアなプラットフォームを提供します。
+
+ペイロードデータの保護は、非常に重要です。この目的を達成するために、CloudHub は、ペイロードデータの検査や保存、または直接のやりとりを行いません。CloudHub ワーカーは、各アプリケーションに独自の仮想マシンを提供することで、データの転送および処理に対応するセキュアな機能を提供します。これにより、ペイロードのセキュリティを確保するためのテナント間の完全な分離と、他のテナントのコードからの隔離が実現します。
+
+CloudHub は、CloudHub ワーカーから監視データ、分析データ、ログデータを収集したり、ユーザの代わりに CloudHub ワーカーでアクションを実行したりできます。CloudHub プラットフォームサービスとワーカークラウド間のすべての通信は、SSL とクライアント証明書認証を使用して保護されます。これにより、認証されていないパーティはデータを読み取ることができず、不正なアクションを開始できません。
+
+xref:secure-application-properties.adoc[セキュアなプロパティ]をアプリケーションバンドルの一部として読み込むこともできます。プロパティにセキュアフラグが設定されている場合、Runtime Manager コンソールでも表示できなくなります。実際には、アプリケーションを実行している CloudHub ワーカー以外の場所に伝播されなくなります。
+
+セキュリティに関する MuleSoft のアプローチについての詳細は、 http://mulesoft.com/downloads/whitepapers/security-whitepaper.pdf[「Anypoint Cloud Security & Compliance whitepaper (Anypoint クラウドセキュリティおよびコンプライアンス)」ホワイトペーパー]を参照してください。
+
+== 関連情報
+
+* xref:cloudhub-networking-guide.adoc[CloudHub ネットワークガイド]
+* xref:cloudhub-faq.adoc[CloudHub FAQ]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:maintenance-and-upgrade-policy.adoc[メンテナンスおよびアップグレードポリシー]
+* http://forums.mulesoft.com[フォーラム]のリソース
+* http://status.mulesoft.com/[status.mulesoft.com].
