@@ -383,7 +383,7 @@ $ anypoint-cli [params] [command]
 
 このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
 
-== account environment delete
+== account environment describe
 
 ----
 > account environment describe [options] <name>
