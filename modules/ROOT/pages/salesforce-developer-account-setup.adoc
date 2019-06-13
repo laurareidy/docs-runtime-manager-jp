@@ -1,0 +1,24 @@
+= Salesforce 開発者アカウントのセットアップ
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, salesforce, arm, Runtime Manager
+
+無料の開発者用 Salesforce アカウントをセットアップする手順は、次のとおりです。
+
+== 登録
+
+http://developer.salesforce.com/signup にアクセスして登録します。
+
+== セキュリティトークンのリセット
+
+リセットする手順は、次のとおりです。
+
+. Salesforce にログインした後、*[設定]* に移動します。
+. ウィンドウの上部にあるバナーから自分の名前を選択し、*[私の設定]* を選択します。
+. *[個人用]* を選択します。
+. *[私のセキュリティトークンのリセット]* を選択し、*[セキュリティトークンのリセット]* ボタンを押します。
+
+新しいセキュリティトークンを含むメールが送信されます。
+
+Salesforce では、API 認証にパスワードとセキュリティトークンが使用されます。

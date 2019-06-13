@@ -1,0 +1,73 @@
+= ログメッセージのリスト
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 例, arm, Runtime Manager
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+このドキュメントでは、xref:cloudhub-api.adoc[CloudHub API] のコールについて説明します。Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] とその下位ページを参照してください。
+
+`/applications/{application}/logs` リソースで GET 操作を使用すると、すべてのログメッセージがリストされます。このコールは、各呼び出しに対して最大 10,000 行のログデータを返します。ただし、連続する時間枠を検索条件に使用してコールを繰り返すことによって、ログ全体をダウンロードできます。
+
+次のクエリパラメータがサポートされています。
+
+[%header,cols="34a,33a,33a"]
+|===
+|Name (名前) |Default (デフォルト) |説明
+|limit (制限) |0 |返す行数。
+|offset (オフセット) |0 |ログメッセージのリストを開始する行。
+|startDate |  |ログメッセージの検索を開始する日付。ISO-8601 形式。
+|endDate |  |ログメッセージの検索を終了する日付。ISO-8601 形式。
+|search (検索) |  |メッセージが一致する必要があるテキスト。
+|priority (優先度) |  |返されるログレベル優先度は、DEBUG (デバッグ)、INFO (情報)、WARN (警告)、ERROR (エラー)、SYSTEM (システム)、CONSOLE (コンソール) です。
+|ワーカー |  |ログを返す対象のワーカー。0 から開始します。
+|===
+
+*要求の例:*
+
+[source,json,linenums]
+----
+GET https://anypoint.mulesoft.com/cloudhub/api/applications/exampleapp/logs?limit=1
+----
+
+*応答の例:*
+
+[source,json,linenums]
+----
+200 OK
+Content-Type: application/json
+Server: Apache-Coyote/1.1
+Date: Sun, 18 Jan 2015 00:12:55 GMT
+
+{
+  "data": [
+    {
+      "message": "Deploying application to 1 workers.",
+      "priority": "SYSTEM",
+      "sequenceNumber": 1343797858127,
+      "timestamp": 1344872571834
+    }
+  ],
+  "total": 528
+}
+----
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+== 関連情報
+
+* xref:index.adoc[Runtime Manager]
+* xref:cloudhub.adoc[CloudHub]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

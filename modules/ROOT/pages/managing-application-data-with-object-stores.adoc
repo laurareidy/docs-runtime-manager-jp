@@ -1,0 +1,77 @@
+= Object Store を使用したアプリケーションデータストレージの管理
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, Object Store, arm, Runtime Manager
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+CloudHub には、管理対象の各アプリケーションのアプリケーションデータストレージが含まれており、このデータには Mule の xref:3.8@mule-runtime::mule-object-stores.adoc[Object Store v1] および xref:object-store::index.adoc[Object Store v2] 機能を使用してアクセスできます。Object Store は、任意のものを保存するために使用できますが、主な用途は次の 2 つです。
+
+* 同期状態の保存: アプリケーションで最後に同期したレコードを記録する必要がある場合があります。そうすることで、アプリケーションが次回同期するときに、中断したところから再開できます。
+* OAuth トークン: OAuth 対応コネクタは、数行の設定コードを使用することで、Object Store 内にトークンを保存できます。
+
+アプリケーションは、下記の制限内でカスタムインテグレーションデータも保存できます。
+
+[NOTE]
+====
+* Object Store は、CloudHub ワーカーにデプロイされたアプリケーションに対してのみ、このドキュメントで説明する方法で処理されます。Runtime Manager を使用してローカルサーバにデプロイしたアプリケーションについては、独自のリポジトリでデータの保存を処理する必要があります。詳細は、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
+* Object Store v1 のすべてのデータは、アプリケーションがデプロイされたゾーンに関係なく、​*US-East ゾーン*​のサーバによって処理されます。これは、パフォーマンスに影響する場合があります。
+* xref:object-store::osv2-faq.adoc[Object Store v2] では、クラウドオブジェクトストアリージョン数が増え、Mule 3.8.5 以降および Mule 4 で使用するためのオブジェクトストア機能が拡張されました。
+====
+
+== データの保存と取得
+
+Mule フロー内のアプリケーションデータを操作するには、Object Store Connector を使用します。このコネクタでは、Runtime Manager Object Store に対してデータを保存、取得、リスト、削除する操作が提供されます。Object Store Connector は、Object Store v1 と Object Store v2 の両方で機能します。
+
+[NOTE]
+コネクタ内で、一意のパーティション名を指定する必要があります。*[Runtime Manager]* > *[Application Data (アプリケーションデータ)]* で情報を表示するには、コネクタプロジェクトに `_defaultUserObjectStore` Spring Bean インスタンスへの Object Store 参照が含まれている必要があります。
+
+情報:
+
+* https://anypoint.mulesoft.com/exchange/org.mule.modules/mule-module-objectstore/[Anypoint Exchange の Object Store Connector]
+* xref:3.8@mule-runtime::object-store-connector.adoc#springbeans[Object Store Spring Bean Instances (Object Store Spring Bean インスタンス)]
+
+=== OAuth データの保存
+
+Object Store モジュールを使用して OAuth トークンの保存と取得を実行する方法についての詳細は、 http://mulesoft.github.com/linkedin-connector/mule/linkedin-config.html#config[「LinkedIn connector configuration (LinkedIn コネクタの設定)」]ドキュメントの「Saving and Restoring State (状態の保存と復元)」セクションを参照してください。
+
+== アプリケーションデータの表示
+
+アプリケーションデータを表示するには、Runtime Manager でアプリケーション名をクリックし、*[Manage Application (アプリケーションを管理)]* をクリックし、*[Application Data (アプリケーションデータ)]* タブをクリックします。このタブには、キーと値のリストが含まれています。データはプレーンテキストまたはリストとして表示できます。
+
+image::applicationdata.png[]
+
+[TIP]
+プロパティをセキュアにして、Runtime Manager UI やその他の場所に表示されないようにするには、xref:secure-application-properties.adoc[「セキュアなアプリケーションプロパティ」]を参照してください。
+
+== セマンティクスとストレージ制限
+
+Object Store v1 では、リードアフターライトによる一貫性が提供され、最後に書き込まれた内容によって更新されます。
+
+Object Store v1 の制限は次のとおりです。
+
+* アプリケーションごとの最大キー数: 100,000
+* キーのサイズ: 768 バイト
+* 値のサイズ: 1 MB
+* アプリケーションあたりのデータ: 1 GB
+
+Object Store v2 の制限は次のとおりです。
+
+* Mule 3.8.5 以降および Mule 4 と連携
+* アプリケーションごとのキー数: 無制限
+* 値の最大サイズ: 10 MB
+* TPS: トライアルレベルの場合は 10、プレミアムレベルの場合は 100
+* キーの最長保持期間: 30 日間
+* xref:object-store::osv2-faq.adoc[商用のすべての CloudHub リージョン]で使用可能
+
+== 高度な情報
+
+内部では、Mule にはいくつかの異なる種類のオブジェクトストアがあります。Runtime Manager では Object Store v1 (Mule 3 用) と Object Store v2 (Mule 3.8.5 以降および Mule 4 用) が提供されます。これらのオブジェクトストアは、上記のユースケースのようにアプリケーションに関する実行時の情報のためのものです。このオブジェクトストアに内部で直接アクセスする必要がある場合は、Mule レジストリの「_defaultUserObjectStore」にあります。Object Store モジュールとコネクタでは、デフォルトではすべてのデータの保存にこのストアが使用されます。
+
+=== 関連情報
+
+xref:object-store::osv2-tutorial.adoc[チュートリアル: Object Store v2]

@@ -1,0 +1,88 @@
+= 専用ロードバランサでの証明書の検証
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+SSL エンドポイントの CA 証明書を 1 つ以上指定すると、ロードバランサは以下の HTTP ヘッダーを使用してクライアント証明書データを API に渡します。
+
+== X-SSL-Client-Verify
+
+このヘッダーは、`SUCCESS`、`FAILED`、`NONE` のいずれかを返します。`SUCCESS` の場合にのみクライアントが検証されます。 +
+証明書が存在しない場合は `NONE` を返し、他の検証の問題が発生した場合は `FAILED` を返します。
+
+== X-SSL-Client-DN
+
+クライアント証明書の完全な識別名が含まれます。
+
+== X-SSL-Issuer
+
+発行元証明書の完全な識別名が含まれます。
+
+== X-SSL-Client-Serial
+
+クライアントを識別するために CA で使用されるシリアル番号が含まれます。
+
+== 失効リストの追加
+
+CloudHub ロードバランサでは、必要に応じてクライアント要求を証明書失効リスト (CRL) に対して検証できます。アップロードするには、すべての CRL ファイルを PEM でエンコードされた 1 つのファイルに連結する必要があります。順序は重要ではありません。
+
+ロードバランサの作成時に xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[`load-balancer create`] コマンドで「--crl」オプションを使用して失効リストを追加できます。
+
+また、ロードバランサがすでに作成されている場合、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955[REST API] を使用して更新できます。 +
+`PATCH` 要求に `revocationList` 要素を追加して、`/organizations/{orgid}/vpcs/{vpcId}/loadbalancers/{lbId}` エンドポイントに送信できます。
+
+[source,json,linenums]
+----
+[
+  {
+    "op": "replace",
+    "path": "/sslEndpoints/0/revocationList",
+    "value": "-----BEGIN X509 CRL-----\nMIIBTTCBtwIBATANBgkqhkiG9w0BAQUFADBXMQswCQYDVQQGEwJBVTETMBEGA1UE\nCBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRk\nMRAwDgYDVQQDEwdvcmcuY29tFw0xNjAzMTUwOTI2MThaFw0xODAzMTUwOTI2MTha\nMBwwGgIJAIBvvO4dJHjhFw0xNjAzMTUwODUwMTZaoA4wDDAKBgNVHRQEAwIBBjAN\nBgkqhkiG9w0BAQUFAAOBgQCCAbGXW+Hnzmd1bXqWsFXfogOsJScoxkJOhhmjui3I\nhTUyO5plGHUBLjBnDkypM+iLfn0W4wPcNj7FZdz4Hu/WLntxwrTtR5YOcfIhEGcq\nwvJq/1+WKUPC6eqGwx0iKOOBIWsaf5CNOOUQMo6RaeTeu8Uba2EGFk1Vu/SoZYAK\nsw==\n-----END X509 CRL-----\n"
+  }
+]
+----
+
+[NOTE]
+--
+CloudHub REST API を使用して、プログラムによって失効リストを更新することをお勧めします。 +
+CLI から必要な `vpcId` と loadbalancerId を取得するには、それぞれ xref:anypoint-platform-cli.adoc#cloudhub-vpc-describe-json[`vpc JSON describe`] と xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-describe-json[`load-balancer JSON describe`] を使用できます。
+--
+
+PATCH 要求をロードバランサのエンドポイントに送信して、その他のプロパティを更新することもできます。
+
+
+== 証明書の暗号化
+
+次に挙げる推奨暗号化スイートはそれぞれ、SSL エンドポイント向けに互換性とセキュリティのバランスが取れており、前方秘匿性があります。ただし、RC4-SHA は例外で、これは Internet Explorer 8 をサポートするために含まれています。
+
+----
+ECDHE-RSA-AES256-GCM-SHA384
+ECDHE-RSA-AES128-GCM-SHA256
+DHE-RSA-AES256-GCM-SHA384
+DHE-RSA-AES128-GCM-SHA256
+ECDHE-RSA-AES256-SHA384
+ECDHE-RSA-AES128-SHA256
+ECDHE-RSA-AES256-SHA
+ECDHE-RSA-AES128-SHA
+DHE-RSA-AES256-SHA256
+DHE-RSA-AES128-SHA256
+DHE-RSA-AES256-SHA
+DHE-RSA-AES128-SHA
+ECDHE-RSA-DES-CBC3-SHA
+EDH-RSA-DES-CBC3-SHA
+AES256-GCM-SHA384
+AES128-GCM-SHA256
+AES256-SHA256
+AES128-SHA256
+AES256-SHA
+AES128-SHA
+DES-CBC3-SHA
+----
+
+ClourHub 専用ロードバランサは、TLSv1.1 と TLSv1.2 をサポートしています。さらに、TLS v1.0 を設定することもできます。ただし、TLS v1.0 は、重大な脆弱性があるため、PCI コンプライアンスに認められなくなりました。
+
+== 関連情報
+
+* xref:lb-cert-upload.adoc[証明書のアップロードについて]
+* xref:lb-whitelists.adoc[ホワイトリストについて]
+* xref:lb-mapping-rules.adoc[マッピングルールについて]

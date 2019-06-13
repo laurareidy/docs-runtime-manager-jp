@@ -1,0 +1,23 @@
+= Runtime Manager エージェント API
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, esb, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+大半のユースケースの場合、必要なのは、xref:installing-and-configuring-runtime-manager-agent.adoc[「Runtime Manager エージェントのインストールと設定」]の手順に従い、Runtime Manager エージェントをインストールし、設定することだけです。
+
+xref:index.adoc[Runtime Manager] とオンプレミスのランタイム間の通信を管理する以外に Runtime Manager エージェントを使用するには、次のセクションのドキュメントを参照してください。
+
+* xref:administration-service.adoc[管理サービス]
+* xref:managing-applications-and-domains.adoc[アプリケーションおよびドメインの管理]
+* xref:jmx-service.adoc[JMX サービス]
+* xref:runtime-manager-agent-notifications.adoc[Runtime Manager エージェント通知]
+
+
+[NOTE]
+これらのトピックは、xref:3.8@mule-management-console::index.adoc[Mule 管理コンソール]とは関係がありません。これらのトピックは、ローカルランタイムで Runtime Manager と通信する Runtime Manager エージェントに関するものです。

@@ -1,0 +1,153 @@
+= ペイロード形式のロギングについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+:keywords: 分析, 監視, splunk, elk, elastisearch, logstash, kibana, ログ, mule イベント, ログ, apy 分析, メトリクス, トレーサビリティ, arm, anypoint runtime manager
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+メッセージペイロードデータをxref:sending-data-from-arm-to-external-analytics-software.adoc[外部分析ソフトウェア]に送信するには、まずシリアル化してテキストに変換する必要があります。
+
+一部のペイロード形式は、プレーンテキストに変換できません。このため、Runtime Manager エージェントは適切に形式を区別し、機能すると考えられる形式にのみ変換します。
+
+変換できない種別のペイロード形式の場合、エージェントはコンテンツではなく、ペイロードクラス種別の完全修飾名のみを渡します。
+
+[WARNING]
+このドキュメントの情報は、Runtime Manager エージェントのバージョン xref:release-notes::runtime-manager-agent/runtime-manager-agent-1.6.3-release-notes.adoc[1.6.3] 以降にのみ適用されます。以前のバージョンでは、すべての形式を変換しようとするため、エラーが発生する可能性があります。
+
+== デフォルトの変換動作
+
+Runtime Manager エージェントは、以下の表の *[文字列への変換]* 列が `TRUE` の場合にのみペイロードメッセージを渡します。
+
+[%header,cols="15,35,25,20"]
+|===
+|拡張子 |	ドキュメントの種類|	MIME タイプ|	文字列への変換
+|.epub	|電子出版物 (EPUB)|	application/epub+zip|	いいえ
+|.jar	|Java アーカイブ (JAR)	|application/java-archive|	いいえ
+|.js	|JavaScript (ECMAScript)|	application/javascript|	はい
+|.json	|JSON 形式|	application/json|	はい
+|.doc	|Microsoft Word|	application/msword|	いいえ
+|.arc	|アーカイブドキュメント (複数のファイルが埋め込まれている)|	application/octet-stream|	いいえ
+|.bin	|任意の種類のバイナリデータ|	application/octet-stream|	いいえ
+|.ogx	|OGG|	application/ogg|	いいえ
+|.pdf	|Adobe ポータブルドキュメント形式 (PDF)|	application/pdf|	いいえ
+|.rtf	|リッチテキスト形式 (RTF)|	application/rtf|	はい
+|.azw	|Amazon Kindle eBook 形式|	application/vnd.amazon.ebook|	いいえ
+|.mpkg	|Apple インストーラパッケージ|	application/vnd.apple.installer+xml|	いいえ
+|.xul	|XUL|	application/vnd.mozilla.xul+xml|	はい
+|.xls	|Microsoft Excel|	application/vnd.ms-excel|	いいえ
+|.ppt	|Microsoft PowerPoint|	application/vnd.ms-powerpoint|	いいえ
+|.odp	|OpenDocuemnt プレゼンテーションドキュメント|	application/vnd.oasis.opendocument.presentation|	いいえ
+|.ods	|OpenDocuemnt スプレッドシートドキュメント|	application/vnd.oasis.opendocument.spreadsheet|	いいえ
+|.odt	|OpenDocument テキストドキュメント|	application/vnd.oasis.opendocument.text|	いいえ
+|.vsd	|Microsoft Visio	|application/vnd.visio|	いいえ
+|.7z	|7-zip アーカイブ	|application/x-7z-compressed|	いいえ
+|.abw	|AbiWord ドキュメント	|application/x-abiword|	いいえ
+|.bz	|BZip アーカイブ	|application/x-bzip|	いいえ
+|.bz2	|BZip2 アーカイブ	|application/x-bzip2|	いいえ
+|.csh	|C シェルスクリプト	|application/x-csh|	はい
+|.rar	|RAR アーカイブ	|application/x-rar-compressed|	いいえ
+|.sh	|Bourne シェルスクリプト	|application/x-sh|	はい
+|.swf	|Small web format (SWF) または Adobe Flash ドキュメント|	application/x-shockwave-flash|	いいえ
+|.tar	|テープアーカイブ (TAR)|	application/x-tar|	いいえ
+|.xhtml	|XHTML|	application/xhtml+xml|	はい
+|.xml	|XML|	application/xm|l	TRUE
+|.zip	|ZIP アーカイブ|	application/zip|	いいえ
+|.aac	|AAC オーディオファイル|	audio/aac|	いいえ
+|.mid .midi|	電子楽器デジタルインターフェース (MIDI)|	audio/midi|	いいえ
+|.oga	|OGG オーディオ|	audio/ogg|	いいえ
+|.weba	|WEBM オーディオ|	audio/webm|	いいえ
+|.wav	|Waveform オーディオ形式|	audio/x-wav|	いいえ
+|.ttf	|TrueType フォント|	font/ttf|	いいえ
+|.woff	|Web オープンフォント形式 (WOFF)|	font/woff|	いいえ
+|.woff2	|Web オープンフォント形式 (WOFF)|	font/woff2|	いいえ
+|.gif	|グラフィックスインターチェンジ形式 (GIF)|	image/gif|	いいえ
+|.jpeg .jpg|	JPEG 画像|	image/jpeg|	いいえ
+|.svg	|スケーラブルベクターグラフィックス (SVG)|	image/svg+xml|	はい
+|.tif |.tiff	タグ付き画像ファイル形式 (TIFF)|	image/tiff|	いいえ
+|.webp	|WEBP 画像|	image/webp|	いいえ
+|.ico	|アイコン形式|	image/x-icon|	いいえ
+|.ics	|iCalendar 形式|	text/calendar|	はい
+|.css	|カスケードスタイルシート (CSS)|	text/css|	はい
+|.csv	|カンマ区切り値 (CSV)|	text/csv|	はい
+|.htm |.html	ハイパーテキストマークアップ言語 (HTML)|	text/html|	はい
+|.txt	|プレーンテキスト|	text/plain|	はい
+|.3gp	|3GPP オーディオ/ビデオコンテナ	|video/3gpp audio/3gpp (ビデオが含まれていない場合)|	いいえ
+|.3g2	|3GPP2 オーディオ/ビデオコンテナ	|video/3gpp2 audio/3gpp2 (ビデオが含まれていない場合)|	いいえ
+|.mpeg	|MPEG ビデオ	|video/mpeg|	いいえ
+|.ogv	|OGG ビデオ	|video/ogg|	いいえ
+|.webm	|WEBM ビデオ	|video/webm|	いいえ
+|.avi	|AVI: オーディオビデオインターリーブ|	video/x-msvideo|	いいえ
+|	|Multipart|	multipart/mixed、multipart/alternative、multipart/digest、multipart/parallel	|いいえ||
+|===
+
+== 変換動作のカスタマイズ
+
+デフォルトの動作を上書きして、エージェントがすべてのペイロード形式を転送できるようにしたり、どのペイロード形式も転送できないようにしたりできます。これを行うには、特定のプロパティを `conf/mule-agent.yml` ファイルに追加します。
+
+外部ログから特定の形式を強制的に除外できます。これは、特定のデータ種別の剥奪に関するセキュリティ上の懸念などに起因します。
+
+.特定のアプリケーションで強制的に除外する:
+[source,yaml,linenums]
+----
+    mule.agent.tracking.service:
+        globalTrackingLevel: DEBUG
+        enabled: true
+        trackedApplications:
+            - appName: someApp
+              trackingLevel: DEBUG
+              payloadExcluded: true
+----
+
+.グローバルに強制的に除外する:
+[source,yaml,linenums]
+----
+    mule.agent.tracking.service:
+        globalTrackingLevel: DEBUG
+        enabled: true
+        globalPayloadExclusion: true
+----
+
+また、変換できないと考えられる形式を強制的に変換および転送することもできます。
+
+[WARNING]
+これを行うと、ペイロードが破損する危険があります。
+
+
+
+.特定のアプリケーションで強制的に含める:
+[source,yaml,linenums]
+----
+    mule.agent.tracking.service:
+        globalTrackingLevel: DEBUG
+        enabled: true
+        trackedApplications:
+            - appName: someApp
+              trackingLevel: DEBUG
+              forcePayloadInclusion: true
+----
+
+.グローバルに強制的に含める:
+[source,yaml,linenums]
+----
+    mule.agent.tracking.service:
+        globalTrackingLevel: DEBUG
+        enabled: true
+        forceGlobalPayloadInclusion: true
+----
+
+
+
+
+== 関連情報
+
+* xref:managing-servers.adoc[サーバの管理]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:deploying-to-your-own-servers.adoc[独自のサーバへのアプリケーションのデプロイ]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-your-own-servers.adoc[独自のサーバでのアプリケーションの管理]
+* https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API]

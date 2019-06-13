@@ -1,0 +1,41 @@
+= VPC 接続方法について
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+IPsec トンネル、VPC ピアリング、CloudHub 直接接続を使用して Anypoint Virtual Private Cloud (Anypoint VPC) をプライベートネットワークに接続できます。
+
+== IPsec トンネル
+
+ネットワーク間設定で IPsec トンネルを使用して、オンプレミスのデータセンターを Anypoint VPC に接続することができます。IPsec VPN トンネルは、標準化されたセキュアな接続方法が提供されるので、VPC とオンプレミスの接続で一般に推奨されるソリューションです。この方法は、ルータやアプライアンスなどの既存の IT インフラストラクチャともうまく統合します。 
+
+image::chvpc02.png[CHVPC02]
+
+ネットワークとの Anypoint VPN 接続を作成するには、xref:vpn-about.adoc[「Anypoint VPN」]を参照してください。
+
+==  VPC ピアリング
+
+VPC ピアリングは、2 つの VPC 間の接続を提供します。この場合、プライベート Amazon VPC が Anypoint VPC と直接ペアリングされます。これにより、2 つの VPC 間でトラフィックを転送し、同じネットワーク内にあるのと同様の通信が可能になります。
+
+image::chvpc05.png[CHVPC05]
+
+[NOTE]
+--
+VPC ピアリングを使用するには、AWS VPC と Anypoint VPC が同じリージョンにある必要があります。
+--
+
+== CloudHub 直接接続
+
+この方法では、Amazon アカウントから Anypoint VPC への専用ネットワーク接続が確立されます。これにより、ホストされた仮想インターフェースを作成して Anypoint VPC にアタッチできます。
+
+image::vpc-connectivity-methods-concept-7dd0e.png[7dd0e]
+
+[NOTE]
+--
+直接接続を使用するには、AWS 直接接続の場所と Anypoint VPC が同じリージョンにある必要があります。直接接続ゲートウェイはサポートされていません。
+--
+
+== 関連情報
+
+* xref:to-request-vpc-connectivity.adoc[ネットワークへの VPC 接続の要求]
+* xref:vpn-about.adoc[Anypoint VPN]

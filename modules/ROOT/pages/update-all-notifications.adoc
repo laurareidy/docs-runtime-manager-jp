@@ -1,0 +1,49 @@
+= すべての通知の更新
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 通知, api, arm, Runtime Manager
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+これらの例は xref:cloudhub-api.adoc[CloudHub API] をコールします。Runtime Manager UI を使用してこれらの同じタスクをより簡単に実行する手順については、xref:cloudhub.adoc[「CloudHub」]とその子ページを参照してください。
+
+`/api/notifications` リソースで指定される `PUT` 操作はすべての通知を更新します。現在、唯一適用できる更新では、すべての通知が既読としてマークされます。
+
+*要求の例:*
+
+[source,json,linenums]
+----
+PUT https://anypoint.mulesoft.com/cloudhub/api/notifications
+Content-Type: application/json
+
+{
+  "status" : "read"
+}
+----
+
+*応答の例:*
+
+[source,json,linenums]
+----
+204 No Content
+----
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+== 関連情報
+
+* xref:index.adoc[Runtime Manager]
+* xref:cloudhub.adoc[CloudHub]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

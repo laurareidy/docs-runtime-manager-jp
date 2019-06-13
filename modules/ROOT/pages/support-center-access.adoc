@@ -1,0 +1,22 @@
+= サポートセンターへのアクセス
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:noindex:
+
+image::support-logo.png[サポート]
+
+このページは、使用しているアカウントで MuleSoft サポートセンターにアクセスできないために表示されます。アカウントが無料アカウントまたはトライアルであるか、注文どおりに完全にセットアップされていない可能性があります。
+
+サインインに正しいログイン情報を使用していることを確認してください。 
+
+* Anypoint Platform ユーザは、Anypoint Platform ユーザ名とパスワードを使用してログインします。 
+* オンプレミスユーザは、MuleSoft カスタマーサクセスマネージャから提供されたログイン情報を使用します。
+
+MuleSoft と既存の商業的関係があり、Anypoint Platform アカウントへのアクセスで問題が発生している場合は、 https://support.mulesoft.com[MuleSoft サポートセンター]からケースを登録することができます。サポートポータルにアクセスできない場合は、カスタマーサクセスマネージャまたは MuleSoft アカウント管理チームにお問い合わせください。
+
+公開情報は http://support.mulesoft.com[MuleSoft サポートセンター]ポータルで参照できます。
+
+== コミュニティサポート
+
+現在 MuleSoft のお客様でない場合でも、 http://support.mulesoft.com[サポートセンター]で公開されているリソースにアクセスしたり、 http://forums.mulesoft.com[MuleSoft コミュニティフォーラム]で他の開発者から回答を得ることができます。

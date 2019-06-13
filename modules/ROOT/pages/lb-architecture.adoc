@@ -1,0 +1,56 @@
+= 専用ロードバランサアーキテクチャについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+CloudHub 専用ロードバランサを使用すると、外部 HTTP および HTTPS トラフィックを、特定の Virtual Private Cloud (VPC) 内の CloudHub ワーカーにデプロイされた Mule アプリケーションに転送できます。各 CloudHub 専用ロードバランサは、特定の Anypoint VPC に割り当てられ、その Anypoint VPC は特定のサービスリージョン内で実行されます。つまり、専用ロードバランサは、Anypiont VPC の内部と外部両方のトラフィックを、Anypiont VPC にデプロイされた CloudHub ワーカーに転送します。
+
+公開 CloudHub ロードバランサはすでに `http://<myApp>.cloudhub.io` への HTTP 要求を `mule-worker-<myApp>.cloudhub.io:8081` に、そして `https://<myApp>.cloudhub.io:443` への HTTPS トラフィックを `https://mule-worker-<myApp>.cloudhub.io:8082` に転送します。ここで、`<myApp>` は CloudHub への Mule アプリケーションデプロイメントの名前です。
+
+== 専用ロードバランサへの外部要求のルーティング
+
+CloudHub 専用ロードバランサでは、ポート 8091 でリスンする Mule アプリケーションへの HTTP 要求とポート 8092 でリスンする Mule アプリケーションへの HTTPS 要求を転送するための代替ドメイン名が提供されます。さらに、マッピングルールを記述して、CloudHub 専用ロードバランサへの要求の名前を異なる Mule アプリケーションドメイン名に変更できます。
+
+たとえば、*lb-name* というロードバランサを定義して作成するとします。すると、専用ロードバランサは、CloudHub Anypoint VPC ネットワークの外部からアクセスできる 2 つの公開 IP アドレスに解決される外部ドメイン名を公開します。
+
+----
+ lb-name.lb.anypointdns.net
+----
+
+== 専用ロードバランサによる外部 Mule アプリケーション URL の名前変更
+Mule アプリケーションの名前を変更するマッピングルールを作成することで、異なるドメイン名によってアクセスできるようになります。
+
+たとえば、`<myApp>-myCompany-prod.cloudhub.io` という名前の Mule アプリケーションをデプロイするとします。CloudHub ドメイン名は、他のすべての MuleSoft のお客様と Mule アプリケーションの間でグローバルに一意である必要があります。専用ロードバランサによって、企業 DNS ドメイン名内のこの命名の複雑さを隠すことができます。
+
+そして、専用ロードバランサ内でマッピングルールを設定して、外部クライアントが `http://<myApp>.lb-name.lb.anypointdns.net` または `https://<myApp>.lb-name.lb.anypointdns.net:443` 上のアプリケーションにアクセスできるようにすることができます。
+
+さらに、企業 DNS 名前サーバで CNAME レコードを設定して、`lb-name.lb.anypointdns.net` ドメインを会社のバニティドメインにマスクすることができます。
+
+たとえば、会社が DNS ドメイン example.com を所有しているとします。その場合、`myapp.example.com` への要求を `<myApp>.lb-name.lb.anypointdns.net` に転送する CNAME レコードを作成できます。これで、`cloudhub.io` ドメインの CloudHub ドメイン名の複雑さが隠されます。
+
+== 専用ロードバランサへの内部要求のルーティング
+
+CloudHub 専用ロードバランサには、Anypoint VPC 内のアプリケーションとクライアントによって使用される内部ドメイン名もあります。内部ドメインで使用される命名規則は、次のとおりです。
+
+----
+internal-<lb-name>.lb.anypointdns.net
+----
+
+ここで、`<lb-name>` はロードバランサに作成時に付けた名前です。
+
+各専用ロードバランサには DNS レコード `<lb-name>.lb.anypointdns.net` があり、これは 2 つのインスタンスの 2 つの公開 IP アドレスに解決されます。DNS プロバイダを通じて、このレコードを参照する CNAME レコードを追加し、独自のドメイン名を使用してアクセスできます。
+
+ロードバランサでアプリケーションへのすべての接続を処理するが、アプリケーションのデフォルトのドメイン名を公開しない場合は、各アプリケーションがポート 8091 または 8092 で HTTP をリスンする必要があります。または、カスタムマッピングポリシーを作成して、ロードバランサからの外部要求を特定のアプリケーションにリダイレクトできます。
+
+次の図は、ロードバランサが Virtual Private Cloud と Anypoint Platform の間でやりとりを行うしくみを示しています。
+
+image::pxty-lb.png[ロードバランサ]
+
+ロードバランサは、HTTPS 上の外部要求をリスンし、デフォルトでは HTTP を介して内部の通信を行います。Anypoint VPC 内の Mule アプリケーションを設定して HTTPS 上でリスンするようにした場合は、ロードバランサの mappings add コマンドを使用してマッピングリストを作成するときに `upstreamProtocol` を HTTPS に設定する必要があります。
+
+内部 HTTP モードでは、HTTP 要求がどのように処理されるかを設定できます。処理は、無視する、デフォルト SSL エンドポイント上の HTTPS にマップする、URL を対応する HTTPS URL にマップするのいずれかです。
+
+== 関連情報
+
+* xref:cloudhub.adoc[CloudHub]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]

@@ -1,0 +1,22 @@
+= サーバ設定へのアクセス方法 (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+*[Settings (設定)]* ページは、次のいずれかの方法でアクセスできます。
+
+* サーバを選択したら開く右パネルで *[Manage Server (サーバを管理)]*、*[Manage Group (グループを管理)]*、または *[Manage Cluster (クラスタを管理)]* ボタンクリックする。
+
++
+image::managing-servers-ebc52.png[]
+
+* テーブル内のサーバ、グループ、またはクラスタの名前を直接クリックする。
+
++
+image::managing-servers-baa89.png[]
+
+*[Settings (設定)]* ページには、*[Servers (サーバ)]* セクションの右パネルからアクセス可能な同じ情報の他に、このサーバでトリガされたアラートの記録を表示する *[Alerts History (アラート履歴)]* タブが含まれます。 
+
+== 関連情報
+
+xref:alerts-on-runtime-manager.adoc[Runtime Manager のアラート]

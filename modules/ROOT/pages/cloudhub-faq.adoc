@@ -1,0 +1,180 @@
+= CloudHub FAQ
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, FAQ, ipaas, paas, Runtime Manager, arm
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+== よくある質問と回答
+
+=== CloudHub とは?
+
+CloudHub はクラウドベースの、サービスとしてのインテグレーションプラットフォーム (Integration Platform as a Service: iPaaS) であり、これにより、開発者はアプリケーションとサービスの統合およびオーケストレーションができ、運用部門には、ミッションクリティカルな要求に応じるために必要な制御と可視性が提供されます。このすべてを、ミドルウェアまたはハードウェアインフラストラクチャをインストールまたは管理することなく利用できます。  https://anypoint.mulesoft.com[Anypoint Platform] にある Runtime Manager を使用して、アプリケーションを CloudHub にデプロイできます。詳細は、CloudHub xref:cloudhub-architecture.adoc[アーキテクチャ]を参照してください。
+
+
+=== iPaaS とは?
+
+名前が示すとおり、iPaaS はインテグレーションアプリケーションを作成するための開発プラットフォームです。クラウドおよびエンタープライズ内でアプリケーションを統合するための一連のサービスと機能を提供します。iPaaS の核となる理念は、プラットフォーム上のサービスがインテグレーション向けに作成されているという点を除いて PaaS と同じです。マルチテナント、弾力性、信頼性など、期待されるいくつかの基本機能に加えて、iPaaS では、データとイベントの仲介、オーケストレーション、REST および SOAP サービスをパブリッシュするためのサービスコンテナ、強力なセキュリティ機能、監視および開発者ツールが提供されます。
+
+詳細は、 https://blogs.mulesoft.com/dev/mule-dev/introducing-integration-paas-ipaas/[こちら]を参照してください。
+
+
+=== CloudHub アカウントを作成する方法は?
+
+2014 年 11 月の時点で、Anypoint Platform for APIs と CloudHub の両方のアカウントが 1 つのプラットフォームにマージされました。
+
+https://anypoint.mulesoft.com/#/signup[Anypoint Platform アカウント]を使用すると、*Runtime Manager* にアクセスして、*CloudHub* と他のサーバの両方にアプリケーションをデプロイして管理できるほか、Anypoint Platform for APIs にアクセスして、API を作成し、ライフサイクル全体にわたって API を管理できます。
+
+* xref:access-management::managing-your-account.adoc[アカウントの作成]
+* xref:access-management::managing-permissions.adoc[アカウントのロールと権限の管理]
+
+=== Anypoint Studio の入手場所は?
+
+Anypoint Studio は https://www.mulesoft.com/lp/dl/studio[ここでダウンロード]できます。Studio から、CloudHub に直接デプロイしたり、埋め込み Mule Runtime Engine (Mule) でアプリケーションをローカルで実行したりできます。
+
+=== CloudHub の費用は?
+
+具体的な価格については、アカウントエグゼクティブまたはアカウント開発担当者にお問い合わせいただくか、 https://support.mulesoft.com[サポートポータル]でお問い合わせください。
+
+=== ワーカーとは?
+
+リアルタイムサービスまたは API を公開するアプリケーションは 1 つ以上の「ワーカー」上で実行されます。各ワーカーは、インテグレーションアプリケーションを実行する Mule のインスタンスです。アプリケーションを拡大し、高可用性を提供するためにワーカーを共有または二重化する方法についての詳細は、xref:cloudhub-fabric.adoc[「CloudHub Fabric」]を参照してください。
+
+=== インテグレーションアプリケーションとは?
+
+インテグレーションアプリケーションは、2 つ以上のアプリケーションまたはサービスを統合するアプリケーションです。これは、Salesforce データをローカルデータベースに同期し、Google Apps、Facebook、および Salesforce を使用してマッシュアップを作成することと同じように簡単です。このアプリケーションは、さまざまなソースからデータを取得し、そのデータを新しい場所にパブリッシュするか、REST または Web サービスとしてパブリッシュすることで、機能を実行します。従来の 3 層アプリケーションモデルでは、インテグレーションアプリケーションは、アプリケーションデータへの接続を介してデータ層を表し、このデータを組み合わせて変換し、コンシューマにルーティングするために使用するロジックを介してサービス層を表します。
+
+=== Anypoint コネクタとは?
+
+Anypoint コネクタは、SaaS および Cloud API (Salesforce、Facebook、AWS、PayPal など) を容易に統合し、それらを Mule 内でサービスとして使用するためのシンプルかつ簡単な方法を提供します。このコネクタを使用すると、Mule を使用して、SaaS とオンプレミスの両方のアプリケーションにわたるオーケストレーションを作成できます。
+
+=== Mule フローとは?
+
+Mule フローでは、さまざまなアプリケーション間で Mule がメッセージをどのように処理するかを定義します。フローでは、アプリケーション内のイベント、Web サービスや REST サービスへの要求、またはスケジュールされたトリガによってトリガされたメッセージに対してアクションを実行する一連のプロセッサを定義します。
+
+
+=== 使用されている Java バージョンは?
+
+* Mule 4.0.0 以降を使用するワーカーは JDK 8 で動作します。
+* Mule 3.8.0 以降を使用するワーカーは JDK 8 で動作します。
+* Mule 3.7.0 以降を使用するワーカーは JDK 8 で動作します。
+* Mule 3.5.1 以降を使用するワーカーは JDK 7 で動作します。
+* Mule 3.5.0 以前を使用するワーカーは JDK 6 で動作します。
+
+=== 各ワーカーのストレージ容量は?
+
+各ワーカーには、アプリケーションで使用するための 2 GB のストレージがあります。
+
+=== 環境変数とは?
+
+環境変数は、Mule アプリケーションに設定を渡すために設定できるプロパティです。たとえば、ユーザ名を `${db.username}` に設定した JDBC コネクタを作成したとします。次に、環境変数内で名前を `db.username` に設定し、値を、アプリケーションを追加または更新するときの実際のユーザ名に設定できます。
+
+=== アプリケーションを別のリージョンにデプロイできますか?
+
+はい!  アカウントでグローバルデプロイを有効にするには、 https://support.mulesoft.com[サポートケースを申請]してください。アプリケーションは、米国東部 (オハイオ州北バージニア)、米国西部 (オレゴン州北カリフォルニア)、カナダ、南米 (ブラジル - サンパウロ)、ヨーロッパ (アイルランド、フランクフルト)、UK (ロンドン)、およびアジア太平洋 (シドニー、東京、シンガポール) にデプロイできます。システム管理者は [Account Settings (アカウント設定)] の [Organization (組織)] タブでxref:managing-cloudhub-specific-settings.adoc[デフォルトリージョンを設定]できますが、そのリージョンを、アプリケーションのデプロイ時に必要に応じて調整できます。
+
+別のリージョンにデプロイしたアプリケーションのドメインは、リージョンを反映するように自動的に更新されます。
+
+=== アプリケーションの起動時に「Failed to bind to uri (URI へのバインドに失敗しました)」が表示される
+
+次のようなメッセージが表示された場合:
+
+[source,console]
+----
+INFO 11-04-06 20:13:50 [DefaultSystemExceptionStrategy] Failed to bind to uri `+http://foo.cloudhub.io:8081/+`
+----
+
+このメッセージが表示されるのは、0.0.0.0 ではなく特定のホストにバインドしようとしているためです。CloudHub ドメイン名ではなく 0.0.0.0 を使用するように HTTP コネクタを変更し、再デプロイしてください。
+
+=== アプリケーションの停止方法は?
+
+[Runtime Manager] コンソールで、アプリケーションを選択し、左のナビゲーションバーで *[Deployment (デプロイ)]* をクリックします。*[Stop application (アプリケーションを停止)]* をクリックします。
+
+=== 複数のアプリケーションをデプロイできない理由は?
+
+無料アカウントは 1 つのワーカーに制限されるため、デプロイできるのは 1 つのアプリケーションのみになります。  http://www.mulesoft.com/cloudhub/cloudhub-pricing[有料サブスクリプション]にアップグレードすると、複数のアプリケーションをデプロイしたり、1 つのアプリケーションを複数のワーカーに拡大したりできます。
+
+=== アプリケーションは正常にデプロイされたが、mysubdomain.cloudhub.io に移動すると、「you need to change the configuration of your docroot (ドキュメントルートの設定を変更する必要があります)」と表示される
+
+このメッセージが表示された場合、アプリケーションのエンドポイントを異なるパスに表示するように設定している可能性があります。これを mysubdomain.cloudhub.io に表示するには、エンドポイントを再設定してパス変数を削除してください。汎用のエンドポイントを使用している場合、(パスではなく) アドレスを変更する必要があります。
+
+=== HTTP リードタイムアウトの長さは?
+
+ロードバランサは、読み取られたデータがない場合、300 秒後にタイムアウトします。
+
+=== アプリケーションの静的 IP を取得できますか?
+
+はい! アプリケーション設定の *[Static IPs (静的 IP)]* タブで、静的 IP をアプリケーションに割り当てることができます。詳細は、xref:deploying-to-cloudhub.adoc#static-ips-tab[「CloudHub へのデプロイ」]を参照してください。デフォルトでは、サブスクリプション内の本番 vCore の 2 倍の数の静的 IP が割り当てられます。この制限を上げるには、MuleSoft サポートにお問い合わせください。
+
+=== 静的 IP を知る方法は?
+
+アプリケーションに割り当てられた静的 IP はアプリケーション設定ページの *[Static IPs (静的 IP)]* タブに表示されます。
+
+=== 静的 IP が割り当てられた後でアプリケーションを変更できますか?
+
+はい。アプリケーションを停止して開始できます。新しいプロジェクト zip ファイルをアップロードできます。アプリケーションの設定を変更して、アプリケーションを再デプロイできます。
+
+=== 静的 IP が変わる可能性がある状況は?
+
+静的 IP が削除または再割り当てされる場合があるいくつかの特定のシナリオがあります。次のシナリオに注意してください。
+
+* アプリケーションを削除すると、その静的 IP も削除されます。同じ名前で新しいアプリケーションを作成した場合、動的に割り当てられた新しい IP アドレスが設定されます。
+* Sandbox から本番組織への移行によって新しいアプロケーションを追加する場合、新しい静的 IP のため、新しいアプリケーション名が必要です。
+* 組織の xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud (Anypoint VPC)] が構築されている場合、Anypoint VPC にまだ含まれていない既存のアプリケーションは、Anypoint VPC 内で再起動されたときに新しい IP アドレスを受け取ります。
+* アプリケーションを別の地理的リージョンに再デプロイする場合、アプリケーション設定ページの *[Static IPs (静的 IP)]* タブで、新しいリージョンでの静的 IP を事前に割り当てることができます。
+
+=== 特定の静的 IP を要求できますか?
+
+いいえ。Cloudhub は、最初のデプロイ時に Cloudhub アプリケーションのみに割り当てられる静的 IP のプールを使用します。アプリケーションが静的 IP を解放すると、その IP アドレスはプールに戻り、他のアプリケーションで使用できます。
+
+=== Cloudhub 仮想プライベートネットワークを実行しているが、静的 IP を内部の非公開 IP に割り当てる方法は?
+
+Cloudhub では、ワーカーの公開 IP アドレスを「静的」に設定できます。ただし、内部の非公開 IP アドレスは常に「動的」のままです。非公開 IP アドレスは、xref:virtual-private-cloud.adoc[Anypoint VPC] の作成時に決定した Cloudhub ワーカーのアドレス空間で指定された範囲から割り当てられます。
+
+=== 静的 IP に割り当てることができる可能な IP 範囲は?
+
+CloudHub は Amazon EC2 にデプロイされるため、IP アドレスは Amazon EC2 IP プールから選択されます。この範囲のリストについては、 http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html[Amazon EC2 の公開 IP 範囲]を参照してください。
+
+=== アプリケーションのタイムゾーンを変更する方法は?
+
+Enterprise アカウントを持つユーザはグローバルデプロイを利用できます。つまり、別のリージョンを選択してアプリケーションをデプロイできます。実際のワーカーは常に UTC タイムゾーンで実行されます。
+
+=== サポートを受けるにはどうすればよいですか?
+
+当社のオンライン http://forums.mulesoft.com[フォーラム]を参照および検索して、回答を見つけてください。または、質問を投稿して新しいスレッドを開始してください。
+
+CloudHub チームは可能な最良のカスタマーエクスペリエンスを提供することに取り組んでいます。  https://support.mulesoft.com[サポートポータル]で CloudHub チームにお問い合わせください。
+
+有料プランのお客様は、フォーラムに加えてサポートポータルもご利用いただけます。サポートポータルからケースを申請するには、
+. 任意の Anypoint Platform にサインインし、上部のナビゲーションバーで *[Support (サポート)]* をクリックします。
+. *[Cases (ケース)]* タブをクリックします。ここで、オープンケースを参照するか、*[Create New Case (新規ケースを作成)]* ボタンをクリックして新しいケースを申請できます。
+. 新しいケースを作成する場合、必須項目 (赤でマークされています) を入力します。項目の近くにある質問アイコンの上にマウスを置くと、項目固有のガイドラインまたは手順を確認できます。
+. 完了したら、*[Submit (送信)]* をクリックします。一意のケース番号が生成され、ナレッジベースの関連領域が紹介されます。ケースの応答を待っている間にこれをご覧ください。
+
+
+=== プロアクティブな監視
+
+CloudHub プラットフォームは自動化システムによって 24 時間 365 日監視されています。CloudHub インフラストラクチャの健全性と運用に影響する問題が発生した場合は、当社の専門の運用チームに通知されます。運用チームはただちに対応し、問題を診断して修正します。この 24 時間 365 日の監視は CloudHub プラットフォーム全体を対象とするため、無料または有料に関わらず、すべての CloudHub ユーザにメリットがあります。CloudHub サービスの状況および今後のメンテナンスについては http://status.mulesoft.com[`status.mulesoft.com`] で確認できます。
+
+== 関連情報
+
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:cloudhub.adoc[CloudHub]
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

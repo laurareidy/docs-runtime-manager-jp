@@ -1,0 +1,28 @@
+= Runtime Manager について
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, クラウド, saas, アプリケーション, サーバ, クラスタ, sdg, Runtime Manager, arm
+
+Runtime Manager は、Anypoint Platform のツールで、1 か所からすべての Mule アプリケーションのデプロイと管理を行うために使用されます。アプリケーションがクラウドまたはオンプレミスのどちらで実行されている場合でも使用できます。
+
+Mule アプリケーションを作成 (xref:general:getting-started:build-a-hello-world-application.adoc[Hello World Mule アプリケーション]などを参照) した後に、Runtime Manager を使用してアプリケーションを任意の場所にデプロイできます。Runtime Manager は、特に Mule アプリケーションを処理し、xref:cloudhub.adoc[CloudHub] 仮想ワーカーやオンプレミスの Mule サーバ (サーバグループやクラスタなど) 内の使用可能な Mule Runtime インスタンスにデプロイするために設計されています。
+
+[NOTE]
+xref:cloudhub.adoc[CloudHub] は完全なサービスとしてのインテグレーションプラットフォーム (iPaaS) で、標準でオブジェクトストアインフラストラクチャ、監視、トラブルシューティング、スケジュールなどを備えており、あらゆるサーバニーズに対応します。CloudHub にデプロイするには Runtime Manager を使用します。
+
+== アーキテクチャ
+
+Anypoint Platform のクラウドベースバージョンには、xref:cloudhub.adoc[CloudHub] やその他の場所にデプロイされたアプリケーションを管理できるコンソールを備えた Runtime Manager が含まれています。オンプレミスプラットフォームの Runtime Manager では、CloudHub  _以外_ のあらゆる場所にデプロイできます。
+
+CloudHub にデプロイしたアプリケーションの場合 (下図は Cloud ランタイム)、xref:insight.adoc[インサイト]を使用して分析と監視を行うことができます。オンプレミスまたはプライベートクラウドサーバにデプロイしたアプリケーションの場合、xref:sending-data-from-arm-to-external-analytics-software.adoc[サードパーティの分析アプリケーションにデータを送信]できます。
+
+image::arm-big-picture.png[]
+
+Runtime Manager のダッシュボードには、すべてのデプロイ済みアプリケーションと監視対象のサーバの状況が表示され、豊富な機能を使用して、実行中のアプリケーションのアクティビティを管理、追跡できます。
+
+== 関連情報
+
+* xref:3.8@mule-management-console::index.adoc[Mule 管理コンソール]
+* xref:3.8@mule-runtime::elements-in-a-mule-flow.adoc[Elements in a Mule Flow (Mule フローの要素)]
+* xref:general:getting-started:build-a-hello-world-application.adoc[Mule アプリケーションの作成]

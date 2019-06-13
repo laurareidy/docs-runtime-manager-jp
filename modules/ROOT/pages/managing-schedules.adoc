@@ -1,0 +1,112 @@
+= スケジュールの管理 (CloudHub)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: スケジュール, cloudhub, ポーリング
+
+CloudHub コンソールには左ナビゲーションメニューに*[Queues (キュー)]* タブが含まれています。このタブでは、デプロイされたアプリケーションのフロー内のポーリング要素を表示および制御できます。CloudHub では、フロー内から自動的にポーリング要素が検出され、*[Schedules (スケジュール)]* タブにリストされます。このタブでは、選択したポーリング要素の有効化または無効化、ポーリング頻度の変更、ポーリングの即時実行を、すべて実行時に、基になるアプリケーションに一切変更を加えずに行うことができます。
+
+== ユースケース
+
+*[Schedules (スケジュール)]* タブは、次のようなユースケースで特に役立ちます。
+
+* 毎晩実行するジョブがあるが、デバッグするために今すぐそれをトリガしたい。基になるアプリケーションでスケジュールを更新しなくていいようにこれを実行時に行いたい。
+* 再デプロイせずに実行時にアプリケーションでスケジュールを変更したい。
+* 接続しているアプリケーションのうちの 1 つがメンテナンス中である間に、スケジュールされたジョブを無効にしたい場合。
+* アプリケーション内のスケジュールを実行時に可視化したい場合。
+
+== 考慮事項
+
+* スケジューラは CloudHub で管理され、複数のワーカーが使用可能であっても、1 つのワーカーのみでトリガされます。
+* CloudHub では秒単位のポーリング頻度がサポートされていますが、個々のポーリングコール間で数秒の差異が生じることがあります。ポーリング頻度を 10 秒に 1 回より多く設定することはお勧めできません。
+* アプリケーションがダウンしているため、スケジュールされたジョブが 1 回以上トリガされない場合は、アプリケーションが再起動するとすぐにジョブがトリガされます。
+* CloudHub スケジューラは、毎回の実行時にスケジュールジョブ設定を読み取ります。つまり、スケジュール時刻を更新しても、その変更はすぐに適用されません。スケジューラが次回の実行時に設定を取得する前に、ジョブは最初の設定どおりに実行されます。変更を直ちに適用するには、スケジュールを更新するたびにジョブを実行します。
+* ポーリングの実行時間が 12 時間より長くなる場合、スケジューラは失敗し、再実行されます。
+
+
+== コンソールでのアプリケーションスケジュールの表示
+
+Runtime Manager のスケジュール機能を使用するには、1 つ以上のポーリング要素を含むアプリケーションをデプロイします。たとえば、次の図に示すアプリケーションには 2 つの単純なフローが含まれており、それぞれにポーリングスコープがあります。
+
+[.ex]
+=====
+[discrete.view]
+=== Studio ビジュアルエディタ
+
+image::scheduling-cloudhub.png[scheduling+cloudhub]
+
+[discrete.view]
+=== Studio XML エディタ
+
+[source,xml,linenums]
+----
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+
+    <flow name="synchronize-accounts" doc:name="synchronize-accounts">
+        <poll frequency="300000" doc:name="Poll">
+            <logger level="INFO" doc:name="Start" message="Start Account Synchronization ${salesforce.username}"/>
+        </poll>
+        <logger level="INFO" doc:name="End" message="End Account Synchronization"/>
+    </flow>
+    <flow name="synchronize-contacts" doc:name="synchronize-contacts">
+        <poll frequency="600000" doc:name="Poll">
+            <logger level="INFO" doc:name="Start" message="Start Contact Synchronization ${salesforce.username}"/>
+        </poll>
+        <logger level="INFO" doc:name="End" message="End Contact Synchronization"/>
+    </flow>
+</mule>
+----
+=====
+
+CloudHub ではスケジュールが自動的に同期され、ポーリングスコープを含むフローの同期プロパティ設定はすべて上書きされます。他に特別な設定を行う必要はありません。
+
+デプロイされたら、Runtime Manager コンソールでアプリケーションを選択し、左ナビゲーションメニューの *[Schedules (スケジュール]* をクリックします。アプリケーション内のポーリング要素がアプリケーションに表示される順序でリストされます。
+
+image::schedulesview.png[SchedulesView]
+
+[NOTE] 
+各要素の名前は、ポーリングスコープの `doc:name` 属性によって判断されます (XML で追加する場合)。`doc:name` を指定しない場合、*yourFlowname Poll* という名前が適用されます。
+
+*[Last Run (最終実行)]* 列には、各ポーリング要素が最近実行された正確な日時が表示されます。[Logs (ログ)] を表示すると、スケジュールされたジョブの実行がいつ開始され、終了したのかについて詳細を参照できます。
+
+== 実行時のスケジュールの管理
+
+ポーリング要素を管理する手順は、次のとおりです。
+
+. 管理する個々の要素の横にあるチェックボックスをオンにします。
+. スケジュールを上書きし、ジョブを直ちに実行する場合は、*[Run now (今すぐ実行)]* をクリックします。
+. ポーリング要素をサスペンドする場合は、*[Disable (無効化)]* をクリックします。もう一度 *[Enable (有効化)]* をクリックするまで、ポーリングジョブは実行されません。
+. *[Schedule (スケジュール)]* 列には、各ポーリング要素のポーリング頻度がリストされます。
+. ポーリング要素の頻度をクリックして、スケジュールエディタを開きます。
++
+image::scheduleschangetime.png[SchedulesChangeTime]
++
+. スケジュールエディタで、要素のポーリング頻度を調整するか、*[Enabled (有効)]* チェックボックスをオフにしてポーリング頻度を無効にします。
++
+image::chsetpollfreq.png[CHSetPollFreq]
++
+. *[Switch to advanced mode (詳細モードに切り替え)]* をクリックして Cron 式を使用するか、*[Quick reference (クイックリファレンス)]* をクリックして必須項目と許可される値の詳細を参照します。  *[more (詳細)]* をクリックすると、Quartz の http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-06.html[CronTrigger チュートリアル]が表示されます。Cron 設定を変更する場合は、*[Update (更新)]* をクリックします。終了する場合は *[Cancel (キャンセル)]* をクリックします。詳細モードを終了する場合は *[Switch to basic mode (基本モードに切り替え)]* をクリックします。
++
+image::chadvmodewithqkref.png[CHAdvModeWithQkRef]
++
+[NOTE]
+CloudHub ワーカーが配置された地域に関係なく、スケジュールはすべて UTC タイムゾーンに基づき、タイムゾーン設定は無視されます。
+
+. *[Schedule (スケジュール)]* の実際の動作を確認するには、スケジュールされたジョブを 1 つ以上選択し、*[Run Now (今すぐ実行)]* をクリックします。「`The schedules have been queued to run` (スケジュールは実行のためにキューに追加されました)」メッセージが表示されます。
++
+image::schedulesrunnow.png[SchedulesRunNow]
++
+. 結果を確認するには、左ナビゲーションメニューの *[Logs (ログ)]* をクリックしてエントリを参照し、選択したジョブが期待どおりに実行されたことを確認します。 +
++
+image::scheduleslogs.png[SchedulesLogs]
+
+
+== 関連情報
+
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

@@ -1,0 +1,168 @@
+= 専用ロードバランサのマッピングルールについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+ロードバランサ設定は、入力 URL をさまざまな CloudHub アプリケーションへのコールに変換する方法が記述された一連のマッピングルールで定義されます。
+マッピングルールは、ロードバランサの SSL エンドポイントの属性です。
+マッピングルールを作成する場合、証明書 CN を指定する必要があります。`[certificateName]` パラメータを省略すると、マッピングがデフォルトエンドポイントに追加されます。
+
+シンプルな一致ルールを作成する場合、1 つの入力アドレスがそのまま定義済みの出力 (いずれかのアプリケーションのエンドポイント) に一致します。
+リテラル一致の代わりにパターンを使用して、変数のような入力テキストをエンドポイントに対して照合することもできます。
+
+プロキシルールを使用して、CloudHub で実行されている Mule アプリケーションのいずれかにドメインまたはサブドメインをマップできます。
+
+== マッピングルールでのパターンの使用
+
+パターンは、入力テキストを照合するためのテンプレートを定義する文字列です。中括弧 (`{   }`) で囲まれた文字列は変数として扱われます。
+これらの変数には、英字 (a ～ z) のみを使用でき、数字、スラッシュなどのその他の文字は使用できません。変数値には文字 `a-z0-1.&?-_` を使用できますが、スラッシュは使用できません。
+
+たとえば、そのまま 2 つのホスト名をバインドしてリダイレクトできます。
+
+[source,text,linenums]
+----
+‘app.example.com’ ->  application: `app` URI: `/example’
+----
+
+または、入力値を保持するパターンを定義することもできます。
+
+[source,text,linenums]
+----
+‘example.com/{mypattern}’ -> application: `app-{mypattern}` URI: /data
+----
+
+上の例では、`example.com/bookings` と `example.com/sales` の両方がそれぞれ `app-bookings/data` と `app-sales/data` に一致します。これは、`_mypattern_` にこれらの値が保持されるためです。
+入力が「bookings.example.com」の場合、このパターンは、mypattern に「bookings」を割り当てることによって解決され、入力が「sales.example.com」の場合は、mypattern に「sales」を割り当てることによって解決されます。
+
+設計に応じて、パターンまたはリテラルマッピングを使用して、エンドポイントへの内部リダイレクトを活用できます。
+
+現在は、アプリケーション URI ではパターンがサポートされていません。
+
+== マッピングルールの作成
+
+マッピングルールは、入力 URL を定義する一連の項目と、出力 URL を記述する一連の項目です。
+
+* 入力 URL は、ユーザが指定できる URI パラメータを使用して記述されます。
+. `URI` - 入力 URI を表す文字列またはパターン。
++
+[NOTE]
+--
+入力 URL は、メインロードバランサのドメインに従います (同じロードバランサでは、この値は同じ)。
+--
++
+*  _出力 URL_  は 2 つの項目によって指定されます。
+. `appName` - 要求が転送されるアプリケーション名を出力します。
+. `appURI` - 解決したアプリケーションに渡される URI 文字列。
+
+入力 URL と出力 URL のどちらも、パターンまたはリテラル文字列を使用して定義できます。
+
+マッピングルールは、証明書名で識別されるロードバランサの SSL エンドポイントの属性です。
+マッピングルールを作成する場合、証明書 CN を指定する必要があります。`[certificateName]` パラメータを省略すると、マッピングがデフォルトエンドポイントに追加されます。
+
+SSL エンドポイントで https://en.wikipedia.org/wiki/Wildcard_certificate[ワイルドカード証明書]が設定されていて、マッピングルールのサブドメイン部分を使用する場合は、定義済みの `{subdomain}` 変数を使用できます。
+
+最初に定義されたルールには、それ以降に定義された他のルールよりも高い優先度が与えられます。つまり、最初に一致したルールが適用されます。
+xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[`mappings add`]、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-describe[`mappings describe`]、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-remove[`mappings remove`] コマンドをそれぞれ使用して、ルールの作成、表示、既存ルールの削除を実行できます。
+
+== マッピングルールの例
+
+次の表に、マッピングルールの例をいくつか示します。
+
+[NOTE]
+外部ロードバランサドメイン名は、割り当てた一意の名前によって異なりますが、これらの例ではロードバランサは `lb-demo` であると仮定します。
+
+[CAUTION]
+--
+デフォルトでは、ロードバランサは HTTPS で外部要求をリスンし、HTTP でワーカーと内部的に通信します。HTTPS でリスンするように Anypoint VPC 内の Mule アプリケーションを設定している場合、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[load-balancer mappings add] コマンドを使用してマッピングリストを作成するときに `upstreamProtocol` を `HTTPS` に設定してください。
+--
+
+=== URL マッピング
+
+入力 URI としてアプリケーション名を渡し、CloudHub のアプリケーション名に直接マップできます。
+
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |    *URI*   |       *appName*   |   *appURI*
+| 0 | /{app}/    | {app}             | /
+|===
+
+このルールは、`lb-demo.lb.anypointdns.net/{app}` を `{app}.cloudhub.io` にマップします。 +
+{app} は、渡すアプリケーション名のパターンです。
+
+=== ホストマッピング
+
+ワイルドカード証明書 (`*.example.com` など) がある場合は、`subdomain` 変数を使用して任意のサブドメインをマップできます。
+
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |  *URI*   |       *appName*    |  *appURI*
+| 0 | /        | {subdomain}   | /
+|===
+このルールは、`example.com` のサブドメインに渡される要求を対応する `appName` に自動的にマップします。例:
+
+* `api.example.com` を渡すと、`api.cloudhub.io` にリダイレクトされます。 +
+* `application.example.com` を渡すと、`application.cloudhub.io` にマップされます。
+
+SSL エンドポイントの https://en.wikipedia.org/wiki/Subject_Alternative_Name[サブジェクト代替名] (SAN) についても同様です。 +
+証明書の一般名に対して異なる SAN が設定されている場合、subdomain 変数を使用して、ドメイン名のサブドメイン部分をアプリケーションにマップできます。ただし、これが機能するには、アプリケーションの名前がドメイン名の共通部分と同じである必要があります。
+
+例:
+
+* 2 つのデプロイ済みアプリケーション:
+** `dev-app`
+** `qa-app`
+* サブジェクト代替名のある SSL エンドポイント:
+** `dev.example.com`
+** `qa.example.com`
+* マッピングルール:
++
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |  *URI*   |       *appName*    |  *appURI*
+| 0 | /        | {subdomain}-app   | /
+|===
+
+このルールでは、ドメイン名のサブドメイン部分が次のアプリケーション名にマップされます。
+
+* `dev.example.com` を渡すと、`dev-app.cloudhub.io` にリダイレクトされる。
+* `qa.example.com` を渡すと、`qa-app.cloudhub.io` にリダイレクトされる。
+
+
+=== 1:1 マッピング
+
+アプリケーションが 1 つのみの場合、リテラルのアプリケーション名をマップできます。
+
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |  *URI*  |   *appName* |   *appURI*
+| 0 | /       |    myApp    | /
+|===
+この場合、デフォルトのロードバランサ `lb-demo.lb.anypointdns.net` が CloudHub のアプリケーション `myApp.cloudhub.io` に直接マップされます。
+
+== ルールの優先度のインデックス化
+
+マッピングルールを作成したら、インデックスを割り当てて、ルールの優先順序を定義します。
+インデックス `0`で最初に定義されているルールはがその後に定義されている他のルールよりも優先されます。割り当てられているインデックスが大きいほど、マッピングルールの優先度は低くなります。
+
+各ルールで優先度を定義します。  複数のルールがあると、相互に上書きされる可能性があるため、各ルールの作成時にその順序に注意を払うことを強くお勧めします。
+
+=== ルールの順序と優先度の設定
+
+Anypoint Platform CLI で xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[`cloudhub load-balancer mappings add`] コマンドを使用してマッピングルールを作成するときに、インデックス値を指定してその順序を設定できます。
+
+API を使用してルールを作成する場合は優先度を指定できませんが、後でロードバランサエンドポイント `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/loadbalancers/{loadbalancerId}` に `PATCH` 要求を送信して、上記の順序ロジックに基づくニーズに合わせた順序インデックスを使用してルール式を更新できます。
+
+[NOTE]
+--
+ロードバランサ ID は、作成時にロードバランサに提供されます。
+また、エンドポイント `/organizations/{orgid}}/loadbalancers` に対して `GET` 要求を実行し、ID を取得することもできます。
+--
+
+== 関連情報
+
+* xref:lb-cert-upload.adoc[証明書のアップロードについて]
+* xref:lb-whitelists.adoc[ホワイトリストについて]

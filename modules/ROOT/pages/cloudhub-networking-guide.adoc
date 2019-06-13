@@ -1,0 +1,145 @@
+= CloudHub ネットワークガイド
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, クラスタ, 管理, 監視, Runtime Manager, arm
+
+このガイドは、Runtime Manager のクラウドベースバージョンを使用するクラウドデプロイを対象とします。別のデプロイシナリオについては、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
+
+== 概要
+
+CloudHub にはインテグレーションと API を設計するためのさまざまなツールが用意されており、インテグレーションと API の保守性、安全性、拡張性が確保されます。このガイドでは、基本的なネットワークアーキテクチャ、DNS、およびファイアウォールルールについて説明します。
+
+image::cloudhub-networking-guide-1.jpg[CloudHub+Networking+Guide-1]
+
+== 負荷分散
+
+CloudHub はすべてのインテグレーションに負荷分散サービスを提供します。デフォルトの負荷分散サービスを使用するか、xref:cloudhub-dedicated-load-balancer.adoc[専用ロードバランサ]を取得することができます。
+
+CloudHub 負荷分散サービスはワーカー間でラウンドロビン方式の負荷分散を実行します。これにより、ワーカーは、受け取る要求が増加するにつれて規模を線形的に拡大できます。また、この負荷分散では、アプリケーションのアップグレード時に切り替えが透過的に実行されます。xref:managing-applications-on-cloudhub.adoc[「CloudHub でのアプリケーションの管理」]を参照してください。
+
+CloudHub にデプロイされた各アプリケーションには、ロードバランサを参照する `CNAME` レコードがあります (例: `myapp.cloudhub.io`)。CloudHub にデプロイされた Mule アプリケーションはホスト `0.0.0.0` 上で HTTP ポート (`8081`) または HTTPS ポート (`8082`) をリスンする必要があります。 
+
+Mule ワーカーでは次のポートが割り当てられます。
+
+* `http.port` が `8081` に設定されます 
+* `https.port` が `8082` に設定されます 
+
+次に、ロードバランサは Mule ワーカー上の割り当てられたポートに要求を転送します。転送されたトラフィックは引き続き HTTP および HTTPS プロトコルを使用します。つまり、`${http.port}` で HTTPS をリスンしたり、`${https.port}` でプレーン HTTP をリスンしたりできません。 +
+これらのポートを、それぞれに予約されたプロパティ `${http.port}` および `${https.port}` を使用して参照する必要があります。これで、CloudHub サービスはデプロイ時にポートを動的に割り当てることができます。 +
+
+HTTPS エンドポイントを公開する Mule 設定の例を次に示します。
+
+[source,xml]
+----
+<http:listener-config name="HTTP_Listener_Configuration" protocol="HTTPS" host="0.0.0.0" port="${https.port}" doc:name="HTTP Listener Configuration" >
+		<tls:context name="TLS_Context_Custom_Keystore" doc:name="TLS Context">
+			<tls:key-store type="jks" path="server.jks" keyPassword="keypassword" password="storepassword" alias="cloudhubworker" />
+		</tls:context>
+</http:listener-config>
+----
+
+[IMPORTANT]
+Mule ワーカー上で CloudHub ロードバランサは自動的に `http.port` `:80` を HTTP 用のポート `:8081` にプロキシし、`https.port` `:443` を HTTPS 用の `:8082` にプロキシします。 +
+`mule-app.properties` ファイルで `http.port` と `https.port` に他の値が指定されている場合、それらはデプロイ時に上書きされます。
+
+[NOTE]
+--
+CloudHub のロードバランサ (`myapp.cloudhub.io`) を介してクライアントが実行した要求ごとに、ロードバランサは 2 つの接続を維持します。1 つはクライアントからの接続で、もう 1 つはワーカーへの接続です。  接続ごとにロードバランサは 300 秒のアイドルタイムアウトを管理します。これは、どちらの接続にもデータが送信されていない場合にトリガされます。この期間にデータが送受信されない場合、ロードバランサは両方の接続を閉じます。
+
+どちらの側からでも接続の処理に 300 秒を超える時間がかかる場合、処理を非同期で実行することを検討してください。
+--
+
+
+== DNS レコード
+
+アプリケーションが CloudHub にデプロイされると、アプリケーションの以下の DNS レコードが公開されます。
+
+[cols="2*a"]
+|===
+|*myapp.cloudhub.io* |ロードバランサ。ポート 80 と 443 はそれぞれ `${http.port}` と `${https.port}` に転送されます。
+|*mule-worker-myapp.cloudhub.io* |Mule ワーカーの外部 IP アドレス。公開 HTTP サービスは `${http.port}` と `${https.port}` で公開されます。
+|*mule-worker-internal-myapp.cloudhub.io* |Mule ワーカーの内部 IP アドレス。この DNS レコードの IP アドレスには、顧客の非公開 xref:virtual-private-cloud.adoc[Anypoint VPC] 内でのみアクセスできます。​*MuleSoft の共有 VPC 内で実行されているワーカーはこの IP アドレスにアクセスできません。*​内部 HTTP サービスは `${http.private.port}` と `${https.private.port}` で公開されます。割り当てられたデフォルトのポートはそれぞれ 8091 および 8092 であり、これらを変更することはできません。
+|===
+
+たとえば、次のような特定の状況では、アプリケーションの内部 IP アドレスを知ることが必要になる場合があります。
+
+* 公開インターネットにデータを送信せずに、顧客の xref:virtual-private-cloud.adoc[Anypoint VPC] 内でワーカーと直接通信する
+* 独自のロードバランサをセットアップする
+
+この IP アドレスには、Anypoint VPC 内から `mule-worker-internal-myapp.cloudhub.io` レコードを介してアクセスできます。ワーカーに直接アクセスする場合、CloudHub の負荷分散レイヤから得られる負荷分散のすべてのメリットが失われます。
+
+== IP 範囲および静的 IP
+
+CloudHub IP アドレスは Amazon EC2 IP プールから選択されます。この範囲のリストについては、 http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html[Amazon AWS IP アドレス範囲 API] を参照してください。このページの「Download (ダウンロード)」リンクでは、リージョンを含むすべての範囲の動的に生成された JSON 表現を取得できます。これらの範囲は通知なしに変更される可能性があるため、この情報を定期的に更新する必要があります。
+
+CloudHub では、アプリケーションの静的 IP の割り当てがサポートされるため、他のサービス用に静的 IP をホワイトリストに登録できます。アプリケーションの静的 IP を有効にするには、Runtime Manager UI のアプリケーション設定ページの *[Static IPs (静的 IP)]* タブに移動して、*[Use Static IP (静的 IP を使用)]* チェックボックスをオンにします。デフォルトでは、サブスクリプション内の本番 vCore の 2 倍の数の静的 IP が割り当てられます。この制限を増やすには、 https://support.mulesoft.com[MuleSoft サポート]にお問い合わせください。 
+
+アプリケーションの静的 IP が割り当てられると、その静的 IP はアプリケーション設定ページの *[Static IPs (静的 IP)]* タブに表示されます。詳細は、xref:deploying-to-cloudhub.adoc#static-ips-tab[「CloudHub へのデプロイ」]を参照してください。
+
+[NOTE]
+静的 IP アドレスは、Anypoint VPC 内部の非公開 IP アドレスではサポートされません。
+
+場合によって、ファイアウォールまたはインフラストラクチャの設定により、Mule Runtime Engine が Runtime Manager の公開サービスにアクセスできないことがあります。これは、Mule を登録する場合や、Mule を開始し、Runtime Manager と連携するするように Mule を登録する場合に問題となることがあります。
+
+xref:runtime-manager-agent.adoc[Runtime Manager エージェント]と Runtime Manager コンソール間の通信のために IP アドレスをホワイトリストに登録する必要がある場合、xref:installing-and-configuring-runtime-manager-agent.adoc#ports-ips-and-hostnames-to-whitelist[IP をホワイトリストに登録する方法]を参照してください。
+
+[NOTE]
+複数のワーカーを使用するアプリケーションに静的 IP を割り当てることができます。ただし、複数のワーカーの静的 IP を事前に割り当てることはできません。複数のワーカーの場合、IP アドレスは自動的に割り当てられます。
+
+== リージョンサービス
+
+アプリケーションをどのリージョンにデプロイするかに応じて、インテグレーションの DNS レコードとロードバランサが変わる場合があります。各リージョンでアプリケーションがどの DNS レコードを使用できるかについて次の表にまとめました。
+
+[%header,cols="2*a"]
+|===
+|DNS レコード |リージョン
+| `myapp.us-e1.cloudhub.io` | 米国東部 (北バージニア)
+| `myapp.us-e2.cloudhub.io` | 米国東部 (オハイオ)
+| `myapp.us-w1.cloudhub.io` | 米国西部 (北カリフォルニア)
+| `myapp.us-w2.cloudhub.io` | 米国西部 (オレゴン)
+| `myapp.ca-c1.cloudhub.io` | カナダ (中央部)
+| `myapp.br-s1.cloudhub.io` | 南米 (サンパウロ)
+| `myapp.sg-s1.cloudhub.io` | アジア太平洋 (シンガポール)
+| `myapp.au-s1.cloudhub.io` | アジア太平洋 (シドニー)
+| `myapp.jp-e1.cloudhub.io` | アジア太平洋 (東京)
+| `myapp.ir-e1.cloudhub.io` | EU (アイルランド)
+| `myapp.de-c1.cloudhub.io` | EU (フランクフルト)
+| `myapp.uk-e1.cloudhub.io` | EU (ロンドン)
+
+|===
+
+リージョンへのデプロイは、内部および外部のワーカー DNS アドレスにも影響します。たとえば、アイルランドにデプロイした場合、内部および外部の IP アドレスの DNS レコードは `mule-worker-myapp.ir-e1.cloudhub.io` および `mule-worker-internal-myapp.ir-e1.cloudhub.io` になります。
+
+== ファイアウォールルールおよびポートアドレス
+
+外部に公開されるポートは `${http.port}` と `${https.port}` (デフォルトではそれぞれ 8081 と 8082) の 2 つのみです。他のポートにアクセスする必要がある場合、xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud (Anypoint VPC)] を使用できます。
+
+たとえば JMX ベースの監視を行うために追加のポートを Anypoint VPC 内で開くことができます。xref:virtual-private-cloud.adoc#firewall-rules[Anypoint VPC のドキュメント]でファイアウォールルールに関するセクションを参照してください。
+
+== 専用の負荷分散の設定
+
+場合によって、Mule ワーカー用のカスタム負荷分散レイヤのセットアップが必要になることがあります。たとえば、カスタムドメイン名や SSL 証明書を提供する必要がある場合です。
+
+ワーカー用の内部または外部 DNS レコードを介してトラフィックをロードバランサから CloudHub ワーカーにルーティングできます。このレコードにはアプリケーション内のすべてのワーカーの IP アドレスが含まれます。DNS タイムアウトを 20 ～ 60 秒の間で設定することをお勧めします。これで、あらゆる DNS 変更がすばやく反映され、影響が最小限に抑えられます。
+
+xref:anypoint-platform-cli.adoc[Anypoint Platform コマンドラインインターフェース (Anypoint Platform CLI)] を介して独自の xref:virtual-private-cloud.adoc[Anypoint VPC] を設定し、独自のxref:cloudhub-dedicated-load-balancer.adoc[専用ロードバランサ]を設定できます。
+
+== CloudHub 上のアプリケーションの一般公開の回避
+
+xref:virtual-private-cloud.adoc[Anypoint VPC] および xref:cloudhub-dedicated-load-balancer.adoc[CloudHhub 専用ロードバランサ]がある場合、CloudHub でホストされるアプリケーションが一般に公開されることを回避できます。
+
+. 次の方法を使用して、ポート 8081 および 8082 の xref:virtual-private-cloud.adoc#firewall-rules[Anypoint VPC ファイアウォールルール]を削除します。
+.. Anypoint VPC Management Center の *[Firewall Rules (ファイアウォールルール)]* タブ。*ソース* `Anywhere (0.0.0.0/0)` とポート 8081 および 8082 を使用する両方のルールを削除します。
+.. Anypoint Platform CLI。インデックス `1` および `3` を使用して xref:anypoint-platform-cli.adoc#cloudhub-vpc-firewall-rules-remove[`cloudhub vpc firewall-rules remove`] コマンドを実行します。
+. 承認する IP アドレスを使用して、xref:cloudhub-dedicated-load-balancer.adoc#whitelists[専用ロードバランサにホワイトリスト]を作成します。これは、Anypoint Platform CLI で xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-whitelist-add[`cloudhub load-balancer whitelist add`] コマンドを使用してのみ行うことができます。
+
+[Important]
+xref:cloudhub-dedicated-load-balancer.adoc[CloudHub 専用ロードバランサ]がない場合、最初のステップを実行すれば、Anypoint VPC にデプロイされたアプリケーションは一般に公開されません。
+
+== 関連情報
+
+* https://support.mulesoft.com/s/article/Sample-App-Configuring-HTTPS-endpoint-for-deployment-in-Cloudhub[Sample App: Configuring HTTPS endpoint for deployment in CloudHub (サンプルアプリケーション: CloudHub にデプロイするための HTTPS エンドポイントの設定)]
+* xref:developing-applications-for-cloudhub.adoc#providing-an-external-http-https-port[CloudHub にデプロイする場合の外部 HTTP/HTTPS ポートの提供]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]

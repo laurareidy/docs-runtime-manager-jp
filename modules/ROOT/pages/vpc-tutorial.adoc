@@ -1,0 +1,121 @@
+= Runtime Manager の VPC の作成と更新
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:noindex:
+
+Anypoint VPC を作成する前に、組織には次が必要です。
+
+* Anypoint VPC の購入
+* Anypoint VPC を作成および管理するために必要なアカウントの権限
+
+== Anypoint VPN を作成する
+
+. *Organization Administrators (組織のシステム管理者)* ロールを持つユーザとして Anypoint Platform アカウントにサインインします。
+. *[Management Center]* で、*[Runtime Manager]* をクリックします。
+. 左ナビゲーションで、*[VPCs]* をクリックします。
+. *[Create VPC (VPC を作成)]* をクリックし、次の情報を入力して Anypoint VPC を定義および設定します。
+* *Name (名前)*: Anypoint VPC を識別する名前。 +
+名前は次の条件を満たす必要があります。
+
+** 組織内で一意
+** 3 ～ 42 文字
+** 小文字、数字、ダッシュのみを含む
+* *Region (リージョン)*: Anypoint VPC がバインドされるリージョン。
++
+[NOTE]
+--
+すべての Anypoint VPC は CloudHub リージョンに関連付けられている必要があります。
+--
++
+* *CIDR Block (CIDR ブロック)*: クラスレスドメイン間ルーティング (*CIDR*) 表記の Anypoint VPC のサイズ。 +
+たとえば、10.111.0.0/24 に設定すると、Anypoint VPC には 10.111.0.0 ～ 10.111.0.255 の 256 個の IP アドレスが付与されます。 +
+理想的なのは、Anypoint VPC 用に選択する CIDR ブロックがプライベート IP 空間から取得されることで、他の Anypoint VPC の CIDR ブロックや企業ネットワーク内で使用されている他の CIDR ブロックと重複しないようにします。
++
+[CAUTION]
+--
+この設定は、Anypoint VPC の最初の作成時のみ可能です。Anypoint VPC インスタンスが作成されたら、サイズの変更や選択した CIDR ブロックの編集はできません。 +
+このパラメータを設定する前に、ニーズを満たす Anypoint VPC のサイズを適切に指定する方法をよく理解してください。これを設定する方法がわからない場合は、xref:virtual-private-cloud.adoc#size-your-vpc[Anypoint VPC のサイズ指定]ガイドに従ってください。
+--
++
+* *Environments (環境)*: (省略可能) Anypoint VPC をバインドする環境を選択します。 +
+環境を選択しない場合、Anypoint VPC に選択したリージョンにデプロイされるアプリケーションはすべて、デプロイ先の環境に関係なく、この Anypoint VPC に関連付けられます。
+* *Set as default VPC (デフォルトの VPC として設定)*: Anypoint VPC を、設定したリージョンのデフォルトに設定する場合はこのオプションを選択します。 +
+これは、Anypoint VPC に関連付けられないこのリージョン内のすべての環境が、この Anpypoint VPC にデフォルトで関連付けられることを意味します。
+* *Business Groups (ビジネスグループ)*: (省略可能) Anypoint VPC をビジネスグループにバインドします。 +
+ビジネスグループを選択しない場合、Anypoint VPC はマスタ組織に関連付けられます。これは Anypoint VPC 管理設定で後で変更できます。
++
+image::create-vpc.png[]
++
+. *[Firewall Rules (ファイアウォールルール)]* をクリックして項目を展開し、xref:vpc-firewall-rules-concept.adoc[ファイアウォールルールを設定]します。 +
+デフォルトではすべてのインバウンドトラフィックがブロックされるので、ワーカーへのトラフィックを許可するにはファイアウォールルールを設定する必要があります。これらのルールは後で設定できます。 +
+UI には最も一般的に使用されるファイアウォールルールの候補が事前入力されます。 +
+次の例は、`Anywhere` (任意の場所) からの `http.private.port` 種別のファイアウォールルールを示しています。ポート範囲は自動的に `8091` に設定されます。
++
+image::vpc-and-load-balancer-creation-97c25.png[]
++
+つまり、ポート `8091` 経由の接続のみが Anypoint VPC 内部のホワイトリストに登録され、ワーカーはポート `8091` 経由のすべてのインターフェースをリスンします。 +
+このファイアウォールルールを設定すると、デフォルトの設定を使用してxref:cloudhub-dedicated-load-balancer.adoc[専用ロードバランサ]がワーカーと通信することが許可されます。
++
+[NOTE]
+--
+さらに、ロードバランサから適切に要求を受信するには、Anypoint VPC にデプロイされたすべてのアプリケーションがポート `8091` をリスンしている必要があります。
+--
+
+. 必要に応じて *[Internal DNS (内部 DNS)]* オプションをクリックして、プライベートホスト名を解決するようxref:resolve-private-domains-vpc-task.adoc[内部 DNS サーバをセットアップ]することができます。
++
+image::vpc-tutorial-31341.png[]
++
+これは、Anypoint VPC を最初に作成するときに行うか、後で内部 DNS を設定することができます。
+
+. *[Create VPC (VPCを作成)]* をクリックします。
+
+== Anypoint VPC に接続する
+
+xref:virtual-private-cloud.adoc#vpc-connectivity-methods[Anypoint VPC 接続方法] (Anypoint VPC ピアリングと CloudHub 直接接続) は、現時点ではセルフサービス機能ではありません。 +
+Anypoint VPC とインフラストラクチャ間の接続を設定するには、link:{attachmentsdir}/VPC-form-v9.3-template.xlsx[Anypoint VPC 検出フォーム]をダウンロードし (MS Excel 2007 以降でマクロを有効にする必要があります)、接続方法に関する必須情報を入力し、MuleSoft カスタマーサポートに送信してください。
+
+Anypoint VPC の設定の SLA は、Anypoint VPC 検出フォームに記入し返送してから 5 営業日です。ただし、それより早く Anypoint VPC の設定が完了する場合があります。
+
+== 既存の Anypoint VPC の更新
+
+以下は、2018 年 11 月以前に作成された Anypoint VPC を更新する手順です。2018 年 11 月以降に作成された IPsec VPN トンネルに静的ルートを追加する場合は、 https://support.mulesoft.com/s/article/How-to-add-an-additional-Static-route-to-an-Anypoint-VPN-tunnel [API を使用]して行うことができます。
+
+image::vpc-tutorial-c5a66.png[]
+
+. UI で既存の Anypoint VPC のリストから目的の Anypoint VPC を見つけ、選択します。
+. 次を更新できます。
+.. *Environments (環境)* +
+ドロップダウンメニューから特定の環境を 1 つ以上選択できます。
++
+image::vpc-tutorial-6dea0.png[]
++
+.. *Business Groups (ビジネスグループ)* +
+ドロップダウンメニューから 1 つ以上のビジネスグループを選択できます。
++
+image::vpc-tutorial-981cc.png[]
++
+.. *Firewall Rules (ファイアウォールルール)* +
+既存のxref:vpc-firewall-rules-concept.adoc[ファイアウォールルール]を編集するか、新しいルールを追加します。
++
+image::vpc-tutorial-fa890.png[]
++
+.. *Internal DNS (内部 DNS)* +
+既存のxref:resolve-private-domains-vpc-task.adoc[内部 DNS 設定]を編集するか、新しい設定を追加します。
++
+image::vpc-tutorial-0b7b2.png[]
++
+パブリック DNS IP アドレスを設定して `enter` キーを押すか、青のチェックマークをクリックします。 +
++
+image::vpc-tutorial-df177.png[]
++
+DNS サーバを使用して解決する必要があるプライベートドメインを追加して `enter` キーを押すか、青のチェックマークをクリックします。
++
+. 変更が終了したら、*[Apply Changes (変更を適用)]* をクリックします。
+
+== 関連情報
+
+* xref:vpc-firewall-rules-concept.adoc[Anypoint VPC ファイアウォールルールについて]
+* xref:dedicated-load-balancer-tutorial.adoc[CloudHub ロードバランサについて]
+* xref:vpc-management-permission-topic.adoc[FAQ: 組織内のどこに VPC を配置するか]
+* xref:resolve-private-domains-vpc-task.adoc[プライベートドメインの設定]

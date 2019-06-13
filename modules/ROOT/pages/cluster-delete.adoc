@@ -1,0 +1,27 @@
+= クラスタの削除 (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+クラスタを削除するときには、次の点に注意してください。
+* クラスタのアラートの定義と履歴が削除されます。
+* クラスタに割り当てられたサーバは削除されません。
+* クラスタに割り当てられたサーバは再起動されます。
+* クラスタ内のサーバにデプロイされたアプリケーションは削除されます。
+
+Runtime Manager からクラスタを削除する方法
+
+. Runtime Manager の *[Servers (サーバ)]* タブから、クラスタの名前をクリックして詳細を表示します。
+
++
+image::server-details.png[]
+
+. クラスタ状況の横にある下矢印をクリックして、*[Delete Cluster (クラスタを削除)]* をクリックします。
+
++
+image::down-arrow-status.png[DeleteServerDownArrow]
+
+. 続行の確認を促すメッセージが表示されます。チェックボックスをオンにして、*[Delete Cluster (クラスタを削除)]* をクリックします。
+
++
+image::deleteacluster.png[DeleteACluster]

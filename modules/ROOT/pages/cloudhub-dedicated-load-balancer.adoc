@@ -1,0 +1,421 @@
+= CloudHub 専用ロードバランサについて
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, Runtime Manager, arm, 負荷分散, バニティ url, ssl, 双方向 tls,
+
+CloudHub は、インフラストラクチャコンポーネントのプロビジョニングを自動化するように設計されたバックエンド負荷分散サービスを特徴としています。このサービスを使用して、xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud (VPC)] 内に 1 つ以上の専用ロードバランサをデプロイできます。
+
+[NOTE]
+専用ロードバランサを設定する前に、組織で 1 つ以上の Anypoint VPC を定義している必要があります。
+
+各専用ロードバランサでは、次の作業を行うことができます。
+
+. Mule アプリケーションを実行するさまざまな CloudHub ワーカー間の負荷分散を処理する。
+. <<SSL Endpoints,SSL 設定>>を定義して、カスタム証明書と必要に応じて双方向 SSL クライアント認証を提供する。
+. アプリケーションをカスタムドメインにマップする<<Mapping Rules,プロキシルール>>を簡単に設定する。これにより、1 つのバニティドメインですべてをホストしたりできるようになります。
+
+[NOTE]
+--
+これは、デフォルトではどの Anypoint Platform プランにも含まれていない Anypoint インフラストラクチャへの省略可能な追加機能です。専用ロードバランサを作成する前に、まず組織の xref:virtual-private-cloud.adoc[Anypoint VPC] を作成する必要があります。
+同じ Anypoint VPC に複数の環境を関連付けることができます。つまり、異なる環境で同じ専用ロードバランサを使用できます。
+--
+
+詳細は、「<<Creating and Configuring a Dedicated Load Balancer>>」セクションを参照してください。
+
+
+== ロードバランサアーキテクチャ
+
+CloudHub 専用ロードバランサを使用して、内部トラフィック、外部トラフィック、および複数のデプロイ済み Mule アプリケーションの要求をルーティングできます。
+
+CloudHub 専用ロードバランサは、特定の Anypoint VPC に割り当てられます。その後、専用ロードバランサは、Anypoint VPC の特定のサービスリージョン内のその特定の Anypoint VPC にトラフィックをルーティングします。
+
+[NOTE]
+専用ロードバランサで Mule アプリケーションを管理するには、Mule アプリケーションを専用ロードバランサの Anypoint VPC にデプロイする必要があります。
+
+
+CloudHub 専用ロードバランサには、Anypoint VPC 内のアプリケーションとクライアントで使用される内部ドメイン名があります。
+この構造は `internal-<lb-name>.lb.anypointdns.net` のようになります。`<lb-name>` は、ロードバランサの作成時に付ける名前です。
+また、専用ロードバランサは、外部ドメイン名 (`<lb-name>.lb.anypointdns.net`) を公開します。このドメイン名は、CloudHub Anypoint VPC ネットワークの外部からアクセスできる 2 つの公開 IP アドレスに解決されます。`<lb-name>` は、ロードバランサの作成時に付ける名前です。
+
+各専用ロードバランサには、2 つのインスタンスの 2 つの公開 IP アドレスに解決される DNS A レコード `<lb-name>.lb.anypointdns.net` があります。 +
+DNS プロバイダを介して、この A レコードを指し示す CNAME レコードを追加したり、アクセスする独自のドメイン名を使用したりできます。
+
+ロードバランサでアプリケーションへのすべての接続を処理し、公開されているアプリケーションのデフォルトドメイン名を使用しない場合、各アプリケーションでポート 8091 または 8092 で HTTP をリスンするか、カスタムマッピングポリシーを作成して、ロードバランサからの外部要求を特定のアプリケーションにリダイレクトする必要があります。
+
+[NOTE]
+--
+ロードバランサは、HTTPS で外部要求をリスンし、デフォルトで HTTP でワーカーと内部的に通信します。HTTPS でリスンするように Anypoint VPC 内の Mule アプリケーションを設定している場合、 xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[`load-balancer mappings add`] コマンドを使用してマッピングリストを作成するときに `upstreamProtocol` を `HTTPS` に設定してください。
+--
+
+== SSL エンドポイント
+
+証明書と非公開鍵のペアを指定して、クライアントにサービスを提供するロードバランサの SSL エンドポイントを設定します。 +
+各ロードバランサには、複数の独立した SSL エンドポイントを設定できます。各エンドポイントは、サーバ証明書の共通名で識別されます。
+
+[NOTE]
+専用ロードバランサには、1 つ以上の証明書が関連付けられている必要があります。つまり、ロードバランサの作成時に 1 つ以上の SSL エンドポイントが設定されている必要があります。
+
+=== 要件
+
+SSL エンドポイントを関連付けるには、次のファイルが必要です。
+
+. PEM でエンコードされた暗号化されていない証明書ファイル
+. PEM 証明書の非公開鍵が含まれるファイル
++
+[CAUTION]
+非公開鍵ファイルは、_パスフレーズレス_である必要があります。
+
+
+たとえば、`openssl` を使用して、PEM でエンコードされた暗号化されていない証明書ファイルと非公開鍵の両方を作成できます。自己署名証明書と対応する非公開鍵を作成する例を次に示します。
+
+[source,json,linenums]
+----
+openssl req -newkey rsa:2048 -nodes -keyout example-com-private.pem -x509 -days 3000 -out example-com-crt.pem
+----
+
+このコマンドでは、証明書情報が求められます。
+
+また、証明書情報を設定ファイルに保存して、その設定ファイルを `openssl` コマンドに渡すこともできます。
+
+たとえば、`example-com.cfg` という名前のこの証明書設定ファイルには、2 つの Mule アプリケーション (`app1.example.com` と `app2.example.com`) のいくつかの SAN (サブジェクト代替名) が含まれている DNS ドメイン `example.com` が定義されています。
+
+[source,json,linenums]
+----
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+prompt = no
+[ req_distinguished_name ]
+countryName                 = US
+stateOrProvinceName         = California
+localityName               = San Francisco
+organizationName           = MuleSoft
+commonName                 = example.com
+
+[ req_ext ]
+subjectAltName = @alt_names
+[alt_names]
+DNS.1   = app1.example.com
+DNS.2   = app2.example.com
+----
+
+また、このワイルドカード証明書の例では、サブドメイン名を `example.com` にマップします。
+
+[source,json,linenums]
+----
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+prompt = no
+[ req_distinguished_name ]
+countryName                 = US
+stateOrProvinceName         = California
+localityName               = San Francisco
+organizationName           = MuleSoft
+commonName                 = *.example.com
+----
+
+サンプルワイルドカード証明書は、`example.com` へのサブドメイン要求をサポートするように設定されているため、このワイルドカードには `app1.example.com` と `app2.example.com`、および将来のサブドメイン名が含まれます。
+
+その後、証明書設定ファイルを `openssl` コマンドに渡すことができます。
+
+[source,json,linenums]
+----
+openssl req -newkey rsa:2048 -nodes -keyout example-com-private.pem -x509 -days 3000 -out example-com-crt.pem -config example-com.cfg
+----
+
+次に、`openssl` を使用して非公開鍵を復号化できます。
+
+[source,json,linenums]
+----
+openssl rsa -in example-com-private.pem -out example-com-private-decrypted.pem
+----
+
+=== 本番用の証明書の設定
+
+通常、本番環境には有効な認証機関 (CA) によって署名された証明書があります。
+各 SSL エンドポイントには、複数の CA 証明書と CRL (証明書失効リスト) を設定できます。PEM でエンコードされた暗号化されていない 1 つのファイルでこれらの各証明書を指定する必要があります。独立した CA 証明書では順序は重要ではありませんが、信頼チェーンの証明書は連結されている必要があります。
+
+=== 証明書のアップロード
+
+ロードバランサにアップロードする証明書は、PEM でエンコードされた暗号化されていない 1 つのファイルに含まれている必要があります。 +
+このファイルには、以下のサンプルセクションのように順々に並んだ証明書チェーン全体を含めることができます。
+
+[%header,cols="30a,70a"]
+|===
+| Certificate (証明書) | 例
+| プライマリ証明書 | `-----BEGIN CERTIFICATE-----` +
+(プライマリ SSL 証明書: `your_domain_name.crt`) +
+`-----END CERTIFICATE-----`
+| 中間証明書 | `-----BEGIN CERTIFICATE-----` +
+(中間証明書: `DigiCertCA.crt`) +
+`-----END CERTIFICATE-----`
+|===
+
+[NOTE]
+--
+証明書チェーンにルート証明書を含める必要はありません。ただし、各証明書に ASCII アーマーを含める必要があります。
+--
+
+[NOTE]
+ロードバランサを作成するときに xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[cloudhub load-balancer create] を使用して SSL エンドポイントをロードバランサにアップロードしたり、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-ssl-endpoint-add[`cloudhub load-balancer ssl-endpoint add`] コマンドを使用して新しい SSL エンドポイントを既存のロードバランサにアップロードしたりできます。
+
+=== 証明書の検証
+
+SSL エンドポイントの CA 証明書を 1 つ以上指定すると、ロードバランサは以下の HTTP ヘッダーを使用してクライアント証明書データを API に渡します。
+
+==== X-SSL-Client-Verify
+
+このヘッダーは、`SUCCESS`、`FAILED`、`NONE` のいずれかを返します。`SUCCESS` の場合にのみクライアントが検証されます。 +
+証明書が存在しない場合は `NONE` を返し、他の検証の問題が発生した場合は `FAILED` を返します。
+
+==== X-SSL-Client-DN
+
+クライアント証明書の完全な識別名が含まれます。
+
+==== X-SSL-Issuer
+
+発行元証明書の完全な識別名が含まれます。
+
+==== X-SSL-Client-Serial
+
+クライアントを識別するために CA で使用されるシリアル番号が含まれます。
+
+=== 失効リストの追加
+
+CloudHub ロードバランサは、必要に応じて証明書失効リスト (CRL) に対してクライアント要求を検証できます。アップロードするには、すべての CRL ファイルを PEM でエンコードされた 1 つのファイルに連結する必要があります。順序は重要ではありません。
+
+ロードバランサの作成時に xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[`load-balancer create`] コマンドで「--crl」オプションを使用して失効リストを追加できます。
+
+また、ロードバランサがすでに作成されている場合、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955[REST API] を使用して更新できます。 +
+`revocationList` 要素を追加して、PATCH 要求を `/organizations/{orgid}/vpcs/{vpcId}/loadbalancers/{lbId}` エンドポイントに送信できます。
+
+[source,json,linenums]
+----
+[
+  {
+    "op": "replace",
+    "path": "/sslEndpoints/0/revocationList",
+    "value": "-----BEGIN X509 CRL-----\nMIIBTTCBtwIBATANBgkqhkiG9w0BAQUFADBXMQswCQYDVQQGEwJBVTETMBEGA1UE\nCBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRk\nMRAwDgYDVQQDEwdvcmcuY29tFw0xNjAzMTUwOTI2MThaFw0xODAzMTUwOTI2MTha\nMBwwGgIJAIBvvO4dJHjhFw0xNjAzMTUwODUwMTZaoA4wDDAKBgNVHRQEAwIBBjAN\nBgkqhkiG9w0BAQUFAAOBgQCCAbGXW+Hnzmd1bXqWsFXfogOsJScoxkJOhhmjui3I\nhTUyO5plGHUBLjBnDkypM+iLfn0W4wPcNj7FZdz4Hu/WLntxwrTtR5YOcfIhEGcq\nwvJq/1+WKUPC6eqGwx0iKOOBIWsaf5CNOOUQMo6RaeTeu8Uba2EGFk1Vu/SoZYAK\nsw==\n-----END X509 CRL-----\n"
+  }
+]
+----
+
+=== 証明書の暗号化
+
+次に、SSL エンドポイントの互換性とセキュリティのバランスが取れた推奨される暗号化スイートのリストを示します。 +
+Internet Explorer 8 をサポートするための RC4-SHA を除くすべてで前方秘匿性が提供されます。
+
+----
+ECDHE-RSA-AES256-GCM-SHA384
+ECDHE-RSA-AES128-GCM-SHA256
+DHE-RSA-AES256-GCM-SHA384
+DHE-RSA-AES128-GCM-SHA256
+ECDHE-RSA-AES256-SHA384
+ECDHE-RSA-AES128-SHA256
+ECDHE-RSA-AES256-SHA
+ECDHE-RSA-AES128-SHA
+DHE-RSA-AES256-SHA256
+DHE-RSA-AES128-SHA256
+DHE-RSA-AES256-SHA
+DHE-RSA-AES128-SHA
+AES256-GCM-SHA384
+AES128-GCM-SHA256
+AES256-SHA256
+AES128-SHA256
+AES256-SHA
+AES128-SHA
+----
+
+CloudHub の専用ロードバランサでは、TLSv1.1 と TLSv1.2 がサポートされています。TLS v1.0 を設定することもできますが、このプロトコルには重大な脆弱性があるため PCI コンプライアンスで受け入れらなくなっていることに留意してください。
+
+
+== マッピングルール
+
+ロードバランサ設定は、入力 URL をさまざまな CloudHub アプリケーションへのコールに変換する方法が記述された一連のマッピングルールで定義されます。 +
+マッピングルールは、ロードバランサの SSL エンドポイントの属性です。 +
+マッピングルールを作成する場合、証明書 CN を指定する必要があります。`[certificateName]` パラメータを省略すると、マッピングがデフォルトエンドポイントに追加されます。
+
+シンプルな一致ルールを作成する場合、1 つの入力アドレスがそのまま定義済みの出力 (いずれかのアプリケーションのエンドポイント) に一致します。 +
+リテラル一致の代わりにパターンを使用して、変数のような入力テキストをエンドポイントに対して照合することもできます。
+
+プロキシルールを使用すると、ドメインまたはサブドメインを CloudHub で実行されるいずれかの Mule アプリケーションにマップできます。
+
+=== マッピングルールでのパターンの使用
+
+パターンは、入力テキストを照合するためのテンプレートを定義する文字列です。波括弧 `{   }` に何を配置しても、変数のように処理されます。
+これらの変数には、文字 (a ～ z) のみを含めることができ、数字やスラッシュなどの他の文字は含めることができません。変数値には、`a-z0-1.&_-?_` の文字を含めることができますが、スラッシュは含めることができません。
+
+DNS CNAME レコードを `example.com` から `<lb-name>.lb.anypointdns.net` にセットアップしたとします。これにより、`app.example.com` をさまざまなデプロイ済み CloudHub Mule アプリケーション名にマップできます。
+
+たとえば、そのまま 2 つのホスト名をバインドしてリダイレクトできます。
+
+[source,text,linenums]
+----
+‘app.example.com’ ->  application: `app` URI: `/example’
+----
+
+この場合、`+https://app.example.com+` への外部要求は `+http://app.cloudhub.io/example+` にリダイレクトされます。
+
+または、入力値を保持するパターンを定義することもできます。
+
+[source,text,linenums]
+----
+‘example.com/{mypattern}’ -> application: `app-{mypattern}` URI: /data
+----
+
+上記の例では、変数 `mypattern` にこれらの値が保持されているため、`example.com/bookings` が `app-bookings.cloudhub.io/data` に、`example.com/sales` が `app-sales.cloudhub.io/data` にリダイレクトされます。 +
+
+`input=”bookings.example.com”` のパターンは `_mypattern_=”bookings”` を割り当てて解決でき、`input="sales.example.com"` のパターンは `_mypattern_=”sales”` を割り当てて解決できます。
+
+設計に応じて、パターンまたはリテラルマッピングを使用して、エンドポイントへの内部リダイレクトを活用できます。
+
+[CAUTION]
+現在、アプリケーション URI のパターンはサポートされていません。
+
+=== マッピングルールの作成
+
+マッピングルールは、入力 URL を定義する一連の項目と、出力 URL を記述する一連の項目です。
+
+* 入力 URL は、ユーザが指定できる URI パラメータを使用して記述されます。
+. *URI* - 入力 URI を記述する文字列またはパターン。
++
+[NOTE]
+--
+入力 URL は、メインロードバランサのドメインに従います (同じロードバランサでは、この値は同じ)。
+--
++
+* 出力 URL は 2 つの項目で指定します。
+. *appName* - 要求の転送先となるアプリケーション名を出力します。
+. *appURI* - 解決済みのアプリケーションに渡される URI 文字列
+
+入力 URL と出力 URL のどちらも、パターンまたはリテラル文字列を使用して定義できます。
+
+マッピングルールは、証明書名で識別されるロードバランサの SSL エンドポイントの属性です。 +
+マッピングルールを作成する場合、証明書 CN を指定する必要があります。`[certificateName]` パラメータを省略すると、マッピングがデフォルトエンドポイントに追加されます。
+
+マッピングルールのリストでは、最初に定義されているルールがその後に定義されている他のルールよりも優先されます。つまり、最初に一致したルールが適用されます。 +
+既存のルールを作成、表示、削除するには、それぞれ xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[mappings add]、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-describe[mappings describe]、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-remove[mappings remove] コマンドを使用します。
+
+=== マッピングルールの例
+
+
+以下の表には、いくつかのマッピングルールの例が記載されています。これらの例では、`lb-demo` というロードバランサを想定しています。
+
+[CAUTION]
+--
+デフォルトでは、ロードバランサは HTTPS で外部要求をリスンし、HTTP でワーカーと内部的に通信します。HTTPS でリスンするように Anypoint VPC 内の Mule アプリケーションを設定している場合、 xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[`load-balancer mappings add`] コマンドを使用してマッピングリストを作成するときに `upstreamProtocol` を HTTPS に設定してください。
+--
+
+==== URL マッピング
+
+入力 URI としてアプリケーション名を渡し、CloudHub のアプリケーション名に直接マップできます。
+
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |    *URI*   |       *appName*   |   *appURI*
+| 0 | `/{app}/`    | `{app}`             | `/`
+|===
+
+このルールは、`example.com/{app}` を `{app}.cloudhub.io` にマップします。 +
+{app} は、インバウンド要求で渡すアプリケーション名のパターンです。
+
+この例では、`example.com` を `lb-name.lb.anypointdns.net` にルーティングする DNS CNAME レコード、SSL エンドポイント、および共通名が example.com の証明書が設定されていることが前提となっています。
+
+==== ホストマッピング
+
+`*.example.com` のようなワイルドカード証明書がある場合、`subdomain` 変数を使用して任意のサブドメインをマップできます。
+
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |  *URI*   |       *appName*    |  *appURI*
+| 0 | `/`       | `{subdomain}`        | `/`
+|===
+このルールは、`example.com` のサブドメインに渡される要求を対応する `appName` に自動的にマップします。例:
+
+* `api.example.com` を渡すと、`api.cloudhub.io` にリダイレクトされる。 +
+* `application.example.com` を渡すと、`application.cloudhub.io` にマップされる。
+
+SSL エンドポイントのhttps://en.wikipedia.org/wiki/Subject_Alternative_Name[サブジェクト代替名] (SAN) についても同様です。 +
+
+専用ロードバランサを介して任意のサブドメインのアプリケーション名を渡すことができるワイルドカード証明書を使用しなくても、許可されるサブドメイン名を制限できます。これを行うには、証明書の共通名に各種 SAN を設定する必要があります。「subdomain」変数を使用してドメイン名のサブドメイン部分をアプリケーションにマップできます。
+
+例:
+
+* 2 つのデプロイ済みアプリケーション:
+** `dev-app`
+** `qa-app`
+* サブジェクト代替名のある SSL エンドポイント:
+** `dev.example.com`
+** `qa.example.com`
+* マッピングルール:
++
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |  *URI*   |       *appName*    |  *appURI*
+| 0 | `/`        | `{subdomain}-app`   | `/`
+|===
+
+このルールは、ドメイン名のサブドメイン部分をアプリケーション名にマップします。
+
+* `dev.example.com` を渡すと、`dev-app.cloudhub.io` にリダイレクトされる。
+* `qa.example.com` を渡すと、`qa-app.cloudhub.io` にリダイレクトされる。
+
+
+==== 1:1 マッピング
+
+アプリケーションが 1 つのみの場合、リテラルのアプリケーション名をマップできます。
+
+[%header,cols="10a,20a,20a,10a"]
+|===
+|ルール番号 |入力 URL 2+^| 出力 URL
+|   |  *URI*  |   *appName* |   *appURI*
+| 0 | `/`       |    `myApp`    | `/`
+|===
+この場合、デフォルトのロードバランサ `lb-demo.lb.anypointdns.net` が CloudHub のアプリケーション `myApp.cloudhub.io` に直接マップされます。
+
+=== ルールの優先度のインデックス化
+
+マッピングルールを作成したら、インデックスを割り当てて、ルールの優先順序を定義します。 +
+インデックス `0`で最初に定義されているルールはがその後に定義されている他のルールよりも優先されます。割り当てられているインデックスが大きいほど、マッピングルールの優先度は低くなります。
+
+各ルールで優先度を定義します。  複数のルールがあると、相互に上書きされる可能性があるため、各ルールの作成時にその順序に注意を払うことを強くお勧めします。
+
+==== ルールの順序と優先度の設定
+
+Anypoint Platform CLI で xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[`cloudhub load-balancer mappings add`] コマンドを使用してマッピングルールを作成するときに、インデックス値を指定してその順序を設定できます。
+
+API を使用してルールを作成する場合、優先順序を指定せずに、後で PATCH 要求をロードバランサのエンドポイント `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/loadbalancers/{loadbalancerId}` に送信し、上記の順序ロジックルールに基づいてニーズに合うようにルールの式を順序インデックスで更新できます。
+
+[NOTE]
+--
+ロードバランサ ID は、作成時にロードバランサに提供されます。
+また、エンドポイント `/organizations/{orgid}}/loadbalancers` に対して `GET` 要求を実行し、ID を取得することもできます。
+--
+
+== ホワイトリスト
+
+ロードバランサの IP アドレスをホワイトリストに登録するには、xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-whitelist-add[load-balancer whitelist add] コマンドを使用してそれらの IP アドレスを CIDR 表記で渡す必要があります。
+
+ホワイトリストは、CN 証明書レベルではなく、ロードバランサレベルのインバウンド接続で動作します。IP アドレスのみを渡してください。
+
+== 専用ロードバランサの作成と設定
+
+[TIP]
+ロードバランサを作成および設定するには、ロードバランサが関連付けられている組織のシステム管理者のプロファイルが必要です。
+
+Anypoint VPC の専用ロードバランサを作成および設定する方法は 3 つあります。
+
+. Anypoint Platform CLI から xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[cloudhub load-balancer create] コマンドを使用する。
+. エンドポイント `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/loadbalancers` および `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/vpcs` を介して xref:cloudhub-api.adoc[CloudHub API] を使用する。
+. Anypoint Platform UI から xref:lb-create-arm.adoc[Runtime Manager] を使用する。
+
+[NOTE]
+--
+`loadbalancers` および `vpcs` エンドポイントについての詳細は、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を参照してください。API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+--

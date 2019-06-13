@@ -1,0 +1,30 @@
+= ロードバランサの作成方法 (CloudHub API)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+CloudHub API を使用して専用ロードバランサを作成できます。
+
+== 前提条件
+
+CloudHub API を使用してロードバランサを作成するには、次のことを実行します。
+
+* 自分のプロファイルが、ロードバランサを作成する組織のシステム管理者ロールのメンバーであることを確認する。
+* ロードバランサを作成する組織で Anypoint Virtual Private Cloud (Anypoint VPC) を作成する。
+* 少なくとも 1 つの証明書と証明書用の非公開鍵を作成する。
+
+== ロードバランサの作成
+
+CLI からロードバランサを作成するには、`cloudhub load-balancer create` を使用します。このコマンドでは、ロードバランサを作成する Anypoint VPC を指定できます。また、そのロードバランサによって使用される証明書と非公開鍵も指定できます。
+
+CloudHub API を使用してロードバランサを作成するには、次のエンドポイントを使用します。
+
+* `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/loadbalancers`
+* `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/vpcs`
+
+== 関連情報
+
+* https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[Runtime Manager API]
+* xref:access-management::index.adoc[アクセス管理]
+* xref:lb-cert-upload.adoc[証明書のアップロードについて]
+* xref:index.adoc[ロードバランサの作成方法 (Runtime Manager)]

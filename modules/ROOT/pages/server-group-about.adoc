@@ -1,0 +1,11 @@
+= サーバグループについて (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+サーバグループとは、単一のデプロイメント対象として機能する一連のサーバを指し、グループ内のアプリケーションの各インスタンスは完全に相互分離しています。
+
+== 関連情報
+
+* xref:servers-create.adoc[サーバの作成 (ハイブリッド)]
+* xref:server-group-create.adoc[サーバグループの作成 (ハイブリッド)]

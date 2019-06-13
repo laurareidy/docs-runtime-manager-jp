@@ -1,0 +1,45 @@
+= Runtime Manager エージェントのトラブルシューティング
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+`$MULE_HOME/bin/amc_debug` スクリプトを使用して、Runtime Manager エージェントのインストールの問題のトラブルシューティングを行うことができます。
+
+Runtime Manager エージェントプラグインの問題や Anypoint Platform でのアプリケーションの管理の問題が発生した場合、サポートチケットを入力する前にスクリプトを実行し、出力を保存します。
+
+このスクリプトを実行すると、問題のトラブルシューティングに役立つ以下の情報が収集されます。
+
+. Mule エージェントの JVM プロセスを検出します。
+. スレッドダンプを抽出します (可能な場合は強制されません)。
+. ヒープダンプを抽出します。
++
+[CAUTION]
+--
+このステップにより実行中のアプリケーションが遅延する可能性があります。
+--
++
+. マシンの一般的なデータ (Java バージョン、CPU 使用量、メモリ使用量、ディスク使用量) を抽出します。
+. すべてのログをコピーします。
+. Runtime Manager エージェントの設定ファイルをコピーします。
+. すべての情報を ZIP 圧縮します。
+
+スクリプトが完了したら、この ZIP ファイルをフォルダ `$MULE_HOME/bin` (`snapshot_201701021410.zip` などの名前) で見つけることができます。これを、問題のトラブルシューティングに役立つように MuleSoft のサポートエンジニアに送信することができます。
+
+== 接続の問題
+
+接続の問題がある場合は、使用している JVM を確認します。IBM JVM を使用している場合は、トラストストアを手動でインストールします。このトラストストアでは、Oracle JVM や OpenJDK とは異なる特別のパラメータが必要とされるためです。
+
+手順は、xref:servers-create#the-ibm-jvm[「IBM JVM」] を参照してください。
+
+== Runtime Manager エージェントドキュメントのページ
+
+* xref:installing-and-configuring-runtime-manager-agent.adoc[Runtime Manager エージェントのインストール]
+* xref:runtime-manager-agent-architecture.adoc[Runtime Manager エージェントアーキテクチャ]
+* xref:administration-service.adoc[管理サービス]
+* xref:managing-applications-and-domains.adoc[アプリケーションおよびドメインの管理]
+* xref:event-tracking.adoc[イベント追跡]
+* xref:jmx-service.adoc[JMX サービス]
+* xref:runtime-manager-agent-notifications.adoc[Runtime Manager エージェント通知]
+* xref:extending-the-runtime-manager-agent.adoc[Runtime Manager エージェントの拡張]
+* xref:internal-handler-buffering.adoc[内部ハンドラバッファ]

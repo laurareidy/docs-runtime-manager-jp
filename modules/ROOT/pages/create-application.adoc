@@ -1,0 +1,70 @@
+= アプリケーションの作成
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 例, arm, Runtime Manager
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+このドキュメントでは、xref:cloudhub-api.adoc[CloudHub API] のコールについて説明します。Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] とその下位ページを参照してください。
+
+
+`/api/applications` リソースを指定して `POST` 操作を実行すると、CloudHub に新しいアプリケーションが作成されます。
+
+要求の例:
+
+[source,json,linenums]
+----
+POST https://anypoint.mulesoft.com/cloudhub/api/applications
+Content-Type: application/json
+
+{
+  "domain" : "yourdomain",
+  "workers" : 1,
+  "muleVersion":"3.7.0",
+  "properties" : {
+     "your.system.property" : "some.value",
+     "your.system.property.2" : "some.value.2"
+  }
+}
+----
+
+応答の例:
+
+[source,json,linenums]
+----
+201
+Content-Type: application/json
+Location: https://anypoint.mulesoft.com/cloudhub/api/applications/yourdomain
+
+{
+  "workers":1,
+  "domain":"yourdomain",
+  "fullDomain":"yourdomain.cloudhub.io",
+  "hasFile":false,
+  "muleVersion":"3.7.0",
+  "properties" : {
+     "your.system.property" : "some.value"
+  },
+  "status":"UNDEPLOYED"
+}
+----
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+== 関連情報
+
+* xref:index.adoc[Runtime Manager]
+* xref:cloudhub.adoc[CloudHub]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

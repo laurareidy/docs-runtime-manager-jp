@@ -1,0 +1,102 @@
+= ワーカーの監視
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 監視, ワーカー, 再起動
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[NOTE]
+ワーカーの監視は、CloudHub ワーカーにデプロイされたアプリケーションのみで使用可能な機能です。Runtime Manager を使用してローカルサーバにデプロイするアプリケーションでは使用できません。詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]とxref:monitoring.adoc[「アプリケーションの監視」]を参照してください。
+
+CloudHub では、ワーカーの監視と応答しないアプリケーションの自動再起動がサポートされています。監視には、アプリケーションが応答しなくなった場合に通知と診断情報を受信するオプションがあります。必要に応じて、ユーザが介入しなくてもアプリケーションが自動的に回復されれるよう自動再起動を有効にします。CloudHub には、自動再起動を有効化してもしなくても監視を実行できる柔軟性があります。
+
+監視は、CloudHub にデプロイされたすべてのアプリケーションでデフォルトで有効になります。監視機能の導入以前にデプロイ済みのアプリケーションの場合、監視を有効にするには再デプロイする必要があります。 
+
+新しいアプリケーションをデプロイするとき、または既存のアプリケーションを再デプロイするときに、Runtime Manager コンソールを使用して自動再起動機能をアプリケーションごとに有効化できます。
+
+== 前提条件
+
+このドキュメントは、読者が xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]に精通していて、Runtime 3.4.ｎ、3.5.ｎ 以降にデプロイすることを前提としています。
+
+== 自動再起動の有効化
+
+デプロイ時に、アプリケーションの自動再起動を有効にするオプションがあります。
+
+*[Settings (設定)]* > *[Automatically restart application when not responding (応答しない場合はアプリケーションを自動的に再起動する)]* をクリックするか、*[Deploy Application (アプリケーションをデプロイ)]* メニューから同じ設定をクリックします。
+
+image::workermonitoring.png[WorkerMonitoring]
+
+これを *[Deploy Application (アプリケーションをデプロイ)]* メニューから設定する場合は、*[Deploy Application (アプリケーションをデプロイ)]* をクリックします。
+
+これを *[Manage Application (アプリケーションを管理)]* メニューから設定する場合は、*[Apply Changes (変更を適用)]* をクリックします。
+
+Mule 3.8.x 以前で実行されているアプリケーションは、デプロイ後、CloudHub によって監視 ping フローがアプリケーションに挿入されます。アプリケーションが起動すると、監視が有効になっていることと、ping フローがアプリケーションに挿入されたことを示すメッセージがログに表示されます。
+
+image::logpingflowinjector.png[LogPingFlowInjector]
+
+アプリケーションが完全に起動したら、監視が開始されたことを示す追加メッセージ「`Mule system health monitoring started for your application.`」がログに表示されます。
+
+image::chmulesystemhealthmsg.png[CHMuleSystemHealthMsg]
+
+== 監視の動作
+
+=== Mule 3.x.x 
+
+30 秒おきに CloudHub が HTTP get 要求をアプリケーション内の ping フローに送信します。アプリケーションが正常に実行されている場合、ping フローは応答を送信します。CloudHub が 3 回連続で ping から応答を受信しないと、ログに警告が出力され、フルスレッドダンプが表示されます。
+
+image::ch-monitoring-threaddump.png[CH-monitoring-threaddump]
+
+=== Mule 4.x.x
+
+30 秒おきに CloudHub が Mule プロセスの PID をチェックします。アプリケーションプロセスが実行中でないことが 3 回連続して検出されると、ログに警告が出力されます。
+
+どちらの場合でも、CloudHub ではコンソールへの通知がトリガされ、アプリケーションのワーカーが応答しなくなったことが通知されます。
+
+メールアラートを設定してある場合、応答しないワーカーによって、`Worker Not Responding` イベントに基づくメールアラートもトリガされます。これらのアラートの設定についての詳細は、xref:alerts-on-runtime-manager.adoc[アラート]を参照してください。
+
+== 自動再起動の動作
+
+**[Automatically restart application when not responding (応答しない場合はアプリケーションを自動的に再起動する)]** ボックスをオンにすると、CloudHub は前述の同じプロシージャに従いますが、アプリケーションの再デプロイメントも自動的にトリガされます。
+
+このボックスをオンにしない場合は、通知とログメッセージが生成されるだけで、それ以上は何も行われません。
+
+image::ch-monitoring-notification2.png[CH-monitoring-notification2]
+
+image::ch-monitoring-logs5.png[CH-monitoring-logs5]
+
+監視スクリプトが終了し、アプリケーションは手動で介入するまでそのままの状態です。
+
+自動再起動を有効にした場合、CloudHub では再起動がトリガされたことを知らせる通知と、再起動の成功または失敗を報告する通知が生成されます。
+
+image::ch-monitoring-notifications.png[CH-monitoring-notifications]
+
+ログに再起動プロシージャの詳細が表示されます。再起動に成功すると、ping スクリプトが再初期化されて監視が続行されます。
+
+image::ch-successfulrestart.png[CH-successfulrestart]
+
+再起動に失敗すると、CloudHub では引き続き再起動が 5 回まで試行されます。再起動の最大試行回数を超えると、それ以上は何も行われません。監視スクリプトが終了し、アプリケーションは手動で介入するまでそのままの状態です。
+
+== 関連情報
+
+* xref:alerts-on-runtime-manager.adoc[ワーカーの問題に基づくアラートの設定]についての詳細を確認してください。
+
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:cloudhub.adoc[CloudHub の概要]
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

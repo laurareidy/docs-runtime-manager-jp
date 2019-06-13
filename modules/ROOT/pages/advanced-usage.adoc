@@ -1,0 +1,21 @@
+= 高度な用途
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, esb, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+通常、Runtime Manager エージェントで必要な作業は、xref:installing-and-configuring-runtime-manager-agent.adoc[「Runtime Manager エージェントのインストールと設定」]に従ってインストールおよび構成することだけです。
+
+Runtime Manager エージェントの基盤となるアーキテクチャや高度な設定については、次のトピックを参照してください。
+
+* xref:building-an-https-service.adoc[HTTPS サービスの構築]
+* xref:runtime-manager-agent-architecture.adoc[Runtime Manager エージェントアーキテクチャ]
+* xref:runtime-manager-agent-api.adoc[エージェント API]
+* xref:event-tracking.adoc[イベント追跡]
+* xref:internal-handler-buffering.adoc[内部ハンドラバッファ]
+* xref:extending-the-runtime-manager-agent.adoc[Runtime Manager エージェントの拡張]

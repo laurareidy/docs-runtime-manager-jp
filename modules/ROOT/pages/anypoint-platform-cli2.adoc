@@ -1,0 +1,2736 @@
+= Anypoint Platform CLI 2.x
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: 管理, api, 組織, ユーザ, ゲートウェイ, テーマ, cli
+
+Anypoint Platform には、*Anypoint Platform* と *Anypoint Platform Private Cloud Edition* のスクリプトおよびコマンドラインツールが用意されています。
+CLI は、対話型シェルと標準 CLI モードの両方をサポートしており、以下で動作します。
+
+* xref:exchange::index.adoc[Anypoint Exchange]
+* xref:access-management::index.adoc[アクセス管理]
+* MuleSoft でホストされている (CloudHub) および顧客がホストしている Mule Runtime にデプロイされている Mule アプリケーション用の xref:index.adoc[Runtime Manager]
+* xref:virtual-private-cloud.adoc[VPC]
+* xref:cloudhub-dedicated-load-balancer.adoc[Cloudhub ロードバランサ]
+* xref:1.x@api-manager::index.adoc[API Manager 1.x (Crowd プレリリース)]
+* xref:design-center::index.adoc[Design Center]
+
+== 前提条件
+
+Anypoint-CLI は、NodeJS アプリケーションです。Anypoint Platform CLI をコンピュータにインストールするには、NPM (デフォルトの Node.js パッケージマネージャ) と共に NodeJS ランタイム環境がコンピュータにインストールされていることを確認する必要があります。
+NodeJS のドキュメントに従って、両方のリソースを取得します。
+
+また、git バージョン管理システムもコンピュータにインストールする必要があります。特定のオペレーティングシステムのインストール手順やダウンロードリンクは、Git ドキュメントサイトにあります。
+
+NodeJS (npm を使用) と git をインストールしたら、コマンドラインインターフェースを開いて以下を入力し、Anypoint Platform CLI をインストールできます。
+
+== インストール
+
+システムの設定によっては、システム管理者のログイン情報を使用して、次のコマンドを実行することが必要になる場合もあります。
+
+[source]
+----
+$ npm install -g anypoint-cli@2.4.0
+----
+
+[NOTE]
+--
+インストールプロセス中に npm で `fatal: read error: Invalid argument` エラーがスローされた場合、git クライアントがコンピュータにインストールされていて、git プロトコルがファイアウォールまたはネットワークでブロックされていないことを確認します。
+--
+
+== 参照
+
+Anypoint-CLI の各インスタンスでは、次のいずれかのオプションが使用されます。
+
+[%header%autowidth.spread,cols="a,a,a"]
+|===
+|パラメータ |説明 | 必須
+|username (ユーザ名) | Anypoint Platform ユーザ名。
+
+環境変数 `export ANYPOINT_USERNAME=<name>` を使用して、この値を渡すこともできます。 | *はい*
+
+|password (パスワード) | Anypoint Platform パスワード。
+
+環境変数 `export ANYPOINT_PASSWORD=<pwd>` を使用して、この値を渡すこともできます。 | *はい*
+
+|組織 | Anypoint Platform 内の組織。
+
+環境変数 ` export ANYPOINT_ORG=<name>` を使用して、この値を渡すこともできます。 | いいえ
+
+|環境 | Anypoint 環境。
+
+環境変数 `export ANYPOINT_ENV=<name>` を使用して、この値を渡すこともできます。 | いいえ
+
+|host (ホスト) | Anypoint Platform インストールのホスト。 +
+デフォルトでは、この値は +https://anypoint.mulesoft.com+ を参照します。 +
+Anypoint Platform Private Cloud Edition を使用している場合、プラットフォームをホストしているアドレスを渡していることを確認します。
+Anypoint Platform EU クラウドを使用している場合、EU 準拠の URL を渡していることを確認します。
+
+専用の環境変数 `ANYPOINT_HOST=<name>` を使用して、この値を渡すこともできます。 | いいえ
+
+|bearer (ベアラー) | ユーザ名とパスワードを渡す代わりに、アカウントのトークンを渡すことができる。 +
+アカウントのトークンを取得するには、ユーザ名とパスワードを使用して +https://anypoint.mulesoft.com/accounts/login+ エンドポイントにアクセスし、ベアラー値を取得します。
+
+トークンベアラーの有効期限が切れると、セッションの有効期限が切れます。 +
+ユーザ名/パスワードとトークンベアラーの両方を送信した場合、CLI ではベアラーログインが優先されます。
+| いいえ
+|===
+
+== 使い方
+
+=== ログイン情報ファイル
+
+これらのオプションを Anypoint Platform CLI インストールに渡すには、`./anypoint/` ディレクトリ内にある `credentials` ファイルを使用することをお勧めします。このファイルは、インストール時に自動的に作成されません。ログイン情報ファイルを作成する手順は、次のとおりです。
+
+. Linux および OSx では `~/` ディレクトリ、Windows では `C:\Users\USERNAME \` に `.anypoint` というディレクトリを作成します。
+. `.anypoint` ディレクトリに移動し、次の構造の `credentials` という名前の空白のファイルを作成します。
++
+[source,text,linenums]
+----
+{
+ "default": {
+  "username": "yourAnypointUserName",
+  "password": "yourAnypointPassword",
+  "organization": "",
+  "environment": "",
+  "host": ""
+ },
+ "otherProfile": {
+  "username": "",
+  "password": "",
+  "organization": "",
+  "environment": "",
+  "host": ""
+ }
+}
+----
+`ANYPOINT_PROFILE` 環境変数が設定されていないと、「default」プロファイルが使用されます。
++
+[source,text,linenums]
+----
+> export ANYPOINT_PROFILE="otherProfile"
+> anypoint-cli
+----
+
+次に、オプションを指定せずに anypoint-cli コマンドを実行します。
+
+[source,text,linenums]
+----
+> anypoint-cli
+----
+
+=== 専用の環境変数
+
+Anypoint-CLI の実行時にログイン情報を渡す場合、両方のパラメータを環境変数 `ANYPOINT_USERNAME` および `ANYPOINT_PASSWORD` として渡すことを強くお勧めします。
+
+[source,text,linenums]
+----
+> export ANYPOINT_USERNAME="username"
+> export ANYPOINT_PASSWORD="password"
+> anypoint-cli
+----
+
+=== CLI オプション
+
+前述したように、ユーザ名とパスワードのパラメータは必須です。ただし、ユーザ名を渡すと、Anypoint Platform CLI からパスワードを求められます。
+
+[source,text,linenums]
+----
+> anypoint-cli --username="user"
+Password: ****
+----
+
+== コマンドを渡す
+
+CLI から Anypoint Platform にアクセスする適切な方法をセットアップしたら、コマンドを渡すことができます。 +
+これらの使用方法の手順については、xref:anypoint-platform-cli2-commands.adoc[「Anypoint Platform CLI 2.x のコマンドリスト」]を参照してください。
+
+== 考慮事項
+
+Anypoint-CLI を使用する場合、いくつかの考慮事項があります。
+
+. 環境変数はログイン情報ファイルパラメータよりも優先され、コマンドラインパラメータは環境変数よりも優先されます。 +
+コマンドラインパラメータを渡さない場合、デフォルトプロファイルのプロパティが使用されます。
+. 環境が設定されていない場合、自動的に `production` に送信されます。 +
+. Anypoint セッションの有効期限は、xref:access-management::organization.adoc#manage-the-master-organization-s-settings[マスタ組織の設定]の *[Default session timeout (デフォルトセッションタイムアウト)]* に基づいています。 +
+. Anypoint-CLI は、コートコンプリートと連動します。コマンドまたはパラメータの名前の入力を開始して `tab` キーを押すと、オートコンプリートが実行されます。また、`tab` キーをダブルタップすると、使用可能なすべてのオプションのリストが表示されます。
+
+== コマンドのリスト
+
+Anypoint Platform CLI には、さまざまなユースケースシナリオに対応するコマンドが用意されています。
+
+* <<Commands For Administrating your Anypoint Platform Account>>
+* <<Commands for API Manager>>
+* <<Commands for Administrating your Design Center Applications>>
+* <<Commands for Managing Exchange Assets>>
+* <<Commands for Administrating your CloudHub Application>>
+* <<Commands for Managing your Locally Deployed Applications Managed by Runtime Manager>>
+* <<Commands for Managing Your Local PCF Deployed Applications>>
+* <<Commands for Managing your Local Servers>>
+* <<Commands for Administrating your Local Server Groups>>
+* <<Commands for Administrating your Local Cluster Servers>>
+* <<Commands for Managing Alerts for your Locally Deployed Applications Managed by Runtime Manager>>
+* <<Commands for Mananging your CloudHub Dedicated Load balancer>>
+* <<Commands for Managing your CloudHub VPC>>
+* <<Commands for Specifying Environments and Business Groups>>
+
+
+[TIP]
+--
+Anypoint Platform CLI には、3 つのデフォルトオプションがあります。
+
+* `--help` オプション。コマンドの利用方法の情報を表示します。
+* `-o` または `--output` オプション。コマンドの出力を定義済みの形式に指定できます。 +
+サポートされている値は、`table`、`text`、`json` です。非対話型モードのデフォルトは `text`、対話型セッションのデフォルトは `table` です。
+* `-f` または `--fields` オプション。出力する項目を定義できます。 +
+コマンドの後に `--fields` オプションを渡して、出力可能なすべての項目のリストを取得できます。
+--
+
+=== Anypoint Platform アカウントを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<account user describe>>| アカウントの詳細を表示する
+|<<account business-group list>>| ビジネスグループをリストする
+|<<account business-group describe>>| ビジネスグループの詳細を表示する
+|<<account environment list>>| 環境をリストする
+|<<account environment create>>| 新しい環境を作成する
+|<<account environment delete>>| 環境を削除する
+|<<account environment describe>> | 環境の詳細を表示する
+|===
+
+=== API Manager のコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<api-mgr api list>> | API Manager のすべての API をリストする
+|<<api-mgr api-version delete>> | API バージョンを削除する
+|<<api-mgr api-version list>> | API Manager の API のすべてのバージョンをリストする
+|<<api-mgr applications approve>> | 特定のアプリケーションを承認する
+|<<api-mgr applications approve-tier-change>> | SLA 層の変更を承認する
+|<<api-mgr applications delete>> | 特定のアプリケーションを削除する
+|<<api-mgr applications list>> | 特定の API バージョンに対するすべてのアプリケーションをリストする
+|<<api-mgr applications reject>> | 特定のアプリケーションを拒否する
+|<<api-mgr applications reject-tier-change>> | SLA 層の変更を拒否する
+|<<api-mgr applications restore>> | 特定のアプリケーションを復元する
+|<<api-mgr applications revoke>> | 特定のアプリケーションを失効させる
+|<<api-mgr applications set-tier>> | 特定のアプリケーションの SLA 層を設定する
+|<<api-mgr definition copy>> | API 間で API 定義をコピーする
+|<<api-mgr definition download>> | ローカルディレクトリに API 定義をダウンロードする
+|<<api-mgr definition upload>> | ローカル API 定義を API Manager にアップロードする
+|<<api-mgr endpoint configure>> | 特定の API バージョンのエンドポイントを設定する
+|<<api-mgr endpoint describe>> | 特定の API バージョンのエンドポイント設定を表示する
+|<<api-mgr policy apply>> | 特定の API バージョンにポリシーを適用する
+|<<api-mgr policy copy>> | API バージョン間でポリシー設定をコピーする。これを行うと、ソース API バージョンに存在しないポリシーは削除されます。
+|<<api-mgr policy describe>> | 特定のポリシーの情報と使用可能な設定プロパティを表示する
+|<<api-mgr policy disable>> | 特定の API バージョンのポリシーを無効にする
+|<<api-mgr policy edit>> | 特定の API バージョンのポリシー設定を編集する
+|<<api-mgr policy enable>> | 特定の API バージョンのポリシーを有効にする
+|<<api-mgr policy list>> | ポリシーをリストする
+|<<api-mgr policy remove>> | 特定の API バージョンからポリシーを削除する
+|<<api-mgr portal copy>> | ソースから対象に API Portal をコピーする
+|<<api-mgr portal list>> | API のすべてのポータルをリストする
+|<<api-mgr portal open>> | ブラウザで API Portal を開く
+|<<api-mgr tiers add>> | SLA 層を作成する
+|<<api-mgr tiers copy>> | API バージョン間で SLA 層をコピーする
+|<<api-mgr tiers delete>> | SLA 層を削除する
+|<<api-mgr tiers deprecate>> | SLA 層を非推奨にする
+|<<api-mgr tiers edit>> | SLA 層を編集する
+|<<api-mgr tiers list>> | API バージョンの SLA 層をリストする
+|<<api-mgr tiers reactivate>> | SLA 層を再アクティブ化する
+|<<api-mgr proxy download>> | プロキシの ZIP アーカイブをローカルディレクトリにダウンロードする
+|===
+
+=== Design Center アプリケーションを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+| <<designcenter project create>> | 新しい Design Center プロジェクトを作成する
+| <<designcenter project delete>> | Design Center プロジェクトを削除する
+| <<designcenter project download>> | Design Center プロジェクトのコンテンツをダウンロードする
+| <<designcenter project publish>> | Design Center プロジェクトを Exchange にパブリッシュする
+| <<designcenter project upload>> | プロジェクトのコンテンツを Design Center にアップロードする
+| <<designcenter project list>> | すべての Design Center プロジェクトをリストする
+|===
+
+=== Exchange アセットを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<exchange asset upload>> | Exchange アセットをアップロードする
+|<<exchange asset modify>> | Exchange アセットを変更する
+|<<exchange asset download>> | Exchange アセットをダウンロードする
+|<<exchange asset list>> | すべてのアセットをリストする
+|<<exchange asset page download>> | Exchange のアセットの説明ページをダウンロードする
+|<<exchange asset page modify>> | Exchange のアセットの説明ページを変更する
+|<<exchange asset page upload>> | Exchange のアセットの説明ページをアップロードする
+|<<exchange asset page delete>> | Exchange のアセットの説明ページを削除する
+|<<exchange asset page list>> | 特定のアセットのすべてのページをリストする
+|<<exchange asset copy>> | Exchange アセットをコピーする
+|<<exchange asset delete>> | Exchange のアセットを削除する
+|<<exchange asset deprecate>> | アセットを非推奨にする
+|<<exchange asset undeprecate>> | アセットの非推奨を解除する
+|<<exchange asset describe>> | 特定のアセットの情報を表示する
+|===
+
+=== CloudHub アプリケーションを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<runtime-mgr cloudhub-alert list>>| 環境内のすべてのアラートをリストする
+|<<runtime-mgr cloudhub-alert-history describe>>| アラームの履歴の情報を表示する
+|<<runtime-mgr cloudhub-application list>>| 環境内のすべてのアプリケーションをリストする
+|<<runtime-mgr cloudhub-application describe>>| アプリケーションの詳細を表示する
+|<<runtime-mgr cloudhub-application describe-json>>| 未加工のアプリケーション JSON 応答を表示する
+|<<runtime-mgr cloudhub-application stop>>| 実行中のアプリケーションを停止する
+|<<runtime-mgr cloudhub-application start>>| アプリケーションを開始する
+|<<runtime-mgr cloudhub-application restart>>| 実行中のアプリケーションを再起動する
+|<<runtime-mgr cloudhub-application delete>>| アプリケーションを削除する
+|<<runtime-mgr cloudhub-application deploy>>| 新しいアプリケーションをデプロイする
+|<<runtime-mgr cloudhub-application modify>>| 既存のアプリケーションを変更する (必要に応じて zip ファイルを更新する)
+// |<<runtime-mgr application revert-runtime>>| Reverts application to its previous runtime
+|<<runtime-mgr cloudhub-application download-logs>>| 指定されたディレクトリにアプリケーションをダウンロードする
+|<<runtime-mgr cloudhub-application tail-logs>>| アプリケーションログの末尾を表示する
+|<<runtime-mgr cloudhub-application copy>>| CloudHub アプリケーションをコピーする
+// |<<runtime-mgr cloudhub-application upgrade-runtime>>| Upgrades application runtime to the latest patch version or if a version if specified, to that version.
+// |<<runtime-mgr cloudhub-application downgrade-runtime>>| Downgrades application runtime to the previous runtime version or if a version is specified, to that version.
+|===
+
+=== Runtime Manager の管理下にある、ローカルにデプロイされているアプリケーションを管理するコマンド
+
+[CAUTION]
+Anypoint Platform CLI で対象サーバを認識できるように、手動で各サーバをプラットフォームに登録する必要があります。
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<runtime-mgr standalone-application artifact>> | アプリケーションアーチファクトバイナリをダウンロードする
+|<<runtime-mgr standalone-application deploy>> | オンプレミスのサーバ、サーバグループ、クラスタに新しいアプリケーションをデプロイする
+|<<runtime-mgr standalone-application describe-json>> | スタンドアロンアプリケーションの未加工の JSON 応答を表示する
+|<<runtime-mgr standalone-application modify>> | スタンドアロンアプリケーションアーチファクトを変更する
+|<<runtime-mgr standalone-application start>> | スタンドアロンアプリケーションを開始する
+|<<runtime-mgr standalone-application delete>> | スタンドアロンアプリケーションを削除する
+|<<runtime-mgr standalone-application describe>> | スタンドアロンアプリケーションの詳細情報を表示する
+|<<runtime-mgr standalone-application list>> | 環境内のすべてのスタンドアロンアプリケーションをリストする
+|<<runtime-mgr standalone-application restart>> | スタンドアロンアプリケーションを再起動する
+|<<runtime-mgr standalone-application stop>> | スタンドアロンアプリケーションを停止する
+|<<runtime-mgr standalone-application copy>> | スタンドアロンアプリケーションをコピーする
+|===
+
+=== ローカル PCF デプロイ済みアプリケーションを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<runtime-mgr pcf-application delete>> | PCF アプリケーションを削除する
+|<<runtime-mgr pcf-application describe>> | PCF アプリケーションの詳細情報を表示する
+|<<runtime-mgr pcf-application list>> | 環境内のすべての PCF アプリケーションをリストする
+|<<runtime-mgr pcf-application restart>> | PCF アプリケーションを再起動する
+|<<runtime-mgr pcf-application stop>> | PCF アプリケーションを停止する
+|<<runtime-mgr pcf-application deploy>> | 新しいアプリケーションを PCF 領域にデプロイする
+|<<runtime-mgr pcf-application describe-json>> | PCF アプリケーションの未加工の JSON 応答を表示する
+|<<runtime-mgr pcf-application modify>> | PCF 領域にデプロイされているアプリケーションを編集する
+|<<runtime-mgr pcf-application start>> | PCF アプリケーションを開始する
+|===
+
+
+=== ローカルサーバを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<runtime-mgr server describe>> | サーバの情報を表示する
+|<<runtime-mgr server modify>> | サーバを変更する
+|<<runtime-mgr server token>> | サーバ登録トークンを取得する。新しいサーバを登録するには、このトークンを使用する必要があります。
+|<<runtime-mgr server delete>> | サーバを削除する
+|<<runtime-mgr server list>> | スタンドアロンアプリケーションアーチファクトを変更する
+// |<<runtime-mgr server register>> | Registers a new server. Returns a signed certificate which is downloaded to the `directory` path
+|===
+
+=== ローカルサーバグループを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<runtime-mgr serverGroup create>> | サーバのサーバグループを作成する
+|<<runtime-mgr serverGroup describe>> | サーバグループの情報を表示する
+|<<runtime-mgr serverGroup modify>> | サーバグループを変更する
+|<<runtime-mgr serverGroup add server>> | サーバをサーバグループに追加する
+|<<runtime-mgr serverGroup delete>> | サーバグループを削除する
+|<<runtime-mgr serverGroup list>> | 環境内のすべてのサーバグループをリストする
+|<<runtime-mgr serverGroup remove server>> | サーバグループのサーバを削除する
+|===
+
+=== ローカルクラスタサーバを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<runtime-mgr cluster add server>> | サーバをクラスタに追加する
+|<<runtime-mgr cluster delete>> | クラスタを削除する
+|<<runtime-mgr cluster list>> | 環境内のすべてのクラスタをリストする
+|<<runtime-mgr cluster remove server>> | クラスタからサーバを削除する
+|<<runtime-mgr cluster create>> | 新しいクラスタを作成する
+|<<runtime-mgr cluster describe>> | サーバクラスタの情報を表示する
+|<<runtime-mgr cluster modify>> | クラスタを変更する
+|===
+
+
+=== Runtime Manager の管理下にある、ローカルにデプロイされているアプリケーションのアラートを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<runtime-mgr standalone-alert describe>> | アラートの情報を表示する
+|<<runtime-mgr standalone-alert create>> | スタンドアロンランタイムの新しいアラートを作成する
+|<<runtime-mgr standalone-alert modify>> | スタンドアロンランタイムのアラートを変更する
+|<<runtime-mgr standalone-alert list>> | 環境内のスタンドアロンランタイムのすべてのアラートをリストする
+|===
+
+=== CloudHub 専用ロードバランサを管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<cloudhub load-balancer list>>| 組織内のすべてのロードバランサをリストする
+|<<cloudhub load-balancer describe>>| LB の詳細を表示する
+|<<cloudhub load-balancer describe-json>>| 未加工の LB JSON 応答を表示する
+|<<cloudhub load-balancer create>>| ロードバランサを作成する
+|<<cloudhub load-balancer start>>| ロードバランサを開始する
+|<<cloudhub load-balancer stop>>| ロードバランサを停止する
+|<<cloudhub load-balancer delete>>| ロードバランサを削除する
+|<<cloudhub load-balancer ssl-endpoint add>>| 証明書を既存のロードバランサに追加する
+|<<cloudhub load-balancer ssl-endpoint remove>>| ロードバランサから証明書を削除する
+|<<cloudhub load-balancer ssl-endpoint set-default>>| ロードバランサが提供するデフォルトの証明書を設定する
+|<<cloudhub load-balancer ssl-endpoint describe>>| 特定の証明書のロードバランサ設定を表示する
+|<<cloudhub load-balancer whitelist add>>| IP または IP の範囲をロードバランサのホワイトリストに追加する
+|<<cloudhub load-balancer whitelist remove>>| IP または IP の範囲をロードバランサのホワイトリストから削除する
+|<<cloudhub load-balancer mappings describe>>| ロードバランサのプロキシマッピングルールをリストする。certificateName が指定されていない場合、デフォルトの SSL エンドポイントのマッピングが表示されます。
+|<<cloudhub load-balancer mappings add>>| 指定されたインデックスでプロキシマッピングルールを追加する。certificateName が指定されていない場合、デフォルトの SSL エンドポイントのマッピングが表示されます。
+|<<cloudhub load-balancer mappings remove>>| プロキシマッピングルールを削除する。certificateName が指定されていない場合、デフォルトの SSL エンドポイントのマッピングが表示されます。
+|<<cloudhub load-balancer dynamic-ips enable>>| 動的 IP を有効にする
+|<<cloudhub load-balancer dynamic-ips disable>>| 動的 IP を無効にする
+|<<cloudhub region list>>| サポートされているすべてのリージョンをリストする
+|<<cloudhub runtime list>>| 使用可能なすべてのランタイムをリストする
+|===
+
+=== CloudHub VPC を管理するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<cloudhub vpc list>>| すべての VPC をリストする
+|<<cloudhub vpc describe>>| VPC の詳細を表示する
+|<<cloudhub vpc describe-json>>| 未加工の VPC JSON 応答を表示する
+|<<cloudhub vpc create>>| 新しい VPC を作成する
+|<<cloudhub vpc delete>>| 既存の VPC を削除する
+|<<cloudhub vpc environments add>>| Runtime Manager 環境と VPC の関連付けを変更する
+|<<cloudhub vpc environments remove>>| Runtime Manager 環境と VPC の関連付けを変更する
+|<<cloudhub vpc business-groups add>>| VPC を一連のビジネスグループと共有する
+|<<cloudhub vpc business-groups remove>>| VPC を一連のビジネスグループと共有する
+|<<cloudhub vpc dns-servers set>>| 内部 DNS サーバを使用して解決されるドメイン名を設定する。オプションを指定せずに使用する場合、内部 DNS が無効になります。
+|<<cloudhub vpc dns-servers unset>>| 内部 DNS サーバを使用して解決されるドメイン名のリストをクリアする
+|<<cloudhub vpc firewall-rules describe>>| この VPC の Mule アプリケーションのファイアウォールルールを表示する
+|<<cloudhub vpc firewall-rules add>>| この VPC の Mule アプリケーションのファイアウォールルールを追加する
+|<<cloudhub vpc firewall-rules remove>>| この VPC の Mule アプリケーションのファイアウォールルールを削除する
+|===
+
+=== 環境およびビジネスグループを指定するコマンド
+
+[%header,cols="35a,65a"]
+|===
+|コマンド |説明
+|<<use environment>>| 指定された環境をアクティブにする
+|<<use business-group>>| 指定されたビジネスグループをアクティブにする
+|===
+
+Anypoint-CLI コールの形式は、次のようになります。
+[source,console]
+----
+$ anypoint-cli [params] [command]
+----
+
+コマンドを渡さない場合、Anypoint-CLI は​*対話型モード*​で実行されます。
+特定のコマンドを渡してエラーがあると、アプリケーションが終了して問題の説明が返されます。
+
+=== account user describe
+
+----
+> account user describe  [options]
+----
+
+このコマンドは、アカウントの情報を返します。これには、ユーザ名、氏名、メールアドレス、アカウントの作成日が含まれます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== account business-group list
+
+----
+> account business-group list [options]
+----
+
+このコマンドは、すべてのxref:access-management::organization.adoc#business-groups[ビジネスグループ]をリストします。ビジネスグループの名前、種別 (「Master」または「Business unit」)、ID を返します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== account business-group describe
+
+----
+> account business-group describe  [options] <name>
+----
+
+このコマンドは、<name> で渡すビジネスグループに関する情報を表示します。 +
+<name> が指定されていない場合、このコマンドは現在のセッションのビジネスグループの情報を表示します。
+
+[NOTE]
+--
+ビジネスグループまたは組織名にスペースが含まれている場合、その名前を `"` 文字で囲む必要があります。
+
+----
+> account business-group describe "QA Organization"
+----
+--
+
+このコマンドは、オーナー、種別、サブスクリプション情報、グループのエンタイトルメント、実行環境などのデータを返します。
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== account environment list
+
+----
+> account environment list [options]
+----
+このコマンドは、Anypoint Platform のすべての環境をリストします。環境名、その ID、および Sandbox 環境かどうかどうかを返します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== account environment create
+
+----
+> account environment create [options] <name>
+----
+このコマンドは、<name> で設定した名前を使用して新しい環境を作成します。 +
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に `--type` オプションも使用できます。`--type` オプションを使用して、環境種別を指定します。 +
+環境種別では、次の値がサポートされています。
+
+* 設計
+* 本番
+* Sandbox
+
+種別が指定されていない場合、このコマンドは本番環境を作成します。
+
+=== account environment delete
+
+----
+> account environment delete  [options] <name>
+----
+このコマンドは、<name> で指定される環境を削除します。 +
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== account environment delete
+
+----
+> account environment describe [options] <name>
+----
+
+このコマンドは、<name> で指定される環境を削除します。 +
+<name> が指定されていない場合、このコマンドは現在のセッションの環境に関する情報を返します。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr api list
+
+----
+> api-mgr api list [options] <searchText>
+----
+このコマンドは、API Manager のすべての API をリストします。
+
+`searchText` の API 参照名を指定して、その特定の API の結果を取得できます。 +
+このコマンドは、API 参照名、API の最新バージョン、API のバージョン数、最後に更新されてからの経過時間をリストします。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+|--limit | 取得する結果の数 | `api-mgr api list --limit 2`
+|--offset | 渡された API の数をオフセットする | `api-mgr api list --offset 3`
+|--sort | 渡された項目名の結果を並び替える | `api-mgr api list --sort "Latest Version"`
+|===
+
+=== api-mgr api-version delete
+
+----
+> api-mgr api-version delete [options] <apiName> <version>
+----
+
+このコマンドは、`apiName` で渡される API の `version` で指定されるバージョンを削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr api-version list
+
+----
+> api-mgr api-version list [options] <apiName>
+----
+
+このコマンドは、`apiName` で指定される API のすべてのバージョンをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr applications approve
+
+----
+> api-mgr applications approve [options] <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で指定される API (`apiVersion` で渡されるバージョン) に対して、`clientId` で渡されるクライアント ID のアプリケーションからのアクセス要求を承認します。
+
+[TIP]
+--
+<<api-mgr applications list>> コマンドを使用して、操作するアプリケーションのクライアント ID を取得できます。
+--
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr applications approve-tier-change
+
+----
+> api-mgr applications approve-tier-change [options] <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で指定される API (`apiVersion` で渡されるバージョン) に対して、`clientId` で渡されるクライアント ID のアプリケーションの SLA 層の変更を承認します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[TIP]
+--
+<<api-mgr applications list>> コマンドを使用して、操作するアプリケーションのクライアント ID を取得できます。
+--
+
+=== api-mgr applications delete
+
+----
+>  api-mgr applications delete [options] <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で指定されるバージョン) に対して、`clientId` で渡されるクライアント ID に関連付けられているアプリケーションを削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[TIP]
+--
+<<api-mgr applications list>> コマンドを使用して、操作するアプリケーションのクライアント ID を取得できます。
+--
+
+
+=== api-mgr applications list
+
+----
+> api-mgr applications list [options] <apiName> <apiVersion> [searchText]
+----
+
+このコマンドは、API に対するアクセス要求状況が `pending`、`approved`、`revoked` であるアプリケーションに関する情報を表示します。
+
+[TIP]
+searchText でキーワードを指定して、それらの特定のキーワードが含まれる API のみが結果に表示されるように制限できます。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+|--tier-requests | 渡されると、このコマンドは待機中の SLA 層の変更要求があるアプリケーションのみをリストする。 | `api-mgr applications list --tier-requests`
+|--limit | 取得する結果の数 | `api-mgr applications list --limit 2`
+|--offset | 渡された API の数をオフセットする | `api-mgr applications list --offset 3`
+|--sort | 渡された項目名の結果を並び替える | `api-mgr applications list --sort "Latest Version"`
+|===
+
+=== api-mgr applications reject
+
+----
+> api-mgr applications reject [options] <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で指定されるバージョン) に対して、アプリケーションを拒否します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[TIP]
+--
+<<api-mgr applications list>> コマンドを使用して、操作するアプリケーションのクライアント ID を取得できます。
+--
+
+=== api-mgr applications reject-tier-change
+
+----
+> api-mgr applications reject-tier-change [options] <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で指定されるバージョン) に対して、`clientId` で渡されるクライアント ID のアプリケーションで要求された SLA 層の変更を拒否します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[TIP]
+--
+<<api-mgr applications list>> コマンドを使用して、操作するアプリケーションのクライアント ID を取得できます。
+--
+
+=== api-mgr applications restore
+
+----
+> api-mgr applications restore [options] <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で指定されるバージョン) を使用して、`clientId` で渡されるクライアント ID に関連付けられている要求対象アプリケーションを復元します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[TIP]
+--
+<<api-mgr applications list>> コマンドを使用して、操作するアプリケーションのクライアント ID を取得できます。
+--
+
+
+=== api-mgr applications revoke
+
+----
+> api-mgr applications revoke [options] <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で指定されるバージョン) に対して、`clientId` で渡されるクライアント ID に関連付けられているアプリケーションを失効させます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[TIP]
+--
+<<api-mgr applications list>> コマンドを使用して、操作するアプリケーションのクライアント ID を取得できます。
+--
+
+=== api-mgr applications set-tier
+
+----
+> api-mgr applications set-tier [options] <tierId> <clientId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で指定されるバージョン) に対して、`clientId` で渡されるクライアント ID に関連付けられているアプリケーションの `tierId` で指定される SLA 層を設定します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[NOTE]
+<<api-mgr tiers add>> コマンドを使用して、層を作成できます。
+
+=== api-mgr definition copy
+
+----
+> api-mgr definition copy [options] <source> <target>
+----
+
+このコマンドは、`source` で渡される API から `target` で渡される API に定義をコピーします。 +
+引数「source」と「target」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+例:
+
+----
+> api-mgr definition copy Services/api-1/1.0 Development/api-1/1.0
+----
+
+`api-1` という名前の API (バージョン `1.0`) の定義を _サービス_ 組織から _開発_ 組織にコピーします。 +
+Anypoint Platform CLI でサービス組織を使用する場合、コマンドの `source` としてアプリケーション名を使用できます。
+
+----
+> api-mgr definition copy api-1/1.0 Development/api-1/1.0
+----
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr definition download
+
+----
+> api-mgr definition download [options] <apiName> <version> <directory>
+----
+
+このコマンドは、`apiName` で渡される API (`version` で指定されるバージョン) の API 定義を `directory` で渡されるローカルディレクトリにダウンロードします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== api-mgr definition upload
+
+----
+> api-mgr definition upload [options] <apiName> <version> <directory>
+----
+
+このコマンドは、`directory` で渡されるディレクトリの API 定義を `apiName` で渡される API (`version` で渡されるバージョン) にアップロードします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+|--swagger | API 定義が swagger の場合に渡される | `api-mgr definition upload --swagger --root swagger.yaml test-api 1 /Users/sample/Documents`
+|--root | アップロードする API 定義のルートファイルを定義する | `api-mgr definition upload --root sample.raml test-api 1 /Users/sample/Documents`
+|===
+
+=== api-mgr endpoint configure
+
+----
+> api-mgr endpoint configure [options] <apiName> <apiVersion>
+----
+このコマンドは、`apiName` で指定される API (バージョン `apiVersion`) のエンドポイントを設定できるようにします。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,70a"]
+|===
+|コマンド | 説明
+| -p, --withProxy            | エンドポイントでプロキシを使用するかどうかを示す。`false` を渡すと、プロキシ固有のすべてのオプションが `null` に設定されます。
+| -c, --isCloudHub           | CloudHub プロキシを設定する必要があるかどうかを示す。`true` を渡すと、プロキシの `--port` が CloudHub のデフォルト値に設定され、`--referencesUserDomain` が `false` に設定されます。
+| -r, --referencesUserDomain | プロキシでユーザドメインを参照する必要があるかどうかを示す
+| --type <value>             | エンドポイント種別
+| --uri <value>              | 実装 URI
+| --getUriFromRAML           | RAML から実装 URI を取得する
+| --scheme <value>           | プロキシスキーム
+| --port <value>             | プロキシポート
+| --path <value>             | プロキシパス
+| --responseTimeout          | 応答タイムアウト
+|===
+
+
+=== api-mgr endpoint describe
+
+----
+> api-mgr endpoint describe [options] <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) のエンドポイントの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== api-mgr policy apply
+
+----
+> api-mgr policy apply [options] <policyId> <apiName> <apiVersion>
+----
+
+このコマンドは、`policyId` で渡されるポリシーを `apiName` で渡される API (`apiVersion` で渡されるバージョン) に適用します。
+
+[TIP]
+--
+<<api-mgr policy list>> コマンドを使用して、各デフォルトポリシーのポリシー ID を確認できます。
+--
+
+
+[CAUTION]
+--
+ポリシー設定プロパティは、`-c` または `--config` オプションを使用して、JSON 形式で渡す必要があります。
+
+----
+api-mgr policy apply ip-blacklist test-api 1 -c '{"ips": "123.1.1.1"}'
+----
+
+--
+
+このコマンドでは、`-c`/`--config` オプション以外にデフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプションも使用できます。
+
+[TIP]
+--
+<<api-mgr policy describe>> オプションを使用して、各デフォルトポリシーのデフォルトの項目名と値を確認できます。 +
+--
+
+=== api-mgr policy copy
+
+----
+> api-mgr policy copy [options] <source> <target> [policyId]
+----
+
+このコマンドは、`source` で渡される API から `target` で渡される API にすべてのポリシーをコピーします。 +
+引数「source」と「target」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。
+
+「policyId」引数が指定されると、その ID に一致するポリシーのみがコピーされます。 +
+例:
+
+----
+> api-mgr policy copy Services/api-1/1.0 Development/api-1/1.0
+----
+
+`api-1` という名前の API (バージョン `1.0`) のポリシーを _サービス_ 組織から _開発_ 組織にコピーします。
+
+----
+> api-mgr policy copy Services/api-1/1.0 Development/api-1/1.0 ip-blacklist
+----
+
+ip-blacklist ポリシーのみをコピーします。
+
+Anypoint Platform CLI でサービス組織を使用する場合、コマンドの `source` としてアプリケーション名を使用できます。
+
+----
+> api-mgr definition copy api-1/1.0 Development/api-1/1.0
+----
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr policy describe
+
+----
+> api-mgr policy describe [options] <policyId>
+----
+
+このコマンドは、`policyId` で渡されるポリシーの情報を表示します。
+
+[TIP]
+--
+<<api-mgr policy list>> コマンドを使用して、各デフォルトポリシーのポリシー ID を確認できます。
+--
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr policy disable
+
+----
+> api-mgr policy disable [options] <policyId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) の `policyId` で渡されるポリシーを無効にします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[TIP]
+--
+<<api-mgr policy list>> コマンドを使用して、各デフォルトポリシーのポリシー ID を確認できます。
+--
+
+=== api-mgr policy edit
+
+----
+> api-mgr policy edit [options] <policyId> <apiName> <apiVersion>
+----
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) の `policyId` で渡されるポリシーを編集します。
+
+[TIP]
+--
+<<api-mgr policy list>> コマンドを使用して、各デフォルトポリシーのポリシー ID を確認できます。
+--
+
+[CAUTION]
+--
+ポリシー設定プロパティは、`-c` または `--config` オプションを使用して、JSON 形式で渡す必要があります。
+
+----
+api-mgr policy edit ip-blacklist test-api 1 -c '{"ips": "123.1.1.1"}'
+----
+
+--
+
+このコマンドでは、`-c`/`--config` オプション以外にデフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプションも使用できます。
+
+[TIP]
+--
+<<api-mgr policy describe>> オプションを使用して、各デフォルトポリシーのデフォルトの項目名と値を確認できます。 +
+--
+
+=== api-mgr policy enable
+
+----
+> api-mgr policy enable [options] <policyId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) の `policyId` で渡されるポリシーを有効にします。
+
+[TIP]
+--
+<<api-mgr policy list>> コマンドを使用して、各デフォルトポリシーのポリシー ID を確認できます。
+--
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr policy list
+
+----
+> api-mgr policy list [options] [apiName] [apiVersion]
+----
+
+このコマンドは、使用可能なすべてのポリシーをリストします。 +
+`apiName` と `apiVersion` が指定されると、このコマンドは指定された API に適用されるポリシーを返します。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr policy remove
+
+----
+> api-mgr policy remove [options] <policyId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) の `policyId` で渡されるポリシーを削除します。
+
+[TIP]
+--
+<<api-mgr policy list>> コマンドを使用して、各デフォルトポリシーのポリシー ID を確認できます。
+--
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr portal copy
+
+----
+> api-mgr portal copy [options] <source> <target>
+----
+
+このコマンドは、`source` で渡される API から `target` で渡される API に API Portal をコピーします。 +
+引数「source」と「target」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+例:
+
+----
+> api-mgr portal copy Services/api-1/1.0 Development/api-1/1.0
+----
+
+`api-1` という名前の API (バージョン `1.0`) の API Portal を _サービス_ 組織から _開発_ 組織にコピーします。 +
+Anypoint Platform CLI でサービス組織を使用する場合、コマンドの `source` としてアプリケーション名を使用できます。
+
+----
+> api-mgr portal copy api-1/1.0 Development/api-1/1.0
+----
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== api-mgr portal list
+
+----
+> api-mgr portal list [options] <apiName>
+----
+
+このコマンドは、`apiName` で渡される API に関連付けられているすべてのポータルをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr portal open
+
+このコマンドは、対話型モードでのみ使用できます。
+
+----
+> api-mgr portal open [options] <apiName> <version>
+----
+
+このコマンドは、`apiName` で渡される API (`version` で渡されるバージョン) の API Portal をブラウザで開きます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== api-mgr tiers add
+
+----
+> api-mgr tiers add [options] <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`version` で渡されるバージョン) の SLA 層を作成します。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,70a"]
+|===
+|コマンド | 説明
+| -a, --autoApprove | SLA 層を自動承認する必要があるかどうかを示す。
+| --name | SLA 層の名前
+| --description | SLA 層の情報
+| -l, --limit | `--limit A,B,C` 形式の SLA 層の制限の単一インスタンス。
+
+* 「A」はこの制限を表示する必要があるかどうかを示すブール。
+* 「B」は「C」期間ごとの要求数。
+* 「C」は期間の単位。期間のオプションは、次のとおりです。
+** `ms` (ミリ秒)
+** `sec` (秒)
+** `min` (分)
+** `hr` (時間)
+** `d` (日)
+** `wk` (週)
+** `mo` (月)
+** `yr` (年)
+
+例: `--limit true,100,min` は、100 要求/分の制限 (「visible」) です。 +
+
+[TIP]
+複数の制限を作成するために、複数の `--limit` オプションを指定できます。 +
+例: `-l true,100,sec -l false,20,min`
+
+|===
+
+=== api-mgr tiers copy
+
+----
+> api-mgr tiers copy [options] <source> <target>
+----
+このコマンドは、`source` で渡される API から `target` で渡される API に SLA 層をコピーします。 +
+引数「source」と「target」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+例:
+
+----
+> api-mgr tiers copy Services/api-1/1.0 Development/api-1/1.0
+----
+
+`api-1` という名前の API (バージョン `1.0`) の層を _サービス_ 組織から _開発_ 組織にコピーします。 +
+Anypoint Platform CLI でサービス組織を使用する場合、コマンドの `source` としてアプリケーション名を使用できます。
+
+----
+> api-mgr tiers copy api-1/1.0 Development/api-1/1.0
+----
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== api-mgr tiers delete
+
+----
+> api-mgr tiers delete [options] <tierId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` の API (`apiVersion` のバージョン) の `tierId` で渡される SLA 層を削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+
+=== api-mgr tiers deprecate
+
+----
+> api-mgr tiers deprecate [options] <tierId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` の API (`apiVersion` のバージョン) の `tierId` で渡される SLA 層を非推奨にします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr tiers edit
+
+----
+> api-mgr tiers edit [options] <tierId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) に関連付けられている、`tierId` で渡される SLA 層を編集します。
+
+[CAUTION]
+深いマージや比較は実行されずに、渡されるすべてのデータで元のデータが置き換えられます。 +
+完全な SLA 層データを渡す必要があります。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,70a"]
+|===
+|コマンド | 説明
+| -a, --autoApprove | SLA 層を自動承認する必要があるかどうかを示す。
+| --name | SLA 層の名前
+| --description | SLA 層の情報
+| -l, --limit | `--limit A,B,C` 形式の SLA 層の制限の単一インスタンス。
+
+* 「A」はこの制限を表示する必要があるかどうかを示すブール。
+* 「B」は「C」期間ごとの要求数。
+* 「C」は期間の単位。期間のオプションは、次のとおりです。
+** `ms` (ミリ秒)
+** `sec` (秒)
+** `min` (分)
+** `hr` (時間)
+** `d` (日)
+** `wk` (週)
+** `mo` (月)
+** `yr` (年)
+
+例: `--limit true,100,min` は、100 要求/分の制限 (「visible」) です。 +
+
+[TIP]
+複数の制限を作成するために、複数の `--limit` オプションを指定できます。 +
+例: `-l true,100,sec -l false,20,min`
+
+|===
+
+=== api-mgr tiers list
+
+----
+> api-mgr tiers list [options] <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) のすべての SLA 層をリストします。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+|--limit | 取得する結果の数 | `api-mgr tiers list --limit 2`
+|--offset | 渡された API の数をオフセットする | `api-mgr tiers list --offset 3`
+|--sort | 渡された項目名の結果を並び替える | `api-mgr tiers list --sort "Latest Version"`
+|===
+
+
+=== api-mgr tiers reactivate
+
+----
+> api-mgr tiers reactivate [options] <tierId> <apiName> <apiVersion>
+----
+
+このコマンドは、`apiName` で渡される API (`apiVersion` で渡されるバージョン) の `tierId` で渡される SLA 層を再アクティブ化します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== api-mgr proxy download
+
+----
+> api-mgr proxy download [options] <apiName> <apiVersion> <directory>
+----
+
+このコマンドは、<apiName> (<apiVersion>) で使用されるプロキシの ZIP アーカイブを <directory> で渡されるローカルディレクトリにダウンロードします。 +
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に `-gatewayVersion` オプションも使用できます。  指定しない場合、このコマンドのデフォルトは最新バージョンになります。
+
+=== designcenter project create
+
+----
+> designcenter project create [options] <name>
+----
+
+このコマンドは、<name> で指定される名前を使用して、新しい Design Center プロジェクトを作成します。
+
+[IMPORTANT]
+このコマンドでは、Mule アプリケーション種別はサポートされていません。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+| --type (必須) | プロジェクトタイプ。 +
+この項目は必須です。
+
+サポートされている値は、次のとおりです。
+
+* raml
+* raml-fragment | `designcenter project create --type raml`
+| --fragment-type | アプリケーション種別が RAML フラグメントの場合のフラグメントタイプ。
+
+type オプションが raml-fragment として設定されている場合、この項目は必須です。
+
+サポートされているフラグメントタイプは、次のとおりです。
+
+* trait
+* resource-type
+* library
+* type
+* user-documentation | `designcenter project create --type raml-fragment --fragment-type user-documentation`
+|===
+
+=== designcenter project delete
+
+----
+> designcenter project delete [options] <name>
+----
+
+このコマンドは、`name` で指定される Design Center プロジェクトを削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== designcenter project download
+
+----
+> designcenter project download [options] <name> <targetDir>
+----
+
+このコマンドは、`name` で渡される Design Center プロジェクトを `targetDir` で指定されるローカルディレクトリにダウンロードします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== designcenter project publish
+
+----
+> designcenter project publish [options] <projectName>
+----
+
+このコマンドは、`projectName` で渡される Design Center プロジェクトを Exchange をパブリッシュします。 +
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[TIP]
+指定されていないオプションは、exchange.json から抽出されます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+| --name | アセットの名前 | `designcenter project publish --name sampleProject`
+| --main | メインファイル名の名前。 | `designcenter project publish --main sample.xml`
+| --apiVersion | プロジェクトが API 仕様プロジェクトの場合の API バージョン。 | `designcenter project publish --main sample.raml --apiVersion 1.0`
+| --tags | タグのカンマ区切りリスト。 | `designcenter project publish --tags test,sample,integration`
+| --groupId | アセットのグループ ID。 | `designcenter project publish --groupId com.mulesoft.com`
+| --assetId  | アセットのアセット ID。 | `designcenter project publish --assetId project`
+| --version | アセットのバージョン。 | `designcenter project publish --version 1.0`
+|===
+
+=== designcenter project upload
+
+----
+> designcenter project upload [options] <name> <projDir>
+----
+
+このコマンドは、`projDir` で渡されるローカルディレクトリの Design Center プロジェクトをアップロードし、`name` で渡される名前を使用して名前を付けます。
+
+デフォルトでは、このコマンドは非表示のファイルおよびディレクトリをすべて無視します。非表示のファイルおよびディレクトリを含めるには、`--include-dot-files` オプションを使用します。 +
+`--include-dot-files` オプションを使用すると、コマンドは指定されたディレクトリの非表示のファイルおよびフォルダをアップロードします。
+
+このコマンドでは、`--include-dot-files` オプション以外にデフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプションも使用できます。
+
+=== designcenter project list
+
+----
+> designcenter project list [options] [searchText]
+----
+
+このコマンドは、すべての Design Center プロジェクトをリストします。 +
+プロジェクトの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset upload
+
+----
+> exchange asset upload [options] <assetIdentifier> [filePath]
+----
+
+このコマンドは、<assetIdentifier> で渡される ID を使用して、oas、wsdl、http、またはカスタムアセットをアップロードします。 +
+[filePath] で ZIP アーカイブファイルが参照されている場合、アセットを記述する「exchange.json」ファイルがそのアーカイブに含まれている必要があります。 +
+引数「assetIdentifier」は、<>/<>/<version> の形式にする必要があります。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+| --apiVersion |  アセット API バージョン .3+<.<| `exchange asset upload --apiVersion 1.0 --name testProject --classifier custom`
+| --name       |  アセット名
+| --classifier |  アセット分類子 +
+有効な分類子は、`custom`、`oas`、`wsdl` です。
+|===
+
+=== exchange asset modify
+
+----
+> exchange asset modify [options] <assetIdentifier>
+----
+
+このコマンドは、<assetIdentifier> で識別される Exchange アセットを変更します。 +
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+|--name | 新しいアセット名 .2+<.<| `exchange asset modify --name newName --tags test,sample`
+|--tags | アセットのカンマ区切りタグ
+|===
+
+=== exchange asset download
+
+----
+> exchange asset download [options] <assetIdentifier> <directory>
+----
+
+このコマンドは、<assetIdentifier> で識別される Exchange アセットを <directory> で渡されるディレクトリにダウンロードします。 +
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset list
+
+----
+> exchange asset list [options] [searchText]
+----
+
+このコマンドは、Exchange のすべてのアセットをリストします。
+
+[TIP]
+searchText でキーワードを指定して、それらの特定のキーワードが含まれる API のみが結果に表示されるように制限できます。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,40a,30a"]
+|===
+|コマンド | 説明 |  例
+|--limit | 取得する結果の数 | `exchange asset list --limit 2`
+|--offset | 渡された API の数をオフセットする | `exchange asset list --offset 3`
+|--sort | 渡された項目名の結果を並び替える | `exchange asset list --sort "Latest Version"`
+|===
+
+
+=== exchange asset page download
+
+----
+> exchange asset page download [options] <assetIdentifier> <directory> [pageName]
+----
+
+このコマンドは、<assetIdentifier> で識別される Exchange アセットの [pageName] で指定される説明ページを <directory> で渡されるディレクトリにダウンロードします。 +
+[pageName] が指定されていない場合、このコマンドはすべてのページをダウンロードします。
+
+[NOTE]
+このコマンドでは、パブリッシュ済みページのみがサポートされています。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+説明ページは、マークダウン形式でダウンロードされます。「name」が指定されていない場合、すべてのページがダウンロードされます。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset page modify
+
+----
+> exchange asset page modify [options] <assetIdentifier> <pageName>
+----
+
+このコマンドは、<assetIdentifier> で識別される Exchange アセットの <pageName> で指定される説明ページを変更します。
+
+[NOTE]
+このコマンドでは、パブリッシュ済みページのみがサポートされています。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に、新しいアセットページ名を設定する `--name` オプションも使用できます。
+
+=== exchange asset page upload
+
+----
+> exchange asset page upload [options] <assetIdentifier> <pageName> <mdPath>
+----
+
+このコマンドは、<pageName> で指定される名前を使用して、アセットの説明ページを <mdPath> で渡されるパスから <assetIdentifier> で識別される Exchange アセットにアップロードします。 +
+ページの名前を「home」にすると、アップロードされたページが Exchange アセットのメイン説明ページになります。
+
+[NOTE]
+このコマンドでは、パブリッシュ済みページのみがサポートされています。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset page delete
+
+----
+> exchange asset page delete [options] <assetIdentifier> <pageName>
+----
+
+このコマンドは、<assetIdentifier> で識別されるアセットの <pageName> で指定される説明ページを削除します。 +
+[pageName] が指定されていない場合、このコマンドはすべてのページをダウンロードします。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+[NOTE]
+このコマンドでは、パブリッシュ済みページのみがサポートされています。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset page list
+
+----
+> exchange asset page list <assetIdentifier>
+----
+
+このコマンドは、<assetIdentifier> で渡されるアセットのすべてのページをリストします。 +
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。
+
+[NOTE]
+このコマンドでは、パブリッシュ済みページのみがサポートされています。
+
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== exchange asset copy
+
+----
+> exchange asset copy [options] <source> <target>
+----
+
+このコマンドは、<source> から <target> に Exchange アセットをコピーします。 +
+引数「source」と「target」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset delete
+
+----
+> exchange asset delete [options] <assetIdentifier>
+----
+
+このコマンドは、<assetIdentifier> で渡される Exchange アセットを削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset deprecate
+
+----
+> exchange asset deprecate <assetIdentifier>
+----
+
+このコマンドは、<assetIdentifier> で渡されるアセットを非推奨にします。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset undeprecate
+
+----
+> exchange asset undeprecate <assetIdentifier>
+----
+
+このコマンドは、<assetIdentifier> で渡されるアセットの非推奨を解除します。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== exchange asset describe
+
+----
+> exchange asset describe <assetIdentifier>
+----
+
+このコマンドは、<assetIdentifier> で渡されるアセットの情報を表示します。
+
+引数「assetIdentifier」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-alert list
+
+----
+> runtime-mgr cloudhub-alert list [options]
+----
+このコマンドは、現在の環境に関連付けられているすべてのアラートをリストします。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-alert-history describe
+
+----
+> runtime-mgr cloudhub-alert-history describe [options] <name>
+----
+このコマンドは、<name> で渡されるアラームの履歴の情報を表示します。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application list
+
+----
+> runtime-mgr cloudhub-application list [options]
+----
+
+このコマンドは、Anypoint-CLI で使用できるすべてのアプリケーションをリストします。アプリケーション、その状況、割り当てられている vCore の数、最終更新時間を返します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application describe
+
+----
+> runtime-mgr cloudhub-application describe [options] <name>
+----
+
+このコマンドは、<name> で渡すアプリケーションに関する情報を表示します。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+アプリケーションのドメイン、その状況、最終更新時間、ランタイムバージョン、.zip ファイル名、リージョン、監視、ワーカー、および永続的なキューや静的 IP の有効化に関する「TRUE」または「FALSE」情報などのデータを返します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application describe-json
+
+----
+> runtime-mgr cloudhub-application describe-json  [options] <name>
+----
+
+このコマンドは、<name> で指定するアプリケーションの未加工の JSON 応答を返します。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application stop
+
+----
+> runtime-mgr cloudhub-application stop  [options] <name>
+----
+
+このコマンドは、<name> で指定する実行中のアプリケーションを停止します。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application start
+
+----
+> runtime-mgr cloudhub-application start [options] <name>
+----
+
+このコマンドは、<name> で指定する実行中のアプリケーションを開始します。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application restart
+
+----
+> runtime-mgr cloudhub-application restart  [options] <name>
+----
+
+このコマンドは、<name> で指定する実行中のアプリケーションを再起動します。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application delete
+
+----
+> runtime-mgr cloudhub-application delete [options] <name>
+----
+
+このコマンドは、<name> で指定する実行中のアプリケーションを削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cloudhub-application deploy
+
+----
+> runtime-mgr cloudhub-application deploy  [options] <name> <zipfile>
+----
+
+このコマンドは、<name> で設定する名前を使用して、<zipfile> で指定する Mule のデプロイ可能なアーカイブ .zip ファイルをデプロイします。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+ローカルハードドライブのデプロイ可能な zip ファイルの絶対パスまたは相対パスを指定する必要があります。また、アプリケーションには一意の名前を付ける必要があります。
+
+このコマンドで使用できるオプションは、次のとおりです。
+[%header,cols="30a,70a"]
+|===
+|オプション |説明
+|--runtime                                   | ランタイム環境の名前とバージョン。 +
+このオプションを使用して、デプロイするランタイムの名前とバージョンを指定します。 +
+この値の例として、`2.1.1-API-Gateway`、`3.9.1-visualizer`、`4.1.1` などが挙げられます。 +
+CLI で使用可能なすべてのオプションを表示するには、このオプションの後で `tab` キーをタップします。
+|--workers                                      | ワーカーの数。(このデフォルト値は「1」)。
+|--workerSize                               | vCore のワーカーのサイズ。(このデフォルト値は「1」)。
+|--region                                        | デプロイ先のリージョンの名前。 +
+サポートされているすべてのリージョンのリストを取得するには、<<cloudhub region list>> コマンドを使用します。
+|--property                                    | プロパティ (name:value) を設定する。複数回指定できます。 +
+設定するプロパティは引用符で囲み、文字 `:` および `=` はエスケープする必要があります +
+(例: `--property "salesforce.password:qa\=34534"`)。
+
+文字 `:` は、プロパティの名前に使用できません。
+|--propertiesFile                        | このファイルの値ですべてのプロパティを上書きする。ファイル形式は、1 行以上の name:value 形式です。ローカルハードドライブのプロパティファイルの絶対パスを設定します。
+|--persistentQueues                   | 永続的なキューを有効または無効にする。「true」または「false」の値を使用できます。(このデフォルト値は「false」)。
+|--persistentQueuesEncrypted  | 永続的なキューの暗号化を有効または無効にする。「true」または「false」の値を使用できます。(このデフォルト値は「false」)。
+|--staticIPsEnabled                                      | 静的 IP を有効または無効にする。「Enable」または「Disabled」の値を使用できます。(このデフォルト値は「Disabled」)。
+|--autoRestart                            | 応答しない場合にアプリケーションを自動的に再起動する。「true」または「false」の値を使用できます。(このデフォルト値は「false」)。
+|--help                                                  | 使用量情報を出力する
+|===
+Anypoint-CLI から静的 IP を割り当てることはできません。有効化または無効化のみが可能です。
+
+オプションの入力後、`tab` キーをダブルタップすると、使用可能なすべてのオプションのリストが表示されます。
+例:
+----
+> deploy <app name> --runtime [tab][tab]
+----
+選択できる使用可能なすべてのランタイムをリストします。
+
+[IMPORTANT]
+====
+オプションを使用せずにデプロイする場合、アプリケーションはすべてのデフォルト値を使用してデプロイされます。
+====
+
+=== runtime-mgr cloudhub-application modify
+
+----
+> runtime-mgr cloudhub-application modify  [options] <name> [zipfile]
+----
+このコマンドは、既存のアプリケーションの設定を更新します。必要に応じて、新しい .zip ファイルをアップロードして更新できます。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。
+このコマンドでは、*deploy* オプションとまったく同じオプションを使用できます。
+
+また、オプションの入力を開始して `tab` キーを押し、Anypoint-CLI でオプションをオートコンプリートすることもできます。
+
+//TODO Check revert-runtime deprecation
+// === runtime-mgr application revert-runtime
+//
+// [source,Example]
+// ----
+// > runtime-mgr application revert-runtime [options] <name>
+// ----
+// This command reverts the application defined in <name> to its previous runtime environment. +
+// You can start typing your application's name and hit `tab` for Anypoint-CLI to autocomplete it, or you can double tap `tab` for a full list of all the values you can pass. +
+// This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
+
+=== runtime-mgr cloudhub-application download-logs
+
+----
+> runtime-mgr cloudhub-application download-logs [options] <name> <directory>
+----
+このコマンドは、<name> で指定されるアプリケーションのログを指定のディレクトリにダウンロードします。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+UI とは異なり、CLI からダウンロードするログでは、システムログとワーカーログが分離されません。
+
+=== runtime-mgr cloudhub-application tail-logs
+
+----
+> runtime-mgr cloudhub-application tail-logs [options] <name>
+----
+
+このコマンドは、アプリケーションログの末尾を表示します。 +
+アプリケーションの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+// === runtime-mgr cloudhub-application upgrade-runtime
+//
+// [source,Example]
+// ----
+// > runtime-mgr cloudhub-application upgrade-runtime [options] <name>
+// ----
+//
+// This command upgrades the runtime version of the application passed in `name` to the latest patch version. If the `-v`/`--version` option is used to specify a specific runtime version, this command updates the application's runtime to that version. +
+// Besides the `--version` option, this command also takes the default `--help`, `-f`/`--fields` and `-o`/`--output` options.
+//
+// === runtime-mgr cloudhub-application downgrade-runtime
+//
+// [source,Example]
+// ----
+// > runtime-mgr cloudhub-application downgrade-runtime [options] <name>
+// ----
+// This command downgrades the runtime version of the application passed in `name` to the previous runtime version. If the `-v`/`--version` option is used to specify a specific runtime version, this command updates the application's runtime to that version. +
+// Besides the `--version` option, this command also takes the default `--help`, `-f`/`--fields` and `-o`/`--output` options.
+
+=== runtime-mgr cloudhub-application copy
+
+----
+> runtime-mgr cloudhub-application copy [options] <source> <target>
+----
+
+このコマンドは、`source` で渡される CloudHub アプリケーションを `target` で渡される対象にコピーします。 +
+引数「source」と「target」は、([]/)<>/<version> の形式にする必要があります。 +
+「」が指定されていない場合、現在選択されている組織 ID がデフォルトに設定されます。 +
+例:
+
+----
+> runtime-mgr cloudhub-application copy Services:QA/application-1 Development:QA/application-2
+----
+`application-1` という名前のアプリケーションを _サービス_ 組織の QA 環境から _開発_ 組織の QA 環境にコピーします。 +
+Anypoint Platform CLI でサービス組織の QA 環境を使用する場合、コマンドの `source` としてアプリケーション名を使用できます。
+
+----
+> runtime-mgr cloudhub-application copy application-1 Development/QA/application-2
+----
+
+[NOTE]
+このコマンドを実行するには、ユーザに OS の `/tmp` ディレクトリ (CLI のインストール先) への参照/更新アクセス権が必要です。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application artifact
+
+----
+> runtime-mgr standalone-application artifact [options] <identifier> <directory>
+----
+
+このコマンドは、`identifier` アプリケーションのアプリケーションアーチファクトを `directory` で渡されるディレクトリにダウンロードします。 +
+「identifier」パラメータは、アプリケーション ID または名前のいずれかになります。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application deploy
+
+----
+> runtime-mgr standalone-application deploy [options] <targetIdentifier> <name> <zipfile>
+----
+
+このコマンドは、パス `zipfile` の zip ファイルとして渡されるアプリケーションを `targetIdentifier` で渡されるオンプレミスの対象にデプロイします。 +
+「targetIdentifier」パラメータは、対象 ID または名前のいずれかになります。 +
+対象は、サーバ、サーバグループ、クラスタのいずれかになります。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application describe-json
+
+----
+> runtime-mgr standalone-application describe-json [options] <identifier>
+----
+
+このコマンドは、`identifier` で渡されるアプリケーションの情報を未加工の JSON 応答として表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application modify
+
+----
+> runtime-mgr standalone-application modify [options] <identifier> <zipfile>
+----
+
+このコマンドは、パスとして `zipfile` で渡される zip ファイルアプリケーションを使用して、`identifier` で渡されるスタンドアロンアプリケーションを変更します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application start
+
+----
+> runtime-mgr standalone-application start [options] <identifier>
+----
+
+このコマンドは、`identifier` で渡されるアプリケーションを開始します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application delete
+
+----
+> runtime-mgr standalone-application delete [options] <identifier>
+----
+
+このコマンドは、`identifier` で渡されるアプリケーションを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+=== runtime-mgr standalone-application describe
+
+----
+> runtime-mgr standalone-application describe [options] <identifier>
+----
+
+このコマンドは、`identifier` で渡されるスタンドアロンアプリケーションの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application list
+
+----
+> runtime-mgr standalone-application list [options]
+----
+
+このコマンドは、すべてのスタンドアロンアプリケーションをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application restart
+
+----
+> runtime-mgr standalone-application restart [options] <identifier>
+----
+
+このコマンドは、`identifier` で渡されるアプリケーションを再起動します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application stop
+
+----
+> runtime-mgr standalone-application stop [options] <identifier>
+----
+
+このコマンドは、`identifier` で渡されるスタンドアロンアプリケーションを停止します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-application copy
+
+----
+> runtime-mgr standalone-application copy [options] <source> <target> <targetIdentifier>
+----
+
+このコマンドは、`source` で渡されるスタンドアロンアプリケーションを `target` で渡される対象およびサーバ、サーバグループ、クラスタ ID (`targetIdentifier` で渡される名前) にコピーします。 +
+`source` と `destination` の引数はどちらも、次のように `<organizationName>:<environmentName>/<appName>` の形式を使用して表されます。
+
+----
+> runtime-mgr standalone-application copy Services:QA/application-1 Development:QA/application-2 123456
+----
+`application-1` という名前のアプリケーションを _サービス_ 組織の QA 環境からサーバ ID 123456 の _開発_ 組織の QA 環境にコピーします。 +
+Anypoint Platform CLI でサービス組織の QA 環境を使用する場合、コマンドの `source` としてアプリケーション名を使用できます。
+
+----
+> runtime-mgr standalone-application copy application-1 Development/QA/application-2 123456
+----
+
+[NOTE]
+このコマンドを実行するには、ユーザに OS の `/tmp` ディレクトリ (CLI のインストール先) への参照/更新アクセス権が必要です。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr pcf-application delete
+
+----
+> runtime-mgr pcf-application delete [options] <appId>
+----
+
+このコマンドは、`appId` で渡される PCF アプリケーションを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+=== runtime-mgr pcf-application describe
+
+----
+> runtime-mgr pcf-application describe [options] <appId>
+----
+
+このコマンドは、`appId` で渡される PCF デプロイ済みアプリケーションの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr pcf-application list
+
+----
+> runtime-mgr pcf-application list [options]
+----
+
+このコマンドは、すべての PCF デプロイ済みアプリケーションをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr pcf-application restart
+
+----
+> runtime-mgr pcf-application restart [options] <appId>
+----
+
+このコマンドは、`appId` で渡される PCF デプロイ済みアプリケーションを再起動します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr pcf-application stop
+
+----
+> runtime-mgr pcf-application stop [options] <appId>
+----
+
+このコマンドは、`appId` で渡される PCF デプロイ済みアプリケーションを停止します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr pcf-application deploy
+
+----
+> runtime-mgr pcf-application deploy [options] <name> <zipfile>
+----
+
+このコマンドは、`name` で渡される名前 ID を使用して、`zipfile` で渡されるアプリケーションを PCF インスタンスにデプロイします。 +
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30,70"]
+|===
+|値 |説明
+| --runtime [version] | ランタイムバージョン
+| --replication [factor] | 複製係数
+| --property [property] | プロパティ (name:value) を設定する。複数回指定できます。
+| --propertiesFile [propertiesFile] | このファイルの値ですべてのプロパティを上書きする。ファイル形式は、1 行以上の name:value 形式です。
+| --binding [binding] | プロパティ (serviceName.key:value) を設定する。複数回指定できます。
+| --bindingsFile [sindingsFile] | このファイルの値ですべてのプロパティを上書きする。ファイル形式は、1 行以上の serviceName.key:value 形式です。
+|===
+
+=== runtime-mgr pcf-application describe-json
+
+----
+> runtime-mgr pcf-application describe-json [options] <appId>
+----
+
+このコマンドは、`appId` で渡される PCF デプロイ済みアプリケーションの未加工の JSON の情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr pcf-application modify
+
+----
+> runtime-mgr pcf-application modify [options] <appId> [zipfile]
+----
+
+このコマンドは、`zipfile` で渡される ZIP ファイルアプリケーションを使用して、`appId` で渡される PCF デプロイ済みアプリケーションを変更します。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30,70"]
+|===
+|値 |説明
+| --runtime [version] | ランタイムバージョン
+| --replication [factor] | 複製係数
+| --property [property] | プロパティ (name:value) を設定する。複数回指定できます。
+| --propertiesFile [propertiesFile]  | このファイルの値ですべてのプロパティを上書きする。ファイル形式は、1 行以上の name:value 形式です。
+| --binding [binding] | プロパティ (serviceName.key:value) を設定する。複数回指定できます。
+| --bindingsFile [sindingsFile] | このファイルの値ですべてのプロパティを上書きする。ファイル形式は、1 行以上の serviceName.key:value 形式です。
+|===
+
+=== runtime-mgr pcf-application start
+
+----
+> runtime-mgr pcf-application start [options] <appId>
+----
+
+このコマンドは、`appId` で渡される PCF デプロイ済みアプリケーションを開始します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr server describe
+
+----
+> runtime-mgr server describe [options] <serverId>
+----
+
+このコマンドは、`serverId` で渡されるサーバの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr server modify
+
+----
+> runtime-mgr server modify [options] <serverId>
+----
+
+このコマンドは、`serverId` で渡されるサーバを変更します。 +
+クラスタの ID を更新するには、`--name` オプションを渡す必要があります。
+
+このコマンドでは、`--name` オプション以外にデフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプションも使用できます。
+
+=== runtime-mgr server token
+
+----
+> runtime-mgr server token [options]
+----
+
+このコマンドは、サーバ登録トークンを取得します。新しいサーバを登録するには、このトークンを使用する必要があります。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr server delete
+
+----
+> runtime-mgr server delete [options] <serverId>
+----
+
+このコマンドは、`serverId` で渡されるサーバを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+=== runtime-mgr server list
+
+----
+> runtime-mgr server list [options]
+----
+
+このサーバは、環境内のすべてのサーバをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+// TODO: Deprecated server register
+// === runtime-mgr server register
+//
+// [source,Example]
+// ----
+// > runtime-mgr server register [options] <name> <directory>
+// ----
+//
+// This command registers a new server with the name passed in `name`. This command returns a signed certificate which is downloaded to `directory` path.
+//
+// Besides the default `--help`, `-f`/`--fields` and `-o`/`--output` options, this command also takes:
+//
+// [%header,cols="30,70"]
+// |===
+// |Value |Description
+// | --signature <signatureStr> | Signature for Sign Certificate Request.
+// | --mule <version> | Mule version
+// | --gateway <version> | Gateway version
+// |===
+
+=== runtime-mgr serverGroup create
+
+----
+> runtime-mgr serverGroup create [options] <name> [serverIds...]
+----
+
+このコマンドは、後で引数として渡されるサーバ ID を使用して、`name` で渡される名前でサーバグループを作成します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr serverGroup describe
+
+----
+> runtime-mgr serverGroup describe [options] <serverGroupId>
+----
+
+このコマンドは、`serverGroupId` で渡されるサーバグループの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr serverGroup modify
+
+----
+> runtime-mgr serverGroup modify [options] <serverGroupId>
+----
+
+このコマンドは、`serverGroupId` で渡されるサーバグループを変更します。 +
+クラスタの ID を更新するには、`--name` オプションを渡す必要があります。
+
+このコマンドでは、`--name` オプション以外にデフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプションも使用できます。
+
+
+=== runtime-mgr serverGroup add server
+
+----
+> runtime-mgr serverGroup add server [options] <serverGroupId> <serverId>
+----
+
+このコマンドは、`serverId` で渡されるサーバを `serverGroupId` で渡されるサーバグループに追加します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr serverGroup delete
+
+----
+> runtime-mgr serverGroup delete [options] <serverGroupId>
+----
+
+このコマンドは、`serverGroupId` で渡されるサーバグループを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+=== runtime-mgr serverGroup list
+
+----
+> runtime-mgr serverGroup list [options]
+----
+
+このコマンドは、環境内のすべてのサーバグループをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr serverGroup remove server
+
+----
+> runtime-mgr serverGroup remove server [options] <serverGroupId> <serverId>
+----
+
+このコマンドは、`serverGroupId` で渡されるサーバグループから `serverId` で渡されるサーバを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cluster add server
+
+----
+> runtime-mgr cluster add server [options] <clusterId> <serverId>
+----
+
+このコマンドは、`clusterId` のクラスタを `serverId` で渡されるサーバに追加します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cluster delete
+
+----
+> runtime-mgr cluster delete [options] <clusterId>
+----
+
+このコマンドは、`clusterId` で渡されるクラスタを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+=== runtime-mgr cluster list
+
+----
+> runtime-mgr cluster list [options]
+----
+
+このコマンドは、環境内のすべてのクラスタをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cluster remove server
+
+----
+> runtime-mgr cluster remove server [options] <clusterId> <serverId>
+----
+
+このコマンドは、`clusterId` で渡されるクラスタから `serverId` で渡されるサーバを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cluster create
+
+----
+> runtime-mgr cluster create [options] <name>
+----
+
+このコマンドは、`name` で渡される ID を使用してクラスタを作成します。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+[%header,cols="30,70"]
+|===
+|値 | 説明
+|--multicast | クラスタをマルチキャストにする必要があるかどうか
+|--server <id:ip> | サーバ ID と IP アドレスのペア。マルチキャストクラスタの場合、後者は省略可能です。複数のサーバを追加するには、複数の値を指定します。
+|===
+
+=== runtime-mgr cluster describe
+
+----
+> runtime-mgr cluster describe [options] <clusterId>
+----
+
+このコマンドは、`clusterId` で渡されるクラスタの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr cluster modify
+
+----
+> runtime-mgr cluster modify [options] <clusterId>
+----
+
+このコマンドは、`clusterId` で渡されるクラスタを変更します。 +
+クラスタの ID を更新するには、`--name` オプションを渡す必要があります。
+
+このコマンドでは、`--name` オプション以外にデフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプションも使用できます。
+
+
+
+
+=== runtime-mgr standalone-alert describe
+
+----
+> runtime-mgr standalone-alert describe [options] <alertId>
+----
+
+このコマンドは、`alertId` で渡されるアラートの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== runtime-mgr standalone-alert create
+
+----
+> runtime-mgr standalone-alert create [options] <name>
+----
+
+このコマンドは、`name` で渡される ID を使用して、スタンドアロンランタイムの新しいアラートを作成します。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30,70"]
+|===
+|値 |説明
+| --severity <val> | アラートの重要度
+| --resourceType <type> | アラートのリソース種別
+| --resource [id] | アラートのリソース ID。複数回使用できます。指定されていない場合、すべてのリソースでアラートがトリガされます。resourceType に応じて、リソースはアプリケーション、サーバ、サーバグループ、クラスタになります。
+| --condition <val> | アラートのトリガ条件
+| --period [minutes] | 条件の期間 (分)
+| --threshold [num] | 条件のしきい値
+| --operator [type] | しきい値に関する値を記述する条件演算子。
+| --subject <string> | アラート通知メールの件名
+| --content <string> | アラート通知メールの本文
+| --recipient [username] | アラート通知を送信するユーザ名。複数回使用して、複数のユーザ名を指定できます。
+| --email [emailAddress] | アラート通知を送信するメール。複数回使用して、複数のメールを指定できます。
+|===
+
+=== runtime-mgr standalone-alert modify
+
+----
+> runtime-mgr standalone-alert modify [options] <alertId>
+----
+
+このコマンドは、`alertId` で渡されるアラートを変更します。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30,70"]
+|===
+|値 |説明
+| --name <val> | アラート名
+| --severity <val> | アラートの重要度
+| --resourceType <type> | アラートのリソース種別
+| --resource [id] | アラートのリソース ID。複数回使用できます。指定されていない場合、すべてのリソースでアラートがトリガされます。resourceType に応じて、リソースはアプリケーション、サーバ、サーバグループ、クラスタになります。
+| --condition <val> | アラートのトリガ条件
+| --period [minutes] | 条件の期間 (分)
+| --threshold [num] | 条件のしきい値
+| --operator [type] | しきい値に関する値を記述する条件演算子。
+| --subject <string> | アラート通知メールの件名
+| --content <string> | アラート通知メールの本文
+| --recipient [username] | アラート通知を送信するユーザ名。複数回使用して、複数のユーザ名を指定できます。
+| --email [emailAddress] | アラート通知を送信するメール。複数回使用して、複数のメールを指定できます。
+|===
+
+=== runtime-mgr standalone-alert list
+
+----
+> runtime-mgr standalone-alert list [options]
+----
+
+このコマンドは、現在の環境のスタンドアロンランタイムのすべてのアラートをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+
+=== cloudhub load-balancer list
+
+----
+> cloudhub load-balancer list [options]
+----
+このコマンドは、Anypoint Platform のすべてのロードバランサをリストします。ロードバランサの名前、ドメイン、その状態、およびロードバランサがバインドされている VPC ID を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer describe
+
+----
+> cloudhub load-balancer describe [options] <name>
+----
+このコマンドは、<name> で指定されるロードバランサに関する情報を表示します。 +
+ロードバランサの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+ロードバランサの名前、ドメイン、その状態、およびロードバランサがバインドされている VPC ID を表示します。
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer describe-json
+
+----
+> cloudhub load-balancer describe [options] <name>
+----
+このコマンドは、<name> で指定されるロードバランサの未加工の JSON 応答を表示します。 +
+ロードバランサの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer create
+
+----
+> cloudhub load-balancer create [options] <vpc> <name> <certificate> <privateKey>
+----
+このコマンドは、環境変数で指定される値を使用してロードバランサを作成します。
+[%header,cols="12,53a,35a"]
+|===
+|値 |説明 |例
+| vpc |このロードバランサがバインドされる VPC の名前。 +
+*VPC 名にスペースが含まれている場合、「"」文字で囲んで渡す必要があります。* | vpc-demo
+| name (名前) |ロードバランサの名前。 | newtestloadbalancer
+| Certificate (証明書) |ローカルハードドライブのサーバ証明書の `.pem` ファイルへの絶対パス。 +
+*証明書ファイルは、暗号化せずに PEM でエンコードする必要があります。* | /Users/mule/Documents/cert.pem
+| privateKey |ローカルハードドライブのサーバ証明書の非公開鍵の `.pem` ファイルへの絶対パス。 +
+*非公開鍵ファイルは、パスフレーズレスである必要があります。* | /Users/mule/Documents/privateKey.pem
+|===
+
+[CAUTION]
+--
+<name> で渡すロードバランサの名前は一意である必要があります。 +
+デフォルトでは、ロードバランサは https で外部要求をリスンし、http で内部的にワーカーと通知します。 +
+https でリスンするように VPC 内の Mule アプリケーションを設定している場合、<<cloudhub-load-balancer-mappings-add,load-balancer mappings add>> コマンドを使用してマッピングリストを作成するときに `upstreamProtocol` が https に設定されていることを確認してください。
+--
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,70a"]
+|===
+|値 |説明
+|http | ロードバランサの HTTP 動作を指定する。これは `on` (http 要求を受け入れて、設定したデフォルトの _sslendpoint_ に転送する)、`off` (すべての http 要求を拒否する)、または `redirect` (https にリダイレクトする) に設定できます。
+|clientCertificate | クライアント証明書ファイル
+|verificationMode  | クライアント検証モードを指定する。`on` (常に検証)、`off` (検証しない)、または `optional` (検証は省略可能) に設定できます。
+|crl | 証明書失効リストファイル
+|tlsv1  | TLSv1、TLSv1.1、TLSv1.2 をサポートする
+|dynamic-ips | 再起動後は保持されない動的 IP を使用する。
+|===
+
+[NOTE]
+CloudHub は、オンライン証明書状況プロトコル (OCSP) を実装しません。証明書失効リストを最新の状態に保つには、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955/pages/107964[REST API] を使用してプログラムで証明書を更新することをお勧めします。
+
+設定についての詳細は、専用xref:cloudhub-dedicated-load-balancer.adoc[ロードバランサドキュメント]ページのxref:cloudhub-dedicated-load-balancer.adoc#managing-certificates[証明書セクション]を参照してください。
+
+=== cloudhub load-balancer start
+
+----
+> cloudhub load-balancer start [options] <name>
+----
+このコマンドは、<name> で指定されるロードバランサを開始します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== cloudhub load-balancer stop
+
+----
+> cloudhub load-balancer stop [options] <name>
+----
+このコマンドは、<name> で指定されるロードバランサを停止します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer delete
+
+----
+> cloudhub load-balancer delete [options] <name>
+----
+
+このコマンドは、<name> で指定されるロードバランサを削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer ssl-endpoint add
+
+----
+> cloudhub load-balancer ssl-endpoint add [options] <name> <certificate> <privateKey>
+----
+このコマンドは、渡される証明書と非公開鍵を使用して、SSL エンドポイントを <name> で指定されるロードバランサに追加します。
+
+[%header,cols="12a,53a,35a"]
+|===
+|値 |説明 |例
+| name (名前) |ロードバランサの名前。 | newtestloadbalancer
+| Certificate (証明書) |ローカルハードドライブの証明書の `.pem` ファイルへの絶対パス。 +
+*証明書ファイルは、暗号化せずに PEM でエンコードする必要があります。* | /Users/mule/Documents/cert.pem
+| privateKey |ローカルハードドライブの非公開鍵の `.pem` ファイルへの絶対パス。 +
+*非公開鍵ファイルは、パスフレーズレスである必要があります。* | /Users/mule/Documents/privateKey.pem
+|===
+
+[NOTE]
+CloudHub は、オンライン証明書状況プロトコル (OCSP) を実装しません。証明書失効リストを最新の状態に保つには、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/2321502/pages/107964[REST API] を使用してプログラムで証明書を更新することをお勧めします。
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="15a,85a"]
+|===
+|値 |説明
+|clientCertificate | クライアント証明書ファイル
+|verificationMode  | クライアント検証モードを指定する。`on` (常に検証)、`off` (検証しない)、または `optional` (検証は省略可能) に設定できます。
+|crl | 証明書失効リストファイル
+|tlsv1  | TLSv1、TLSv1.1、TLSv1.2 をサポートする
+|===
+
+設定についての詳細は、専用xref:cloudhub-dedicated-load-balancer.adoc[ロードバランサドキュメント]ページのxref:cloudhub-dedicated-load-balancer.adoc#managing-certificates[証明書セクション]を参照してください。
+
+=== cloudhub load-balancer ssl-endpoint remove
+
+----
+> cloudhub load-balancer ssl-endpoint remove [options] <name> <certificateName>
+----
+このコマンドは、<name> で指定されるロードバランサから <certificateName> で指定される SSL 証明書を削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer ssl-endpoint set-default
+
+----
+> cloudhub load-balancer ssl-endpoint set-default [options] <name> <certificateName>
+----
+このコマンドは、<name> で渡されるロードバランサのデフォルトの証明書として <certificateName> で指定される証明書を設定します。 +
+
+ロードバランサの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="30a,70a"]
+|===
+|値 |説明
+|http | ロードバランサの HTTP 動作を指定する
+|===
+
+=== cloudhub load-balancer ssl-endpoint describe
+
+----
+> cloudhub load-balancer ssl-endpoint describe [options] <name> <certificateName>
+----
+このコマンドは、<certificateName> で指定される証明書の <name> で渡されるロードバランサの設定に関する情報を表示します。 +
+ロードバランサの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer whitelist add
+
+----
+> cloudhub load-balancer whitelist add [options] <name> <cidrBlock>
+----
+このコマンドは、<cidrBlock> で指定される IP アドレスの範囲を <name> で指定されるロードバランサのホワイトリストに追加します。
+
+[NOTE]
+ホワイトリストは、CN 証明書レベルではなく、ロードバランサレベルで動作します。  https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks[CIDR 表記]の形式の IP アドレスのみを渡してください。
+
+ロードバランサの名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer whitelist remove
+
+----
+> cloudhub load-balancer whitelist remove <name> <cidrBlock>
+----
+このコマンドは、<cidrBlock> で指定される IP または IP アドレスの範囲を <name> で指定されるロードバランサのホワイトリストから削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer mappings describe
+
+----
+> cloudhub load-balancer mappings describe <name> [certificateName]
+----
+このコマンドは、<name> で指定されるロードバランサのマッピングルールをリストします。 +
+`certificateName` が渡されない場合、Anypoint Platform CLI はデフォルトの SSL エンドポイントのマッピングを返します。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer mappings add
+
+----
+> cloudhub load-balancer mappings add [options] <name> <index> <inputUri> <appName> <appUri> [certificateName]
+----
+このコマンドは、`certificateName` オプションで渡される CN の <index> で指定される優先度インデックスで、<name> で指定されるロードバランサにプロキシマッピングルールを追加します。 +
+`certificateName` が渡されない場合、Anypoint Platform CLI はマッピングをデフォルトの SSL エンドポイントに追加します。
+
+
+[%header,cols="12a,68a,20a"]
+|===
+|値 |説明 |例
+|name (名前) |ルールが適用されるロードバランサの名前。 |testloadbalancer
+|index |ルールの優先度。  |1
+|inputUri |入力 URL の URI の名前 |example.com
+|appName |要求が転送される出力 URL のアプリケーションの名前 |{app}-example
+|appUri |要求が転送される出力 URL のアプリケーションの URI |/
+|===
+
+上の例の値の場合、`my-superapp.api.example.com/status?limit=10` への入力コールでアプリケーションのエンドポイント `my-superapp-example: /status?limit=10` がコールされます。
+
+このコマンドでは、`--upstreamProtocol` オプションも使用できます。 +
+`--upstreamProtocol` オプションは、内部的にロードバランサと通信するためにアプリケーションで使用されるプロトコルを設定します。upstreamProtocol が設定されていない場合、HTTP がデフォルトとして使用されます。
+
+[%header,cols="12a,68a,20a"]
+|===
+| --upstreamProtocol <protocol> | HTTP ポート 8091 または HTTPS ポート 8092 でアップストリームアプリケーションを確認する。 +
+サポートされている値: http、https | --upsetreamProtocol http
+| --certificateName | |
+|===
+
+=== cloudhub load-balancer mappings remove
+
+----
+> cloudhub load-balancer mappings remove [options] <name> <index> [certificateName]
+----
+このコマンドは、<index> で指定される優先度インデックスおよび `certificateName` オプションとして指定される CN で、<name> で指定されるロードバランサからプロキシマッピングルールを削除します。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。`certificateName` が渡されない場合、Anypoint Platform CLI はデフォルトの SSL エンドポイントのマッピングを削除します。
+
+=== cloudhub load-balancer dynamic-ips enable
+
+----
+> cloudhub load-balancer dynamic-ips enable [options] <name>
+----
+このコマンドは、<name> で指定されるロードバランサの動的 IP を有効にします。
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub load-balancer dynamic-ips disable
+
+----
+> cloudhub load-balancer dynamic-ips disable [options] <name>
+----
+このコマンドは、<name> で指定されるロードバランサの動的 IP を無効にします。
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== cloudhub region list
+
+----
+> cloudhub region list [options]
+----
+このコマンドは、サポートされているすべてのリージョンをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub runtime list
+----
+> cloudhub runtime list [options]
+----
+このコマンドは、サポートされているすべてのランタイムをリストします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub vpc list
+
+----
+> cloudhub vpc list [options]
+----
+このコマンドは、使用可能なすべての VPC をリストします。ID、リージョン、ネットワークの環境、およびデフォルトの VPC かどうかを返します。
+
+=== cloudhub vpc describe
+
+----
+> cloudhub vpc describe [options] <name>
+----
+このコマンドは、<name> で指定される VPC に関する情報を表示します。 +
+VPC の名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub vpc describe-json
+
+----
+> cloudhub vpc describe [options] <name>
+----
+このコマンドは、<name> で指定される VPC の未加工の JSON 応答を表示します。 +
+VPC の名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub vpc create
+
+----
+> cloudhub vpc create [options] <name> <region> <cidrBlock> [environments...]
+----
+このコマンドは、クラスレスインタードメインルーティング (CIDR) ブロック形式 (https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks[CIDR 表記]を使用) の <cidrBlock> で渡されるxref:virtual-private-cloud.adoc#size-your-vpc[サイズ]で <name> の名前を使用して <region> で指定されるリージョンに VPC を作成し、後で引数として渡されるxref:access-management::environments.adoc[環境]に関連付けます。
+
+[NOTE]
+VPC は、組織内のビジネスグループにバインドされている必要があります。VPC を作成するときに <<cloudhub vpc business-groups add,business-groups add>> コマンドを使用して、ビジネスグループに割り当ててください。
+
+このコマンドでは、デフォルトの `--help` オプション以外に `--default` オプションも使用できます。渡されると、VPC は選択された環境のデフォルトの VPC として作成されます。
+
+=== cloudhub vpc delete
+
+----
+> cloudhub vpc delete <name>
+----
+このコマンドは、<name> で指定される VPC を削除します。
+
+[WARNING]
+このコマンドは、削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub vpc environments add
+
+----
+> cloudhub vpc environments add [options] <vpc> [environments...]
+----
+このコマンドは、<vpc> で定義される VPC を、後で引数として渡される環境に割り当てます。 +
+`--default` オプションでは、VPC を組織のデフォルトとして設定できます。これは、VPC が明示的に関連付けられていないすべての環境に適用されます。
+
+このコマンドでは、デフォルトの `--help` オプションも使用できます。
+
+=== cloudhub vpc environments remove
+
+----
+> cloudhub vpc environments remove [options] <vpc> [environments...]
+----
+このコマンドは、<vpc> で定義される VPC を、後で引数として渡される環境から削除します。 +
+このコマンドでは、デフォルトの `--help` オプション以外に、この VPC を環境のデフォルトの VPC として削除する `--default` オプションも使用できます。
+
+=== cloudhub vpc business-groups add
+
+----
+> cloudhub vpc business-groups add [options] <vpc> <businessGroups...>
+----
+このコマンドは、<vpc> で定義される VPC を、後で引数として渡されるビジネスグループに割り当てます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub vpc business-groups remove
+----
+> cloudhub vpc business-groups remove [options] <vpc> <businessGroups...>
+----
+このコマンドは、<vpc> で定義される VPC を、後で引数として渡されるビジネスグループから削除します。 +
+
+[WARNING]
+このコマンドは、指定されたリソースから VPC を削除する前に 2 回入力を促しません。削除命令を送信する場合、確認を求められることはありません。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub vpc dns-servers set
+
+----
+> cloudhub vpc dns-servers set [options] <vpc>
+----
+このコマンドは、非公開アドレスでも公開アドレスでも IP アドレスを指定する必要がある DNS サーバを使用して解決されるローカルホスト名 (内部ドメイン名) のリストを設定します。 +
+それらの非公開ドメインが指定されている場合、ワーカーは非公開 DNS を使用して解決するため、非公開ネットワークの内部ホスト名を引き続き使用できます。
+
+[NOTE]
+この機能は、Mule バージョン 3.5.x、3.6.x、3.7.4、3.8.0-HF1、3.8.1、3.8.2 を実行しているワーカーでサポートされます。
+
+
+このコマンドでは、デフォルトの `--help`、`-f`/`--fields`、`-o`/`--output` オプション以外に次のオプションも使用できます。
+
+[%header,cols="20a,80a"]
+|===
+|オプション |説明
+| サーバ | 特殊なドメインを解決する DNS サーバの IP。最大 3 回指定できます。
+| ドメイン | 特殊な DNS サーバリストで解決するドメイン。複数回指定できます。
+|===
+
+ドメインは任意の数、IP アドレスは最大 3 個渡すことができます。 +
+例: `$ cloudhub vpc dns-servers set --domain example.com --server 192.168.1.10 <VPC Name>`。
+
+このコマンドを実行するたびに、以前の DNS セットコマンドは上書きされます。 +
+DNS セットを削除するには、<<cloudhub vpc dns-servers unset,vpc dns-servers unset>> コマンドを使用する必要があります。
+
+=== cloudhub vpc dns-servers unset
+
+----
+> cloudhub vpc dns-servers unset [options] <vpc>
+----
+このコマンドは、<vpc> で渡される VPC の DNS サーバを使用して解決されるローカルホスト名 (内部ドメイン名) のリストをクリアします。
+
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== cloudhub vpc firewall-rules describe
+
+----
+> cloudhub vpc firewall-rules describe <vpc>
+----
+このコマンドは、<vpc> で定義される VPC のすべてのファイアウォールルールの情報を表示します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== cloudhub vpc firewall-rules add
+
+----
+> cloudhub vpc firewall-rules add [options] <vpc> <cidrBlock> <protocol> <fromPort> [toPort]
+----
+このコマンドは、変数で設定される値を使用して、<vpc> で定義される VPC にファイアウォールルールを追加します。 +
+
+[%header,cols="18a,62a,20a"]
+|===
+|値 |説明 |例
+| vpc |このロードバランサがバインドされる VPC の名前。 +
+*VPC 名にスペースが含まれている場合、「"」文字で囲んで渡す必要があります。* | vpc-demo
+| cidrBlock | ファイアウォールで許可する CIDR 表記の IP アドレス。  | 192.0.1.0/27
+| protocol | ルールで使用するプロトコル。`tcp` または `udp` になります。 | tcp
+| fromPort | ファイアウォールで要求を許可するポート (0 ～ 65535)。 | 8888
+| toPort | *省略可能*。ポート範囲が必要な場合、`fromPort` および `toPort` 変数でそのような範囲を定義します。 | 8090
+|===
+
+[CAUTION]
+--
+VPC を作成するときにアウトバウンドアドレスを許可してください。 +
+デフォルトでは、すべての IP アドレスがブロックされるため、VPC ファイアウォールルールに対して IP アドレスまたはアドレスの範囲を承認する必要があります。
+--
+
+VPC の名前の入力を開始して `tab` キーを押すと、Anypoint-CLI によって名前がオートコンプリートされます。また、`tab` キーをダブルタップすると、渡すことができるすべての値の完全なリストが表示されます。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+
+=== cloudhub vpc firewall-rules remove
+
+----
+> cloudhub vpc firewall-rules remove <vpc> <index>
+----
+このコマンドは、<index> で渡されるインデックスで、<vpc> で指定される VPC 内のワーカーからファイアウォールルールを削除します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== use environment
+
+このコマンドは、対話型モードでのみ使用できます。
+
+----
+> use environment [options] <name>
+----
+このコマンドは、<name> で指定される環境をアクティブにします。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
+
+=== use business-group
+
+このコマンドは、対話型モードでのみ使用できます。
+
+----
+> use business-group  [options] <name>
+----
+このコマンドは、<name> で指定されるビジネスグループをアクティブにします。
+
+[NOTE]
+--
+ビジネスグループまたは組織名にスペースが含まれている場合、その名前を `"` 文字で囲む必要があります。
+
+----
+> use business-group "QA Organization"
+----
+--
+
+=== exit
+
+----
+> exit [options]
+----
+このコマンドは、Anypoint-CLI を終了します。 +
+このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。Anypoint Platform には、以下を操作するコマンドラインツールが用意されています。

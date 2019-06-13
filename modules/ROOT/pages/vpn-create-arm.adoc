@@ -1,0 +1,73 @@
+= Anypoint VPN 接続の作成
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+== 前提条件
+
+Anypoint VPN を作成する前に、Anypoint Virtual Private Cloud (Anypoint VPC) を作成する必要があります。詳細はxref:virtual-private-cloud.adoc[「Virtual Private Cloud」]を参照してください。 
+
+また、外部ネットワークのコンポーネントが正しく設定されていることも確認してください。
+
+1 つの Anypoint VPC は最大 10 個の Anypoint VPN に対応できます。
+
+Anypoint VPN を作成または設定するときに、次の情報を入力する必要があります。
+
+* *Remote IP address (リモート IP アドレス):* 接続先のデバイスの IP アドレス。
+* *Pre-shared Key (PSK) (事前共有キー (PSK)):* Anypoint Platform とネットワークを接続するネットワークトンネルによって使用される共有シークレット。この値は *[Automatic Tunnel Configuration (自動トンネル設定)]* を選択すると自動生成されます。
+* *Point-to-Point CIDR (ポイントツーポイント CIDR):* ネットワークトンネルによって使用される IP 範囲。トンネルごとに一意の IP アドレス範囲を設定する必要があります。この値は *[Automatic Tunnel Configuration (自動トンネル設定)]* を選択すると自動生成されます。
+* *Remote and Local Autonomous System Number (ASN) (リモートおよびローカルの自律システム番号 (ASN))*: ルーティングのプレフィックスのコレクションを指定します。Anypoint VPN を作成する前に、リモート ASN とローカル ASN の両方を設定する必要があります。これは動的ルーティングを使用する場合のみ必須です。
+* *Classless Inter-Domain Routing (CIDR) (クラスレスドメイン間ルーティング (CIDR))*: ネットワークのルーティングアドレスを指定します。これは静的ルーティングを使用する場合のみ必須です。
+
+== Anypoint VPNの作成
+
+. Anypoint Management Center から、*[Runtime Manager]* を選択します。
+. Anypoint VPN を作成する環境に移動します。
+. *[VPNs (VPN)]* タブをクリックし、*[Create VPN (VPNを作成)]* をクリックします。
+. Anypoint VPN について次の情報を入力または選択します。 +
+* *Name (名前)* - Anypoint VPN の名前を入力します。 
+* *VPC* - ドロップダウンリストから、Anypoint VPN 接続の Virtual Private Cloud を選択します。
+* *Remote IP Address (リモート IP アドレス)* - Anypoint VPN に接続するために使用するリモート IP アドレスを入力します。
+. 使用するルーティング種別を選択します。 
++
+[NOTE]
+*[BGP]* か *[Static (静的)]* を選択できます。デバイスでサポートされている場合は、ボーダーゲートウェイプロトコル (BGP) 種別を選択してください。
++
+.. BGP を使用するには、*[BGP]* を選択し、次の値を入力します。 +
+* *Remote ASN (リモート ASN)* - バックエンドに対応する ASN を入力します。デフォルト値は `65001` です。
+* *Local ASN (ローカル ASN)* - MuleSoft 側の ASN を割り当てます。デフォルト値は `64512.` です。
+.. 静的ネットワークルーティングを使用するには、*[Staic (静的)]* を選択し、*[Add New Rule (新規ルールを追加)]* をクリックします。 +
+*[CIDR]* 項目に、クラスレスドメイン間ルーティングアドレスを入力します。例: `10.0.0.0/8`
+. *[Tunnel Configuration (トンネル設定)]* を選択し、Anypoint Platform とネットワークを接続します。 +
+* *Automatic (自動)* - Anypoint VPN に必要なトンネルを自動的に設定します。
+* *Custom (カスタム)* - Anypoint VPN で使用されるトンネルを手動で設定できます。 +
+各 Anypoint VPN 接続にはトンネルが 2 つあり、それぞれ一意のパブリック IP アドレスを使用します。冗長性を確保するため、両方のトンネルを設定することが重要です。カスタム設定の場合は両方の接続に同じ PSK 値を使用できますが、異なるポイントツーポイント CIDR 範囲を使用する必要があります。
+.. *[PSK]* 項目に事前共有キーの値を入力します。 +
+PSK の長さは 8 ～ 64 文字にする必要があり、先頭にゼロ (0) を使用することはできません。許可される文字は、英数字、ピリオド (.)、アンダースコア (_) です。
+.. *[Point-to-Point CIDR (ポイントツーポイント CIDR)]* 項目に、Anypont VPN トンネルの内部 IP アドレス範囲を入力します。 +
+169.254.0.0/16 範囲から、サイズ /30 の CIDR ブロックを指定できます。CIDR ブロックはすべての Anypoint VPN 接続で一意であることが必要です。 +
+次の CIDR ブロックは使用できません。 
++
+----	
+169.254.0.0/30
+169.254.1.0/30
+169.254.2.0/30
+169.254.3.0/30
+169.254.4.0/30
+169.254.5.0/30
+169.254.169.252/30
+----
+. *[Create VPN (VPN を作成)]* をクリックします。
+
+[NOTE]
+Anypoint VPN 接続を作成した後にトンネルオプションを変更することはできません。既存の接続の設定を変更するには、Anypoint VPN 接続を削除して新しい接続を作成する必要があります。 
+
+== 結果
+
+作成後、新しい Anypoint VPN が Anypoint VPN のリストに表示されます。最初に *[Status (状況)]* 列には *[PENDING (待機中)]*、両方の Anypoint VPN トンネルに *[DOWN (停止中)]* と表示されます。Anypoint VPN 接続が正常に確立されたら、状況は *[AVAILABLE (使用可能)]* と *[UP (稼働中)]* に変わります。
+
+=== 関連情報
+
+* xref:vpn-about.adoc[Anypoint VPN]
+* xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud]
+* https://support.mulesoft.com/s/article/Anypoint-VPN-Knowledge-Articles[Anypoint VPN ナレッジ記事]

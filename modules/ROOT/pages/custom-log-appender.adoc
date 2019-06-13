@@ -1,0 +1,108 @@
+= CloudHub カスタムログアペンダー
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, ログ, 拡張ログ管理
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+CloudHub ログを無効にするオプションを使用すると、独自の Log4j 設定を指定して、独自のログシステムと統合することができます。
+
+== Log4j 設定の作成
+[IMPORTANT]
+====
+* この機能は要求に基づいて使用できます。この機能にアクセスできない場合は、サポートポータルを使用してこの機能を要求することができます。
+* MuleSoft は、ユーザ独自の Log4j アペンダーの誤った設定よるログデータの損失に対して責任を負いません。
+* また、MuleSoft は、誤った設定により発生したパフォーマンス低下、ディスク容量の不足、または他の副次的影響についても責任を負いません。
+* ユーザのログシステムと CloudHub の両方にログが送信されるように設定するには、以下の指示を読んでください。UI には、CloudHub のログを使用できないことを示す警告が継続的に表示されます。
+* デフォルトの CloudHub アプリケーションログを無効にした場合、システムログのみを使用できます。アプリケーションワーカーのログについては、独自のアプリケーションのログシステムを確認してください。このシナリオでは、ログのダウンロードはできません。
+* 非同期ログアペンダーのみを使用できます。同期アペンダーは使用しないでください。
+====
+
+独自の Log4j アペンダーを有効にするには、まず、ユーザのログ設定を使用して `log4j2.xml` 設定ファイルを作成する必要があります。Anypoint Studio では、このファイルは src/main/resources ディレクトリにあります。独自の Log4j 設定を作成する方法についての詳細は、 https://logging.apache.org/log4j/2.x/manual/configuration.html[Log4j のドキュメント]を参照してください。
+
+独自のログシステムにログを送信する共に CloudHub でログを表示できるようにする場合、CloudHub Log4j アペンダーを設定する必要があります。これをログ設定の基本設定とすることをお勧めします。MuleSoft スタッフがリモートでのデバッグ目的でログが必要になる場合に備えて、アペンダーはログデータを CloudHub に送信し、ローカルのログファイルを提供します。
+
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" name="cloudhub" packages="com.mulesoft.ch.logging.appender">
+    <Appenders>
+        <RollingFile name="FILE"
+                     fileName="/opt/mule/mule-CURRENT/logs/mule-${sys:domain}.log"
+                     filePattern="/opt/mule/mule-CURRENT/logs/mule-${sys:domain}-%i.log">
+
+            <PatternLayout pattern="[%d{MM-dd HH:mm:ss.SSS}] %-5p %c{1} [%t]: %m%n"/>
+            <DefaultRolloverStrategy max="10"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+        </RollingFile>
+        <Log4J2CloudhubLogAppender name="CLOUDHUB"
+                                   addressProvider="com.mulesoft.ch.logging.DefaultAggregatorAddressProvider"
+                                   applicationContext="com.mulesoft.ch.logging.DefaultApplicationContext"
+                                   appendRetryIntervalMs="${sys:logging.appendRetryInterval}"
+                                   appendMaxAttempts="${sys:logging.appendMaxAttempts}"
+                                   batchSendIntervalMs="${sys:logging.batchSendInterval}"
+                                   batchMaxRecords="${sys:logging.batchMaxRecords}"
+                                   memBufferMaxSize="${sys:logging.memBufferMaxSize}"
+                                   journalMaxWriteBatchSize="${sys:logging.journalMaxBatchSize}"
+                                   journalMaxFileSize="${sys:logging.journalMaxFileSize}"
+                                   clientMaxPacketSize="${sys:logging.clientMaxPacketSize}"
+                                   clientConnectTimeoutMs="${sys:logging.clientConnectTimeout}"
+                                   clientSocketTimeoutMs="${sys:logging.clientSocketTimeout}"
+                                   serverAddressPollIntervalMs="${sys:logging.serverAddressPollInterval}"
+                                   serverHeartbeatSendIntervalMs="${sys:logging.serverHeartbeatSendIntervalMs}"
+                                   statisticsPrintIntervalMs="${sys:logging.statisticsPrintIntervalMs}">
+
+            <PatternLayout pattern="[%d{MM-dd HH:mm:ss}] %-5p %c{1} [%t]: %m%n"/>
+        </Log4J2CloudhubLogAppender>
+    </Appenders>
+    <Loggers>
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="FILE"/>
+            <AppenderRef ref="CLOUDHUB"/>
+        </AsyncRoot>
+        <AsyncLogger name="com.gigaspaces" level="ERROR"/>
+        <AsyncLogger name="com.j_spaces" level="ERROR"/>
+        <AsyncLogger name="com.sun.jini" level="ERROR"/>
+        <AsyncLogger name="net.jini" level="ERROR"/>
+        <AsyncLogger name="org.apache" level="WARN"/>
+        <AsyncLogger name="org.apache.cxf" level="WARN"/>
+        <AsyncLogger name="org.springframework.beans.factory" level="WARN"/>
+        <AsyncLogger name="org.mule" level="INFO"/>
+        <AsyncLogger name="com.mulesoft" level="INFO"/>
+        <AsyncLogger name="org.jetel" level="WARN"/>
+        <AsyncLogger name="Tracking" level="WARN"/>
+    </Loggers>
+</Configuration>
+----
+
+== CloudHub でのカスタム Log4j 設定の有効化
+
+Log4j アペンダーを設定したら、アプリケーションを CloudHub にデプロイして、独自の Log4j 設定を指定していることを CloudHub に伝えます。
+
+. https://anypoint.mulesoft.com/#/signin[Anypoint Platform] にログインし、*[CloudHub]* をクリックします。
+. アプリケーションをクリックし、詳細ビューを展開します。
++
+image::chapps.png[CHApps]
++
+. *[Settings (設定)]* > *[Disable CloudHub Logs (CloudHub ログを無効化)]* をクリックします。
++
+image::disablechlogs.png[DisableCHLogs]
++
+確認を促すメッセージが表示されます。
++
+image::disablechlogsverification.png[DisableCHLogsVerification]
++
+. *[Apply Changes (変更を適用)]* をクリックします。
+. アプリケーション設定を参照して、設定が正しいことを確認します。
+. *[Apply Changes (変更を適用)]* をクリックして、アプリケーションを再起動します。
+
+アプリケーションが起動すると、カスタム Log4j アペンダーへのログの送信が開始され、対象システムでログを参照できるようになります。
+
+上記で指定した CloudHub Log4j アペンダーを使用しなかった場合、システムログのみを使用できます。
+システムログでは、ワーカーのデプロイ状況と、アプリケーションが適切に起動したかどうかが示されますが、アプリケーションログは提供されません。

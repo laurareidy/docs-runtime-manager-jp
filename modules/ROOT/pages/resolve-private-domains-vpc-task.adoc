@@ -1,0 +1,37 @@
+= 内部ネットワーク内のプライベートドメインの解決方法
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+ネットワークの IP アドレスとドメイン名を追加して、カスタムプライベートドメインを指定できます。プライベートドメインを提供すると、ワーカーはプライベート DNS を使用してそれらを解決するので、まだプライベートネットワークの内部ホスト名を使用することできます。
+
+. Anypoint Platform にサインインし、*[Management Center]* で *[Runtime Manager]* をクリックします。
+. 左ナビゲーションで、*[VPCs]* をクリックします。
+. 設定する Anypoint VPC の行を選択し、*[Manage VPC (VPC を管理)]* をクリックします。
+. *[Internal DNS (内部 DNS)]* タブをクリックします。
+. *[Add New IP (新規 IP を追加)]* をクリックして、内部 DNS サーバの IP アドレスを入力し、*[Add to List (リストに追加)]* をクリックします。 +
+IP アドレスは 3 つまで入力できます。
++
+image::vpc-tutorial-f7641.png[]
++
+. *[Add New Domain (新規ドメインを追加)]* をクリックして、内部 DNS サーバのドメイン名を入力し、*[Add to List (リストに追加)]* をクリックします。 +
+追加する必要があるのはドメイン名の共通部分のみです (例: `mulesoft.com`)。
++
+複数のプライベートドメインを追加できます。
++
+image::vpc-tutorial-7770c.png[]
++
+. *[Apply Changes (変更を適用)]* をクリックします。
++
+image::internal-dns-configuration.png[]
+
+内部ネットワーク内でドメイン名を解決する場合、次の点に留意してください。
+
+* 設定する IP アドレスは、内部ネットワークの DNS サーバのものです。接続先のサービスの IP アドレスではありません。
+* 設定するすべてのドメインの最大文字数は 255 文字以内にする必要があります。たとえば、`mydomain1.com` と `mydomain2.com` というドメインを追加するには 28 文字が必要です。DNS 階層では、すべてのドメインの末尾は "." 文字になるので、各ドメイン名には追加で 1 文字が使用されます。
+* 255 文字制限を超えることがないように、ホスト名の入力は避けてください。
+
+== 関連情報
+
+* xref:vpc-architecture-concept.adoc[VPC ネットワークアーキテクチャについて]
+* xref:vpc-tutorial.adoc[VPC の作成]

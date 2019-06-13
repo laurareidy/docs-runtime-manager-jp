@@ -1,0 +1,58 @@
+= Virtual Private Cloud について
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+Anypoint Virtual Private Cloud (VPC) を使用して、分離された仮想プライベートネットワークセグメントをクラウドに作成し、CloudHub ワーカーをホストすることができます。
+
+Anypoint VPC に接続することにより企業イントラネットが拡張され、CloudHub ワーカーから企業ファイアウォールの内側にあるリソースにアクセスできます。セキュアな VPN トンネル経由、VPC ピアリング経由のプライベート AWS VPC、または AWS 直接接続を使用して、オンプレミスのデータセンターに接続することができます。
+
+基本の Anypoint VPC サブスクリプションには 2 つの Anypoint VPC が含まれており、各 Anypoint VPC を複数の環境に関連付けることができます。たとえば、分離されたネットワークの 1 つを本番環境に、もう 1 つを QA およびステージングに使用できます。ライセンス要件は、特定のデプロイメントシナリオによって異なります。 
+
+Anypoint VPC では、さまざまな Amazon リージョンがサポートされています。セットアップ時に必要な Amazon リージョンを指定する必要があります。1 つの Amazon リージョン内で複数の Anypoint VPC を使用することもできますが、これは標準のセットアップではないため、Anypoint VPC をプロビジョニングするときにこの要件を指定する必要があります。
+
+image::virtual-private-cloud-78b5f.png[]
+
+各 Anypoint VPC で、ワーカーに適用するファイアウォールルールを設定できます。カスタムポートを公開またはブロックしたり、CloudHub の共有ロードバランサからのアプリケーションに対する要求をブロックすることもできます。 +
+さらに、1 つ以上の専用ロードバランサを設定し、独自の SSL 証明書を使用して要求を検証したり、入力 URL をさまざまな CloudHub アプリケーションにマップしたりできます。 +
+ファイアウォールルールと専用ロードバランサの設定を組み合わせることで、外部サービスがどのようにアプリケーションに到達するかを微調整できます。
+
+[[example_deployment_scenarios]]
+== Anypoint VPC デプロイメントシナリオの例
+Anypoint VPC の計画および設定を行うときには、要件を満たす十分なライセンスがあることを確認してください。 
+
+=== 1 対 1 関係のデプロイメント
+
+このシナリオでは、1 対 1 の関係を使用します。つまり、各 Anypoint VPC は リモートロケーションにある 1 つのパブリック IP アドレスに接続できます。1 つのリモートロケーションに 1 つのライセンスが使用されます。
+
+image::vpc-1-1-deployment.png[1 対 1 VPC デプロイメント]
+
+=== 1 つの Anypoint VPC を 2 つのリモートロケーションに接続
+
+Anypoint VPC とリモートロケーションの間に厳格な 1 対 1 関係は必要ありません。この例では、1 つの Anypoint VPC が 2 つのリモートロケーションにあるパブリック IP アドレスに接続されます。これは、基本の Anypoint VPC サブスクリションに含まれる両方の Anypoint VPN ライセンスを 1 つの Anypoint VPC に使用することを意味し、2 つ目の Anypoint VPC に接続するためのライセンスがなくなります。 
+
+image::vpc-one-to-two-remote-locations.png[2 つのリモートロケーションに接続する 1 つの Anypoint VPC]
+
+=== 2 つの Anypoint VPC をそれぞれ 2 つのリモートロケーションに接続
+
+両方の Anypoint VPC を 2 つのリモートロケーションに接続する Anypoint VPC デプロイメントシナリオを実装する場合、同じ 2 つのパブリック IP アドレスを使用する場合でも、4 個の Anypoint VPC ライセンスが必要になります。これは、Anypoint VPC からアクセスできるようにする各リモートロケーションに、Anypoint VPC ライセンスがもう 1 つ必要だからです。
+
+image::vpc-2-2-deployment.png[2 対 2 VPC デプロイメント]
+
+
+
+// _TODO: So On-prem + cloud ?
+// VPCs can have multiple peers (connections)
+
+== 関連情報
+
+* xref:vpc-architecture-concept.adoc[Anypoint VPC ネットワークアーキテクチャについて]
+* xref:vpc-provisioning-concept.adoc[Anypoint VPC のプロビジョニングについて]
+* xref:cloudhub-dedicated-load-balancer.adoc[CloudHub 専用ロードバランサについて]
+* xref:vpc-firewall-rules-concept.adoc[Anypoint VPC ファイアウォールルールについて]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+//_TODO: Add this as a See Also link:
+// xref:cloudhub-architecture.adoc#cloudhub-workers[CloudHub workers]
+// xref:cloudhub-dedicated-load-balancer.adoc[dedicated load balancer features]
+// <<Set up Internal DNS, DNS server>>
+// CH Architechture

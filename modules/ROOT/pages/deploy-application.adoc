@@ -1,0 +1,52 @@
+= アプリケーションのデプロイ
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 管理, クラウド, enterprise, デプロイ, Runtime Manager, arm
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+xref:cloudhub-api.adoc[CloudHub API] を使用して、アプリケーションをデプロイします。
+
+[TIP]
+Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] を参照してください。
+
+`/api/applications/{domain}/deploy` リソース (`{domain}` はアプリケーションドメイン) を指定して POST メソッドを実行すると、Mule アプリケーションの ZIP ファイルを CloudHub にデプロイできます。 
+通常、Anypoint Studio でアプリケーションを作成した後や、コマンドラインから Maven を使用した後にデプロイを実行します。このとき、ZIP ファイルを CloudHub にアップロードする必要があります。 
+
+ZIP ファイルをデプロイしたら、xref:logs.adoc[ログを参照]してデプロイの状況を監視できます。
+
+*要求の例:*
+
+[source,json,linenums]
+----
+POST https://anypoint.mulesoft.com/cloudhub/api/applications/hello/deploy
+
+.. application data ...
+----
+
+*応答の例:*
+
+[source,json,linenums]
+----
+200 OK
+----
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+
+== 関連情報
+
+* xref:index.adoc[Runtime Manager]
+* xref:cloudhub.adoc[CloudHub]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

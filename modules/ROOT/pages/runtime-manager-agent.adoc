@@ -1,0 +1,76 @@
+= Runtime Manager エージェント
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: エージェント, Mule, サーバ, 監視, 通知, 外部システム, サードパーティ, 状況の取得, メトリクス
+
+image:logo-cloud-disabled.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+Runtime Manager エージェントは、Mule API を公開する、Mule のプラグイン拡張機能です。Runtime Manager (クラウドコンソールと Anypoint Platform Private Cloud Edition の両方) では、このエージェントを使用して登録済みの Mule インスタンスと通信します。
+
+Runtime Manager 外部で、外部システムから Runtime Manager エージェント API をコールして Runtime Manager エージェントを使用し、Mule インスタンスを監視および制御したり、Mule の独自のデータを外部システムに公開したりできます。Runtime Manager エージェントには、次を含む多数の機能があります。
+
+* アプリケーション、ドメイン、サーバの制御
+** ドメインをリスト、デプロイ、アンデプロイ、または再デプロイする。
+** アプリケーションをリスト、デプロイ、アンデプロイ、状況の取得、開始または停止する。
+* 外部分析システムへの Mule メトリクスの公開
+
+[NOTE]
+====
+* Runtime Manager は、Mule の Community バージョンではなく、Enterprise バージョンのみで使用できます。Runtime Manager エージェントでは、Mule 3.6.0 以降がサポートされています。
+* アプリケーションを xref:deploying-to-pcf.adoc[Pivotal Cloud Foundry] にデプロイする場合、Runtime Manager エージェントのインストールや設定の心配をする必要はありません。このシナリオでは、Runtime Manager エージェントは Mule インスタンスと Runtime Manager 間のリンクとして通常どおりに機能します。ただし、ランタイムインスタンスが自動的に新規作成される同じ PCF ビルドパックでは、Runtime Manager エージェントインスタンスも作成され、Runtime Manager にそれらが登録されます。Runtime Manager エージェントの設定を変更する場合は、ビルドパックを変更する必要があります。
+====
+
+== 通信プロトコル
+
+Runtime Manager エージェントでは、REST と WebSockets の 2 つの通信プロトコルがサポートされています。
+
+=== WebSockets 通信
+WebSockets は (`amc_setup -H` を実行して) `hybrid` インストールオプションで使用されます。このコマンドには、Runtime Manager アカウントから Runtime Manager エージェントの登録先にコピーされるトークンが必要です。クラウドベースまたはオンプレミスバージョンの Runtime Manager にも同じインストールオプションが使用されます。
+
+Runtime Manager エージェントを Runtime Manager に (ハイブリッド `-H` オプションを使用して) 登録するとき、Runtime Manager エージェントでは最初に Runtime Manager とのアウトバウンド HTTPS 接続が確立されます。この接続は、Runtime Manager と Runtime Manager エージェント間で、新しいセキュアな全二重 WebSocket 接続を確立するために使用されます。
+
+設定後、Runtime Manager エージェントは Mule が再起動するたびに、この Runtime Manager アカウントにセキュアに接続されます。  Runtime Manager エージェントによって確立されるリンクを使用して、Anypoint Runtime 管理コンソールからリモートで Mule を監視および管理することができます。
+
+Mule の実行中にこのリンクがダウンすると、統計や分析は WebSocket 接続を再確立できるまでバッファされます。また、WebSockets 接続が切断された場合には、再接続戦略もあります。
+
+=== REST 通信
+各 Runtime Manager エージェントを設定し、Runtime Manager 外部の他の管理ツールによる他の REST 接続 (`-S` オプションを使用したセキュア接続、または `-I` オプションを使用した非セキュア接続) の使用を許可することができます。
+
+また、Runtime Manager エージェントの `mule-agent.yml` ファイルを手動で編集し、通信接続を 1 つの Runtime Manager エージェントに一元化したり、これらの接続のパラメータを変更したりすることもできます。
+
+== インストールの場所
+Runtime Manager エージェントは、`$MULE_HOME/plugins` ディレクトリにインストールされ、1 つの設定ファイルを使用して設定されます。インストール手順とダウンロードリンクについては、xref:installing-and-configuring-runtime-manager-agent.adoc[「Runtime Manager エージェントのインストールと設定」]を参照してください。
+
+
+== 外部システムの選択肢
+
+Runtime Manager エージェントとの REST 接続の設定と許可の他に、Runtime Manager エージェントプラグインを設定し、Mule をさまざまな外部システムに接続することができます。インストールスクリプトでは、Runtime Manager を使用した Mule の制御を含め、特定の通信方法と外部システムを選択するオプションが提供されています。
+
+Runtime Manager エージェントで Runtime Manager との通信がどのように行われるかについては、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。
+
+また、MuleSoft は Runtime Manager 外部からの監視を可能にするオープンソースの Runtime Manager エージェントモジュールを提供しています。これらは無保証で提供されており、MuleSoft からサポートを受けることはできません。これらのモジュールにアクセスするには、GitHub レポジトリを参照してください。
+
+* https://github.com/mulesoft/mule-agent-modules[エージェントモジュール (一般)]
+* https://github.com/mulesoft/mule-agent-modules/tree/develop-mule-3.x/mule-agent-monitoring-publishers[JMX パブリッシャモジュール]
+
+== 前提条件
+
+以下に記載されたページは、Mule の現在のバージョンがすでにインストール済みであることを前提としています。このバージョンにアップグレードする必要がある場合は、http://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードしてください。
+
+さらに、Enterprise ライセンスが有効であることを前提としています。Enterprise ライセンスの入手とインストールについての詳細は、xref:4.1@mule-runtime::installing-an-enterprise-license.adoc[「Installing an Enterprise License (Enterprise ライセンスのインストール)」]を参照してください。
+
+== 関連情報
+
+* xref:installing-and-configuring-runtime-manager-agent.adoc[Runtime Manager エージェントのインストール]
+* xref:runtime-manager-agent-architecture.adoc[Runtime Manager エージェントアーキテクチャ]
+* xref:administration-service.adoc[管理サービス]
+* xref:managing-applications-and-domains.adoc[アプリケーションおよびドメインの管理]
+* xref:event-tracking.adoc[イベント追跡]
+* xref:jmx-service.adoc[JMX サービス]
+* xref:runtime-manager-agent-notifications.adoc[Runtime Manager エージェント通知]
+* xref:extending-the-runtime-manager-agent.adoc[Runtime Manager エージェントの拡張]
+* xref:internal-handler-buffering.adoc[内部ハンドラバッファ]

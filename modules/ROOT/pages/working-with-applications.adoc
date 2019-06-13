@@ -1,0 +1,92 @@
+= アプリケーションの操作
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub api
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+====
+この API では、Runtime Manager のクラウドベースバージョンを使用するクラウドデプロイメントのみが処理されます。さまざまなデプロイメントシナリオについての詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。API を使用したオンプレミスアプリケーションの管理については、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/ae639f94-da46-42bc-9d51-180ec25cf994/apis/38784/versions/42082[Runtime Manager API ポータル]を参照してください。
+====
+
+アプリケーション API では、アプリケーションのリスト、作成、更新、削除ができます。種別を返すか受け入れるすべてのリソースまたはメソッドでは、アプリケーション JSON 種別が使用されます (特に注意書きがある場合を除く)。次に、アプリケーションの取得要求への応答で JSON 形式で受信するデータの例を示します。
+
+[source,json]
+----
+{
+  "domain":"hello",
+  "fullDomain":"hello.cloudhub.io",
+  "workers":1,
+  "hasFile":false,
+  "filename": "myapp.zip",
+  "muleVersion", "3.3.0"
+  "properties": {
+    "foo":"bar"
+  },
+  "status":"STARTED",
+  "workerStatuses":[
+     {
+       "id":"",
+       "host":"xxx.xxx.xxx.xxx",
+       "port":8081,
+       "status":"STARTED"
+     }
+   ],
+   "secureDataGateway": {
+     "connected": false
+   },
+}
+----
+
+
+== アプリケーションプロパティ
+
+アプリケーションのプロパティには、次のものがあります。
+
+[%header,cols="2*"]
+|===
+|プロパティ |説明
+|ドメイン |アプリケーションの短いドメイン名。
+|fullDomain |アプリケーションの長いドメイン名。
+|hasFile |アプリケーションファイルがこのファイルに提供されているかどうか。
+|muleVersion |このアプリケーションの Mule バージョン。3.1.2 または 3.2.0 のいずれか。
+|properties |アプリケーションが開始されるときに設定される環境変数セット。
+|workers (ワーカー) |このアプリケーションに関連付けられているワーカーの数。
+|status (状況) |アプリケーションの状況。STARTED、DEPLOYING、UNDEPLOYED、DEPLOYED_FAILED が有効な値です。
+|secureDataGateway |データゲートウェイが接続されているかどうか、および接続されている時間。
+|===
+
+== アプリケーションの操作
+
+アプリケーションで実行できる操作と各操作に指定するリソースを次にまとめました。
+
+[%header,cols="3*a"]
+|===
+|操作 |リソース |説明
+|xref:list-all-applications.adoc[GET] |/api/applications |すべてのアプリケーションをリストします。
+|xref:create-application.adoc[POST] |/api/applications |アプリケーションを作成します。
+|xref:get-application.adoc[GET] |/api/applications/{domain} |アプリケーションを取得します。
+|xref:deploy-application.adoc[POST] |/api/applications/{domain}/deploy |Mule アプリケーションファイルをデプロイします。
+|xref:update-application-metadata.adoc[PUT] |/api/applications/{domain} |アプリケーションのメタデータを更新します。
+|xref:delete-application.adoc[DELETE] |/api/applications/{domain} |アプリケーションを削除します。
+|===
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+== 関連情報
+
+* xref:index.adoc[Runtime Manager]
+* xref:cloudhub.adoc[CloudHub]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]

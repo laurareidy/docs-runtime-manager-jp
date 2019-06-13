@@ -1,0 +1,92 @@
+= CloudHub での自動スケーリング
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 管理, Runtime Manager, arm, workers (ワーカー), vcores, 容量, クラスタ
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[NOTE]
+自動スケーリング機能を使用するには、組織にエンタープライズライセンス契約 (ELA) が必要です。エンタイトルメントは、適格なユースケースに基づいて承認されます。この機能に興味がある場合は、アカウントの担当者にお問い合わせください。
+
+CloudHub により、使用量の変化に合わせてアプリケーションの背後の処理能力を即座に対応させることができます。アプリケーションで使用される処理リソースをスケールアップまたはスケールダウンして CPU やメモリの使用量のしきい値に対応するポリシーを定義できます。
+
+== 自動スケーリングを設定する
+
+. Runtime Manager の *[Applications (アプリケーション)]* タブをクリックします。
+. CloudHub にデプロイされているアプリケーションを選択して、そのパネルを開きます。
+. パネルで、*[Manage Application (アプリケーションを管理)]* をクリックします。
+. *[Settings (設定)]* セクションで *[Autoscaling (自動スケーリング)]* タブを選択します。 +
+すべての既存の自動スケーリングポリシーを確認したり、アクティブ化または非アクティブ化したり、作成または削除したり、関連する xref:alerts-on-runtime-manager.adoc[Runtime Manager のアラート]を作成したりできます。
+
+== ポリシーを作成する
+
+ポリシーを作成するには、*[Create Policy (ポリシーを作成)]* ボタンをクリックし、ポリシーをセットアップする項目を設定します。
+
+image::autoscale-create-policy.png[ポリシー]
+
+ポリシーの要件を満たすと、ワーカーのサイズまたは数の変更がトリガされます。ポリシーは、CPU またはメモリの使用量に基づいて作成することができ、ワーカーの数やサイズを変更できます。どのポリシーにも、スケールアップとスケールダウンの条件が含まれます。
+
+image::policy-form.png[フォーム]
+
+. ポリシーの​*名前*​を入力します。
+. スケーリングが​*メモリ使用量と CPU 使用量*​のどちらに基づくのかを決定します。
++
+[NOTE]
+表示されている割合は、使用されている JVM に割り当てられる合計メモリまたは CPU の割合です。これには、JVM 自体でコンシュームされるメモリも含まれます。
+
+. スケーリングの​*ルール*​を決定します。アップスケールとダウンスケールの両方の条件で次の値を入力します。
+.. 使用量の​*割合*​
+.. ポリシーが適用されるまでこのレベルを維持する必要がある​*期間*​
+.. このポリシーや他のポリシーが適用されてスケーリングに影響することを防止する​*クールダウン期間*
+
+. ポリシーの適用時に実行される​*アクション*​を定義します。
+.. ワーカーの​*数*​またはワーカーの​*サイズ*​に影響を与える
+.. 変動期間の​*最大*​値と​*最小*​値を設定する
+
+== スケーリングの考慮事項
+
+どのポリシーでも、アプリケーションは段階的にでスケールされます。多くのスケーリングステップが必要となる強いスパイクに合わせてスケールアップする場合、ポリシーの評価時間とクールダウン期間の両方の時間がステップごとにかかります。
+
+アプリケーションごとに 1 つの自動スケーリングポリシーのみを適用できます。
+
+使用可能なワーカーの最大量およびサイズは、アカウントの特性によって制限されます。アカウントで実行されている複数のアプリケーションが限られたリソースで競合している場合、先着順に割り当てられます。
+
+== 既存のポリシーの編集
+
+既存のポリシーを編集するには、*[Policies (ポリシー)]* タブを開きます。ポリシー名をクリックすると、新規ポリシーの作成時に使用するメニューにアクセスします。
+
+== ポリシーの非アクティブ化
+
+実行中のポリシーを非アクティブ化するには、[policies (ポリシー)] タブを開き、対応する *[Status (状況)]* 項目で切り替えます。
+
+image::enable-policy.png[有効化]
+
+== ポリシーの削除
+
+既存のポリシーを削除するには、[policies (ポリシー)] タブに移動し、対応する削除アイコンをクリックします。
+
+== アラートの設定と自動スケーリング履歴の表示
+
+CloudHub では、ワーカーの自動スケーリングイベントが発生したときに警告する 2 つの固有のアラートタイプをアプリケーションにセットアップできます。一方はスケールアップについて警告するアラートで、他方はスケールダウンについて警告するアラートです。
+
+このアラートを設定すると、そのようなイベントが発生したときに、入力したアドレスに自動的にメールが送信されます。
+
+また、アラートがトリガされたすべての時間の全履歴を表示することもできます。これを表示するには、*[Alerts (アラート)]* ページで、アラート名をクリックして対応するパネルを開きます。
+
+image::alerts-history-autoscale.png[履歴]
+
+== 関連情報
+
+* xref:alerts-on-runtime-manager.adoc[Runtime Manager のアラート]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
+* xref:cloudhub.adoc[CloudHub]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]

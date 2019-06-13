@@ -1,0 +1,19 @@
+= サーバ証明書の更新 (ハイブリッド)
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+Runtime Manager で Mule を登録するときに、Runtime Manager と Runtime Manager エージェント間のセキュアな通信を保証する証明書を提供する必要があります。証明書の有効期限が切れたら、Runtime Manager から直接更新することができます。証明書は、特定のサーバまたはクラスタやグループ内の複数のサーバに対して更新できます。
+
+証明書の有効期限はサーバダッシュボードで参照できます。サーバ証明書を更新するには、サーバの状況が *[Running (実行中)]* であることが必要です。
+
+. *[Servers (サーバ)]* タブで、証明書を更新するサーバを選択します。
+. 情報パネルで *[Actions (アクション)]* ボタンをクリックし、*[Renew Certificate (証明書を更新)]* を選択します。
+. 確認するチェックボックスをクリックし、*[Renew (更新)]* をクリックします。
+
+証明書が正常に更新されたことを確認するには、サーバダッシュボードで *[Certificate expiration (証明書有効期限)]* の値をチェックします。
+
+== 関連情報
+
+* xref:servers-about.adoc[サーバについて (ハイブリッド)]
+* xref:servers-actions.adoc[サーバのシャットダウン、再起動、削除 (ハイブリッド)]

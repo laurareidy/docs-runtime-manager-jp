@@ -1,0 +1,135 @@
+= HTTPS サービスの構築
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: Runtime Manager, arm, https, cloudhub
+
+// image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+// image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="Hybrid Deployment"]
+// image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+// image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+CloudHub では、HTTPS および SSL ベースのサービスを構築できるため、データの機密性を確保できます。 
+このドキュメントの設定手順は、Mule アプリケーションを CloudHub にデプロイすることを目的としています。
+
+Mule 4 を使用する場合、これらの手順を実行するか、API Manager とシークレットマネージャのインテグレーションを利用できます。 
+詳細は、xref:api-manager::building-https-proxy.adoc[「HTTPS API プロキシの構築」]の手順を参照してください。
+
+アプリケーションをローカルにデプロイする場合は、xref:3.8@mule-runtime::tls-configuration.adoc[「TLS 設定」]を参照してください。 
+xref:deployment-strategies.adoc[「デプロイメント戦略」]ドキュメントでは、各デプロイメントシナリオの設定の違いについて詳しく説明します。
+
+このチュートリアルは既存のチュートリアルに基づいて構築されているため、開始するにはxref:general:getting-started:deploy-to-cloudhub.adoc[「CloudHub へのデプロイ」チュートリアル]を使用してサービスを構築する必要があります。
+
+これで、HTTPS を使用するように既存のサービスを変更できます。詳細は、次の手順を参照してください。
+
+. キーストアを生成します (まだの場合)。
+ この作業は、コマンドラインや JDK の keytool ユーティリティを使用して行うことができます。
++
+[IMPORTANT]
+--
+今すぐ自己署名証明書を生成するには、コマンドでホスト名を指定する必要があります。以下の例では、プロパティ「SAN=DNS:localhost,IP:127.0.0.1」がキーになります。
+--
++
+[source,text,linenums]
+----
+keytool -genkeypair -keystore keystore.jks   -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"  -keypass password  -storepass password  -keyalg RSA  -sigalg SHA1withRSA  -keysize 2048  -alias mule  -ext SAN=DNS:localhost,IP:127.0.0.1 -validity 9999
+----
++
+このコマンドは、`keystore.jks` という名前のファイルを作成します。続行する前に、このファイルが存在していて、フォルダ `src/main/resources` に表示されていることを確認します。
+
+. Mule 設定内で HTTPS コネクタを設定します。
++
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:https="http://www.mulesoft.org/schema/mule/https" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+    xmlns:spring="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
+    <http:listener-config name="HTTPS_Listener_Configuration" protocol="HTTPS" host="0.0.0.0" port="${https.port}" doc:name="HTTP Listener Configuration">
+        <tls:context>
+            <tls:key-store path="keystore.jks" password="password" keyPassword="${keystore.password}"/>
+        </tls:context>
+    </http:listener-config>
+...
+----
++
+
+. HTTPS スキームとポートの *`${https.port}`* 変数で、HTTPS を使用するホスト IP アドレスを設定します。
+ HTTPS グローバルコネクタ設定への参照を含めます。例:
++
+[source,xml,linenums]
+----
+<http:listener config-ref="HTTPS_Listener_Configuration" path="hello" doc:name="HTTP"/>
+----
+
+外部アドレスへの HTTPS 要求を実行するには、必要な TLS 設定を使用して HTTP リクエスタを設定します。
+
+[source,xml,linenums]
+----
+ <http:request-config name="https.request" protocol="HTTPS" host="0.0.0.0" port="${https.port}" doc:name="HTTP Request Configuration">
+        <tls:context>
+            <tls:key-store path="keystore.jks" password="password" keyPassword="${keystore.password}"/>
+        </tls:context>
+    </http:listener-config>
+
+...
+
+  <http:request config-ref="https.request" path="some-path" doc:name="HTTPs out" method="GET" followRedirects="true" parseResponse="false"/>
+...
+----
+
+これらと同じ設定は、すべて Anypoint Studio UI で簡単に行うことができます。この手順や設定の詳細は、xref:3.8@mule-runtime::http-connector.adoc[「HTTP コネクタ」]ドキュメントを参照してください。
+
+これで、アプリケーションを CloudHub にデプロイする準備が整いました。通常の HTTPS アドレス (`+https://yourdomain.cloudhub.io+` など) を介してエンドポイントにアクセスできます。
+
+== API Manager プロキシに基づくサービス
+
+API Manager からプロキシをダウンロードするように求められており、HTTPS 用に設定する必要がある場合、上記の手順を実行できます。ただし、HTTP リスナの設定がすでにテンプレート化されている点が異なります。
+
+. プロキシプロジェクトを Studio にインポートしたら、プロキシフローの [configuration (設定)] タブを選択します。
+ パーサーによってエラーが検出されます。フローでは、調整が必要であるために現在コメントされている HTTPS コネクタが参照されます。
++
+. http:listener-config ブロックのコメントを解除します。
+. キーストア (パス、パスワード、keyPassword) に関する情報を入力します。
+ 外部プロパティを使用できます。また、パスには src/main/resources を含めないでください。
++
+設定は、次のようになります。
++
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:api-platform-gw="http://www.mulesoft.org/schema/mule/api-platform-gw"
+      xmlns:expression-language="http://www.mulesoft.org/schema/mule/expression-language-gw"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/api-platform-gw http://www.mulesoft.org/schema/mule/api-platform-gw/current/mule-api-platform-gw.xsd
+http://www.mulesoft.org/schema/mule/expression-language-gw http://www.mulesoft.org/schema/mule/expression-language-gw/current/mule-expression-language-gw.xsd">
+
+    <configuration defaultProcessingStrategy="non-blocking" />
+
+    <expression-language:property-placeholder location="config.properties" />
+
+    <api-platform-gw:api apiName="![p['api.name']]" version="![p['api.version']]" flowRef="proxy">
+    </api-platform-gw:api>
+
+    <http:listener-config name="https-lc-0.0.0.0-8082" host="0.0.0.0" port="![p['proxy.port']]" protocol="HTTPS">
+        <tls:context name="tls-context-config">
+            <tls:key-store path="keystore.jks" password="password"
+                           keyPassword="${keystore.password}"/>
+        </tls:context>
+     </http:listener-config>
+...
+----
+
+これらの注意事項を除き、設定は上記の一般的な手順と同じです。
+
+== 関連情報
+
+* Mule 4 での xref:api-manager::building-https-proxy.adoc[HTTPS API プロキシの構築]

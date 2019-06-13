@@ -1,0 +1,109 @@
+= カスタムアプリケーションアラートおよび通知
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, 監視, api, Runtime Manager, arm
+
+[NOTE]
+カスタムアラートおよび通知は、現在、CloudHub ワーカーにデプロイされたアプリケーションでのみ使用できる機能です。Runtime Manager を使用してローカルサーバにオンプレミスでデプロイしたアプリケーションでは使用できません。詳細は、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+== 前提条件
+
+* xref:general:getting-started:deploy-to-cloudhub.adoc[「CloudHub へのデプロイ」] の例を、その例に基づいて作成されたこのトピックの例に従って完了します。
+* Studio 内でプロジェクトを Maven 化します。詳細は、xref:6@studio::enabling-maven-support-for-a-studio-project.adoc[「Enabling Maven Support for a Studio Project (Studio プロジェクトの Maven サポートの有効化)」]を参照してください。
+
+== 通知の使用方法
+
+通知を使用すると、アプリケーション内のビジネス関連のイベントを把握できます。たとえば、次のような場合に通知を発生させることができます。
+
+* アプリケーションがリモートサービスに接続できない。
+* データマッピングの問題など、人の介入を必要とするエラーが発生した。
+* 処理された注文数など、アプリケーションで実行された処理のサマリを作成したい。
+
+xref:alerts-on-runtime-manager.adoc[アラート]と組み合わせると、この通知を別のユーザに直接転送し、アラートに対してアクションを実行して、元の問題を解決できます。
+
+この例では以下の方法を示します。
+
+* ビジネス関連のイベントを通知として送信する方法
+* エラーを通知として送信する方法
+* 通知が到着したときにメールアラートを送信する方法
+
+提供されたソフトウェアを使用して、CloudHub でアラートを作成できます。カスタムアラートを作成する場合、 https://www.mulesoft.com/exchange/#!/cloudhub-integration-connector[CloudHub コネクタ]を取得して Anypoint Studio にインストールする必要があります。
+
+[TIP]
+インストールと設定についての詳細は、xref:3.8@mule-runtime::cloudhub-connector.adoc[「CloudHub コネクタユーザガイド」]を参照してください。
+
+
+== アプリケーションのデプロイ
+
+アプリケーションをデプロイするには、Runtime Manager の *[Applications (アプリケーション)]* メニューから *[Deploy Application (アプリケーションをデプロイ)]* をクリックします。詳細は、xref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
+
+== 通知のトリガ
+
+アプリケーションが実行されていると、アプリケーションの URL (+http://YOURAPP.cloudhub.io/hello-notification+ など) に移動するだけで通知をトリガできます。このページに `Hello World` メッセージが表示され、Runtime Manager コンソールに新しい通知が自動的に作成されます。次に、Runtime Manager コンソールに戻り、右上にある新しい通知インジケータのベルインジケータをクリックすると、アラートメッセージが表示されます。
+
+image::image2014-10-24-17-41-16-1.png[image2014-10-24+17-41-16-1]
+
+例外の発生後に通知が送信された場合、`exception.message` と `exception.stacktrace` が通知のカスタムプロパティとして添付されます。これらには、Runtime Manager コンソールからアクセスできます。
+
+== カスタムアラートの作成
+
+アラートを使用すると、アプリケーション通知に基づいてメールを送信できます。アプリケーション通知のカスタムアラートを作成するには、アプリケーションをクリックし、左メニューから *[Alerts (アラート)]* をクリックします。
+
+*[New Alert (新規アラート)]* ダイアログで、以下の手順を実行します。
+
+. *[New alert (新規アラート)]* をクリックします。
+. アラート名「`Hello World`」を入力します。
+. 必要に応じて、アプリケーション名を選択するか、*[any (いずれか)]* を選択したままにします。
+. イベント種別として *[custom application notification (カスタムアプリケーション通知)]* を選択します。
+. 通知をトリガする語として `Hello` を入力します。上で設定したメッセージは `Hello World` です。
+. アラートメールを受信するメールアドレスを入力します。
+. *[Create (作成)]* をクリックします。
+
+アプリケーションの URL (`+http://YOURAPP.cloudhub.io/+` など) に移動して、通知を再度トリガします。指定したアドレスで、通知を含むメールを受信します。
+
+通知を送信する場所を定義するカスタムプロパティの例を次に示します。
+
+[source,xml,linenums]
+----
+<cloudhub:create-notification message="Error processing transaction." priority="ERROR">
+  <cloudhub:custom-properties >
+    <cloudhub:custom-property key="originalPayload">#[flowVars.originalPayload]</cloudhub:custom-property>
+  </cloudhub:custom-properties>
+</cloudhub:create-notification>
+----
+これで、メッセージ内で通常のプロパティ (`${originalPayload}` など) としてこのカスタムプロパティにアクセスできます。
+
+== エラー通知の送信
+
+ビジネスイベントからの通知の送信に加えて、エラーの発生時にエラーに対してアクションを実行できるように通知を送信できます。これを行うには、「catch exception strategy (キャッチ例外戦略)」の内側で CloudHub コネクタを使用できます。これを行うには、次の XML を mule-config.xml に追加します。
+
+[source,xml,linenums]
+----
+<flow name="create notification from exception">
+    <inbound-endpoint address="http://0.0.0.0:${http.port}/create-notification-from-exception"/>
+    <scripting:component>
+        <scripting:script engine="groovy">
+            throw new Exception("Could not connect to remote service.")
+        </scripting:script>
+    </scripting:component>
+    <default-exception-strategy>
+        <cloudhub:create-notification message="Error processing transaction." priority="ERROR"/>
+    </default-exception-strategy>
+</flow>
+----
+
+このフローは例外をスローし、その例外からメッセージ「Error processing transaction (トランザクションの処理中にエラーが発生しました)」を含む通知を作成します。フローの例外スタックトレースがメッセージに添付されます。必要に応じて、`attachStacktrace` を使用してこれをオフにできます。
+
+以前と同様に、アプリケーションを作成し、デプロイして、`+http://YOURAPP.cloudhub.io/create-notification-from-exception+` に移動します。次に、Runtime Manager コンソールに戻ると、右上に通知ポップアップが表示されます。通知リンクをクリックすると、スタックトレースを含む通知が通知リストに表示されます。
+
+image::notifications-exception.png[notifications_exception]
+
+スタックトレースの全体および詳細を表示するには、[More... (さらに表示)] をクリックすると、メッセージ全体がポップアップウィンドウに表示されます。
+
+image::notifications-stack-trace.png[notifications_stack_trace]

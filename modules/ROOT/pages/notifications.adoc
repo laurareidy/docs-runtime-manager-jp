@@ -1,0 +1,100 @@
+= 通知の操作
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, 管理, クラウド, enterprise, 通知, get, post, put
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+このドキュメントでは、xref:cloudhub-api.adoc[CloudHub API] のコールについて説明します。Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] とその下位ページを参照してください。
+
+通知 API では、通知をリストしたり、作成したり、既読としてマークしたりできます。種別を返すか受け入れるすべてのリソースまたはメソッドでは、アプリケーション JSON 種別が使用されます (特に注意書きがある場合を除く)。例として、通知リソースからどのような結果が返されるのかを以下に示します。
+
+[NOTE]
+アラートと通知は、現在 CloudHub ワーカーにデプロイされたアプリケーションのみで使用可能な機能です。Runtime Manager からローカルサーバにデプロイするアプリケーションでは使用できません。詳細は、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
+
+[source,json,linenums]
+----
+{
+"data":
+  [
+    {
+      "domain" : "myapp",
+      "username" : "joecloud",
+      "priority" : "INFO",
+      "message" : "Something happened",
+      "createdAt" : "2015-05-10T23:42:53.010Z",
+      "read" : false,
+      "readOn" : "2015-02-12T19:51:34.428Z",
+      "href" : "https://prod.anypoint.mulesoft.com/cloudhub/api/notifications/518d85fde4b00795a6ec3394"},
+      "transactionId": "2a097804-f0d5-11e2-b4d2-9dd46521a02d",
+      "properties": {
+         "recordId" : "1234"
+      }
+  ],
+  "total": 1
+}
+----
+
+== 通知オブジェクトのプロパティ
+
+アプリケーションのプロパティには、次のものがあります。
+
+[%header,cols="2*a"]
+|===
+|プロパティ |説明
+|createdAt |通知が作成された ISO8601 形式の時刻。
+|ドメイン |通知が関連付けられているアプリケーション (ある場合)。
+|href |通知の URL。これは、通知の状況を更新するための URL として使用できます。
+|メッセージ |通知メッセージ。
+|priority (優先度) |優先度 - INFO (情報)、WARN (警告)、ERROR (エラー)
+|properties |この通知に関連付けられているカスタムプロパティのマップ。これらは、通知を作成するときにアプリケーションによって指定されます。
+|read |通知が既読になったかどうか。
+|readOn |通知が既読になった ISO8601 形式の時刻。
+|tenantId |通知に関連付けられているテナントの ID。
+|transactionId |この通知に関連付けられているトランザクションの ID。
+|username (ユーザ名) |通知を作成したユーザ。
+|===
+
+== 通知の操作
+
+通知関連の操作の概要を次に示します。
+
+[%header,cols="34a,33a,33a"]
+|===
+|操作 |リソース |説明
+|xref:list-notifications.adoc[GET] |/api/notifications |すべてのアプリケーションの通知をリストします。
+|xref:create-notification.adoc[POST] |/api/notifications |新しい通知を作成します。
+|xref:update-all-notifications.adoc[PUT] |/api/notifications |すべての通知を既読としてマークします。
+|xref:update-notification.adoc[PUT] |/api/notifications/\{id} |通知の状況を更新します。
+|===
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+== 関連情報
+
+* xref:monitoring.adoc[アプリケーションの監視]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:deploying-to-cloudhub.adoc[[CloudHub にデプロイ]
+* xref:cloudhub.adoc[CloudHub] の概要とその機能についての詳細
+* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
+* xref:cloudhub-fabric.adoc[CloudHub Fabric]
+* xref:managing-queues.adoc[キューの管理]
+* xref:managing-schedules.adoc[スケジュールの管理]
+* xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
+* xref:anypoint-platform-cli.adoc[コマンドラインツール]
+* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
+* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
+* xref:penetration-testing-policies.adoc[侵入テストポリシー]

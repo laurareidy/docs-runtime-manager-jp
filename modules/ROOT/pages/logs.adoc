@@ -1,0 +1,72 @@
+= ログの操作
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+:keywords: cloudhub, cloudhub api, ログ, json, get
+
+image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
+image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
+image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
+image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
+
+[TIP]
+このドキュメントでは、xref:cloudhub-api.adoc[CloudHub API] のコールについて説明します。Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] を参照してください。
+
+ログ API を使用すると、ログを検索できます。種別を返すか受け入れるすべてのリソースまたはメソッドでは、アプリケーション JSON 種別が使用されます (特に注意書きがある場合を除く)。ログ検索の結果の例を次に示します。
+
+[source,json,linenums]
+----
+{
+"data":
+  [
+    {
+      "message": "Deploying application to 1 workers.",
+      "priority": "SYSTEM",
+      "sequenceNumber": 1343797858127,
+      "timestamp": 1344872571834
+    }
+  ],
+  "total": 528
+}
+----
+
+
+
+
+== ログオブジェクトのプロパティ
+
+アプリケーションのプロパティには、次のものがあります。
+
+[%header,cols="2*a"]
+|===
+|プロパティ |説明
+|`message` |ログメッセージ。
+|`priority` |優先度 - DEBUG (デバッグ)、INFO (情報)、ERROR (エラー)、SYSTEM (システム)、CONSOLE (コンソール)
+|`timestamp` |ログメッセージが発生したタイムスタンプ (UTC)。
+|`sequenceNumber` |ログメッセージのタイムスタンプが同じ場合にその順序を決定する連番。
+|===
+
+== ログの操作
+
+ログに関連する操作の概要を次に示します。
+
+[%header,cols="34a,33a,33a"]
+|===
+|操作 |リソース |説明
+|xref:list-all-logs.adoc[GET] |`/api/applications/{application}/logs` |ログメッセージをリストします。
+|===
+
+[TIP]
+====
+サポートされているすべてのリソース、メソッド、必須プロパティ、想定される応答の対話型リファレンスを参照するには、CloudHub API の https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を確認してください。
+
+API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+====
+
+== 関連情報
+
+* xref:index.adoc[Runtime Manager]
+* xref:cloudhub.adoc[CloudHub]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
+* xref:monitoring.adoc[アプリケーションの監視]
