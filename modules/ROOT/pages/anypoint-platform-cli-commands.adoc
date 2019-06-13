@@ -2377,14 +2377,14 @@ CloudHub は、オンライン証明書状況プロトコル (OCSP) を実装し
 このコマンドは、サポートされているすべてのランタイムをリストします。 +
 このコマンドでは、デフォルトのオプション (`--help`、`-f`/`--fields`、`-o`/`--output`) 以外のオプションは使用できません。
 
-== cloudhub VPC list
+== cloudhub vpc list
 
 ----
-> cloudhub VPC list [options]
+> cloudhub vpc list [options]
 ----
 このコマンドは、使用可能なすべての Anypoint VPC をリストします。ID、リージョン、ネットワークの環境、およびデフォルトの Anypoint VPC かどうかを返します。
 
-== cloudhub VPC describe
+== cloudhub vpc describe
 
 ----
 > cloudhub vpc describe [options] <name>
