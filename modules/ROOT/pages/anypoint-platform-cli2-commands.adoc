@@ -2,20 +2,20 @@
 
 Anypoint Platform CLI には、さまざまなユースケースシナリオに対応するコマンドが用意されています。
 
-* <<Commands For Administrating your Anypoint Platform Account>>
-* <<Commands for API Manager>>
-* <<Commands for Administrating your Design Center Applications>>
-* <<Commands for Managing Exchange Assets>>
-* <<Commands for Administrating your CloudHub Application>>
-* <<Commands for Managing your Locally Deployed Applications Managed by Runtime Manager>>
-* <<Commands for Managing Your Local Pivotal Cloud Foundry Deployed Applications>>
-* <<Commands for Managing your Local Servers>>
-* <<Commands for Administrating your Local Server Groups>>
-* <<Commands for Administrating your Local Cluster Servers>>
-* <<Commands for Managing Alerts for your Locally Deployed Applications Managed by Runtime Manager>>
-* <<Commands for Mananging your CloudHub Dedicated Load Balancer>>
-* <<Commands for Managing your CloudHub Anypoint Virtual Private Cloud (VPC)>>
-* <<Commands for Specifying Environments and Business Groups>>
+* <<Anypoint Platform アカウントを管理するコマンド>>
+* <<API Manager のコマンド>>
+* <<Design Center アプリケーションを管理するコマンド>>
+* <<Exchange アセットを管理するコマンド>>
+* <<CloudHub アプリケーションを管理するコマンド>>
+* <<Runtime Manager の管理下にある、ローカルにデプロイされているアプリケーションを管理するコマンド>>
+* <<ローカル Pivotal Cloud Foundry デプロイ済みアプリケーションを管理するコマンド>>
+* <<ローカルサーバを管理するコマンド>>
+* <<ローカルサーバグループを管理するコマンド>>
+* <<ローカルクラスタサーバを管理するコマンド>>
+* <<Runtime Manager の管理下にある、ローカルにデプロイされているアプリケーションのアラートを管理するコマンド>>
+* <<CloudHub 専用ロードバランサを管理するコマンド>>
+* <<CloudHub VPC を管理するコマンド>>
+* <<環境およびビジネスグループを指定するコマンド>>
 
 
 [TIP]
