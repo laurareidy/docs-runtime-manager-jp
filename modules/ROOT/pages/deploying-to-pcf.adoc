@@ -147,16 +147,16 @@ image::deploying-to-pcf-properties.png[]
 [#Binding to Hazelcast]
 === Hazelcast へのバインド
 
-([<<Replication Factor>> (複製係数)] 項目の設定によって) 複数のインスタンスにアプリケーションをデプロイする場合に、これらのインスタンスがクラスタとして互いに通信するようにするには、これらを 1 つの Hazelcast サービス (または複数の Hazelcast サービス。その場合は、Hazelcast インスタンスごとに 1 つのサービス) にバインドする必要があります。
+([<<Replication Factor (複製係数)>> (複製係数)] 項目の設定によって) 複数のインスタンスにアプリケーションをデプロイする場合に、これらのインスタンスがクラスタとして互いに通信するようにするには、これらを 1 つの Hazelcast サービス (または複数の Hazelcast サービス。その場合は、Hazelcast インスタンスごとに 1 つのサービス) にバインドする必要があります。
 
 
 まず、xref:1.5@anypoint-platform-pcf::pcf-mule-hazelcast.adoc[「To Configure a Mule Hazelcast Server (Mule Hazelcast サーバの設定方法)」]の手順に従ってサービスを使用可能にする必要があります。
 
-使用可能になると、サービスは <<Service Binding Tab>> のドロップダウンに表示され、UI を使用して簡単にアプリケーションをこのサービスにバインドできます。すべての必要な Hazelcast ノードサービスにアプリケーションをバインドする必要があります。
+使用可能になると、サービスは <<[Service Bindings (サービスバインド)] タブ>> のドロップダウンに表示され、UI を使用して簡単にアプリケーションをこのサービスにバインドできます。すべての必要な Hazelcast ノードサービスにアプリケーションをバインドする必要があります。
 
 Mule buildPack は、Mule アプリケーションと Hazelcast クラスタの間のバインドを自動的に認識し、Mule サーバをクラスタモードで起動します。
 
-すでにデプロイされている Mule アプリケーションを拡張するには、[<<Replication Factor>> (複製係数)] 項目を設定するだけです。新しい Mule ノードは他のノードと同じサービスにバインドされます。Mule アプリケーションを拡張することで、Hazelcast クラスタへの負荷が大きくなり、Hazelcast クラスタも拡張する必要がある可能性があることを考慮してください。
+すでにデプロイされている Mule アプリケーションを拡張するには、[<<Replication Factor (複製係数)>> (複製係数)] 項目を設定するだけです。新しい Mule ノードは他のノードと同じサービスにバインドされます。Mule アプリケーションを拡張することで、Hazelcast クラスタへの負荷が大きくなり、Hazelcast クラスタも拡張する必要がある可能性があることを考慮してください。
 
 ////
 in case the UI doesn't serve for binding Hazelcast:

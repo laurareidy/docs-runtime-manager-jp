@@ -16,9 +16,9 @@ Runtime Manager でアプリケーションをデプロイした後、コンソ�
 
 このページでは、両種別のデプロイメントに共通するコンソールの基本的な管理ツールについて紹介します。
 
-* <<Start, アプリケーションの再起動、停止、削除>>
-* <<Status States>>
-* <<Updating Your Application>>
+* <<アプリケーションの開始、再起動、停止、削除>>
+* <<状況の状態>>
+* <<アプリケーションの更新>>
 * さまざまなxref:monitoring.adoc[監視]およびxref:troubleshooting.adoc[トラブルシューティング]機能
 
 

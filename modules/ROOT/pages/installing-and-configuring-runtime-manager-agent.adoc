@@ -98,7 +98,7 @@ Runtime Manager エージェントの ZIP ファイルをダウンロードし�
 
 == 以前の Runtime Manager エージェントインストールの更新
 
-既存する以前の Runtime Manager エージェントインストールを更新できます。新しい Runtime Manager エージェントをインストールする方法については、下の「<<Installation Options>>」セクションを参照してください。
+既存する以前の Runtime Manager エージェントインストールを更新できます。新しい Runtime Manager エージェントをインストールする方法については、下の「<<インストールオプション>>」セクションを参照してください。
 
 [TIP]
 ====
@@ -264,7 +264,7 @@ Runtime Manager コンソールで、xref:managing-servers.adoc#add-a-server[[Ad
 |`-P <PROXY_HOST> <PROXY_PORT> <PROXY_USER> <PROXY_PASSWORD>`
 
 `--proxy <PROXY_HOST> <PROXY_PORT> <PROXY_USER> <PROXY_PASSWORD>`
-|接続に登録するときに使用するプロキシ設定。このオプションによってプロキシの詳細を定義します。<<Installation Via Proxy>>を参照してください。
+|接続に登録するときに使用するプロキシ設定。このオプションによってプロキシの詳細を定義します。<<プロキシ経由のインストール>>を参照してください。
 
 |===
 
@@ -351,7 +351,7 @@ amc_setup -H <token> MaxRuntime -P acme.proxy.com 443 internalAdmin Ins1d3V0iceP
 
 Runtime Manager エージェントをすでにインストール済みで、プロキシを使用するように設定を変更するには、`mule-agent.yml` ファイルを編集します。
 
-Runtime Manager エージェントでプロキシサーバを設定するのに加えて、`wrapper.conf` ファイルでもプロキシサーバを設定して API 関連の通信と分析も有効にする必要があります。詳細は、「<<Setting up a Proxy>>」を参照してください。
+Runtime Manager エージェントでプロキシサーバを設定するのに加えて、`wrapper.conf` ファイルでもプロキシサーバを設定して API 関連の通信と分析も有効にする必要があります。詳細は、「<<プロキシのセットアップ>>」を参照してください。
 
 
 ==== Anypoint Platform Private Cloud Edition Runtime Manager への登録
@@ -484,7 +484,7 @@ services:
 |`-S`
 
 `--secure`
-|Runtime Manager エージェントがオンプレミス管理コンソールと TLS 接続を確立するように設定します。トラストストアとキーストアを JKS 形式で指定する必要があります。このオプションでは、REST 通信用の TLS チャネルのみが有効になります。<<Secure Connection Channel>>を参照してください。これは、手動でエージェントを管理するためのものです (ARM クラウドコンソールを使用せずにエージェントを管理する場合など)。
+|Runtime Manager エージェントがオンプレミス管理コンソールと TLS 接続を確立するように設定します。トラストストアとキーストアを JKS 形式で指定する必要があります。このオプションでは、REST 通信用の TLS チャネルのみが有効になります。<<セキュア接続チャネル>>を参照してください。これは、手動でエージェントを管理するためのものです (ARM クラウドコンソールを使用せずにエージェントを管理する場合など)。
 
 |===
 

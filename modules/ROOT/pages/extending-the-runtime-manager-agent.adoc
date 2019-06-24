@@ -179,7 +179,7 @@ public class ReverseService implements MuleAgentService
 [[extmh]]
 == 新しい外部メッセージハンドラの追加
 
-新しい外部メッセージハンドラを追加するには、Runtime Manager エージェントの<<Reverse String External Message Handler>>インターフェースを実装する必要があります。
+新しい外部メッセージハンドラを追加するには、Runtime Manager エージェントの<<文字列復元の外部メッセージハンドラ>>インターフェースを実装する必要があります。
 
 カスタム外部メッセージハンドラに関する考慮事項
 
@@ -287,7 +287,7 @@ public class ReverseExternalHandler implements ExternalMessageHandler
 [[intmh]]
 == 新しい内部メッセージハンドラの追加
 
-新しい内部メッセージハンドラを追加するには、<<Internal Message Handler>>インターフェースを実装する必要があります。
+新しい内部メッセージハンドラを追加するには、<<内部メッセージハンドラ>>インターフェースを実装する必要があります。
 
 カスタム内部メッセージハンドラに関する考慮事項
 
