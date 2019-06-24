@@ -32,7 +32,7 @@ image::managing-servers-7fc41.png[]
 [NOTE]
 ダッシュボードは、Anypoint Platform Private Cloud Edition では現在使用できない機能です
 
-* *[Manage Server (サーバを管理)]*、*[Manage Group (グループを管理)]*、または *[Manage Cluster (クラスタを管理)]* ボタン。<<Settings Page>>が表示されます。
+* *[Manage Server (サーバを管理)]*、*[Manage Group (グループを管理)]*、または *[Manage Cluster (クラスタを管理)]* ボタン。<<Settings (設定) ページ>>が表示されます。
 
 +
 image::managing-servers-ebc52.png[]

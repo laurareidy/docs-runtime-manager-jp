@@ -137,7 +137,7 @@ image::ch-date-range-click-drag.png[CH_date+range+click+drag]
 
 image::chinbizdata.png[CHInBizData]
 
-NOTE: *[Business Data (ビジネスデータ)]* 項目を有効にするには、アプリケーションにビジネスイベントがある必要があります。「<<Setting Up Business Events>>」を参照してください。
+NOTE: *[Business Data (ビジネスデータ)]* 項目を有効にするには、アプリケーションにビジネスイベントがある必要があります。「<<ビジネスイベントのセットアップ>>」を参照してください。
 
 |検索を保存する |
 検索を保存するには、*[Save search (検索を保存)]* をクリックします。
