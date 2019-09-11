@@ -59,7 +59,7 @@ Runtime Manager エージェントで Runtime Manager との通信がどのよ�
 
 == 前提条件
 
-以下に記載されたページは、Mule の現在のバージョンがすでにインストール済みであることを前提としています。このバージョンにアップグレードする必要がある場合は、http://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードしてください。
+以下に記載されたページは、Mule の現在のバージョンがすでにインストール済みであることを前提としています。このバージョンにアップグレードする必要がある場合は、&#8203;http://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードしてください。
 
 さらに、Enterprise ライセンスが有効であることを前提としています。Enterprise ライセンスの入手とインストールについての詳細は、xref:4.1@mule-runtime::installing-an-enterprise-license.adoc[「Installing an Enterprise License (Enterprise ライセンスのインストール)」]を参照してください。
 

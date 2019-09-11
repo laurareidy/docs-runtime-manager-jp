@@ -12,8 +12,8 @@ CloudHub は、インフラストラクチャコンポーネントのプロビ�
 各専用ロードバランサでは、次の作業を行うことができます。
 
 . Mule アプリケーションを実行するさまざまな CloudHub ワーカー間の負荷分散を処理する。
-. <<SSL Endpoints,SSL 設定>>を定義して、カスタム証明書と必要に応じて双方向 SSL クライアント認証を提供する。
-. アプリケーションをカスタムドメインにマップする<<Mapping Rules,プロキシルール>>を簡単に設定する。これにより、1 つのバニティドメインですべてをホストしたりできるようになります。
+. <<SSL エンドポイント,SSL 設定>>を定義して、カスタム証明書と必要に応じて双方向 SSL クライアント認証を提供する。
+. アプリケーションをカスタムドメインにマップする<<マッピングルール,プロキシルール>>を簡単に設定する。これにより、1 つのバニティドメインですべてをホストしたりできるようになります。
 
 [NOTE]
 --
@@ -21,7 +21,7 @@ CloudHub は、インフラストラクチャコンポーネントのプロビ�
 同じ Anypoint VPC に複数の環境を関連付けることができます。つまり、異なる環境で同じ専用ロードバランサを使用できます。
 --
 
-詳細は、「<<専用ロードバランサの作成と設定>>」セクションを参照してください。
+詳細については、​<<専用ロードバランサの作成と設定>>​のセクションを参照してください。
 
 
 == ロードバランサアーキテクチャ
@@ -45,7 +45,7 @@ DNS プロバイダを介して、この A レコードを指し示す CNAME レ
 
 [NOTE]
 --
-ロードバランサは、HTTPS で外部要求をリスンし、デフォルトで HTTP でワーカーと内部的に通信します。HTTPS でリスンするように Anypoint VPC 内の Mule アプリケーションを設定している場合、 xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-mappings-add[`load-balancer mappings add`] コマンドを使用してマッピングリストを作成するときに `upstreamProtocol` を `HTTPS` に設定してください。
+ロードバランサは、HTTPS 上の外部要求をリスンし、デフォルトでは HTTP を介して内部の通信を行います。HTTPS でリスンするように Anypoint VPC 内の Mule アプリケーションを設定している場合、xref:anypoint-platform-cli-commands.adoc#cloudhub-load-balancer-mappings-add[`load-balancer mappings add`] コマンドを使用してマッピングリストを作成するときに `upstreamProtocol` が `HTTPS` に設定されていることを確認してください。
 --
 
 == SSL エンドポイント
@@ -187,9 +187,9 @@ SSL エンドポイントの CA 証明書を 1 つ以上指定すると、ロー
 
 CloudHub ロードバランサは、必要に応じて証明書失効リスト (CRL) に対してクライアント要求を検証できます。アップロードするには、すべての CRL ファイルを PEM でエンコードされた 1 つのファイルに連結する必要があります。順序は重要ではありません。
 
-ロードバランサの作成時に xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[`load-balancer create`] コマンドで「--crl」オプションを使用して失効リストを追加できます。
+ロードバランサの作成時に ​xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-create[`load-balancer create`]​ コマンドで「--crl」オプションを使用して失効リストを追加できます。
 
-また、ロードバランサがすでに作成されている場合、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955[REST API] を使用して更新できます。 +
+また、ロードバランサがすでに作成されている場合、&#8203;https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955[REST API] を使用して更新できます。 +
 `revocationList` 要素を追加して、PATCH 要求を `/organizations/{orgid}/vpcs/{vpcId}/loadbalancers/{lbId}` エンドポイントに送信できます。
 
 [source,json,linenums]
@@ -340,7 +340,7 @@ DNS CNAME レコードを `example.com` から `<lb-name>.lb.anypointdns.net` �
 * `api.example.com` を渡すと、`api.cloudhub.io` にリダイレクトされる。 +
 * `application.example.com` を渡すと、`application.cloudhub.io` にマップされる。
 
-SSL エンドポイントのhttps://en.wikipedia.org/wiki/Subject_Alternative_Name[サブジェクト代替名] (SAN) についても同様です。 +
+SSL エンドポイントの​ https://en.wikipedia.org/wiki/Subject_Alternative_Name[サブジェクト代替名]​ (SAN) についても同様です。 +
 
 専用ロードバランサを介して任意のサブドメインのアプリケーション名を渡すことができるワイルドカード証明書を使用しなくても、許可されるサブドメイン名を制限できます。これを行うには、証明書の共通名に各種 SAN を設定する必要があります。「subdomain」変数を使用してドメイン名のサブドメイン部分をアプリケーションにマップできます。
 
@@ -417,5 +417,5 @@ Anypoint VPC の専用ロードバランサを作成および設定する方法�
 
 [NOTE]
 --
-`loadbalancers` および `vpcs` エンドポイントについての詳細は、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を参照してください。API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
+`loadbalancers` および `vpcs` エンドポイントについての詳細は、&#8203;https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を参照してください。API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
 --

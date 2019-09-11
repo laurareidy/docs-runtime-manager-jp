@@ -18,7 +18,7 @@ Mule 4 を使用する場合、これらの手順を実行するか、API Manage
 アプリケーションをローカルにデプロイする場合は、xref:3.8@mule-runtime::tls-configuration.adoc[「TLS 設定」]を参照してください。 
 xref:deployment-strategies.adoc[「デプロイメント戦略」]ドキュメントでは、各デプロイメントシナリオの設定の違いについて詳しく説明します。
 
-このチュートリアルは既存のチュートリアルに基づいて構築されているため、開始するにはxref:general:getting-started:deploy-to-cloudhub.adoc[「CloudHub へのデプロイ」チュートリアル]を使用してサービスを構築する必要があります。
+始める前に、サービスを構築してデプロイします。シンプルな Hello World サービスです。
 
 これで、HTTPS を使用するように既存のサービスを変更できます。詳細は、次の手順を参照してください。
 

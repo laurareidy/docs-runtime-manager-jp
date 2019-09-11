@@ -35,7 +35,7 @@ image::architecture-diagram.png[]
 
 === インテグレーションアプリケーション
 
-インテグレーションアプリケーションは、xref:general:getting-started:build-a-hello-world-application.adoc[Anypoint Studio] を使用して作成したインテグレーションです。これらのアプリケーションは、Salesforce からデータベースへのデータの同期、SOAP または REST API のパブリッシュ、ビジネスプロセスの複雑なオーケストレーションの作成など、あらゆる作業を実行できます。
+インテグレーションアプリケーションは、Anypoint Studio を使用して作成したインテグレーションです。これらのアプリケーションは、Salesforce からデータベースへのデータの同期、SOAP または REST API のパブリッシュ、ビジネスプロセスの複雑なオーケストレーションの作成など、あらゆる作業を実行できます。
 
 インテグレーションアプリケーションの作成やデプロイについての詳細は、xref:cloudhub.adoc[「CloudHub」]およびxref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
 
@@ -55,7 +55,7 @@ CloudHub のプラットフォームサービスは、プラットフォーム�
 
 === CloudHub ワーカー
 
-CloudHub のアプリケーションは、*ワーカー*という 1 つ以上の Mule インスタンスで実行されます。ワーカーには、次の特性があります。
+CloudHub のアプリケーションは、​*ワーカー*​という 1 つ以上の Mule インスタンスで実行されます。ワーカーには、次の特性があります。
 
 * *容量*: 各ワーカーには、データを処理するための特定の容量があります。ワーカーのサイズは、アプリケーションの設定時に選択できます。
 * *分離*: 各ワーカーは、他のすべてのアプリケーションから隔離されたコンテナで実行されます。
@@ -76,7 +76,7 @@ CloudHub のアプリケーションは、*ワーカー*という 1 つ以上の
 
 
 [NOTE]
-使用可能なメモリが少なくなるほど、https://aws.amazon.com/ec2/instance-types/#burst[vCore の一部]を使用するワーカーの CPU と IO の制限が大きくなります。通常、これはワークロードが小さい場合にのみ適しています。
+使用可能なメモリが少なくなるほど、&#8203;https://aws.amazon.com/ec2/instance-types/#burst[vCore の一部]を使用するワーカーの CPU と IO の制限が大きくなります。通常、これはワークロードが小さい場合にのみ適しています。
 
 xref:cloudhub-fabric.adoc[CloudHub Fabric] では、複数のワーカーを追加して各キューで負荷を分散することで、アプリケーションを水平方向にスケールすることもできます。ワーカーのスケーリングについての詳細は、xref:cloudhub-fabric.adoc[「ワーカーのスケールアウト」]を参照してください。CloudHub での永続的なキューの使用についての詳細は、xref:cloudhub-fabric.adoc[「永続的なキュー」]を参照してください。
 
@@ -108,7 +108,7 @@ CloudHub は、世界の 12 の異なるリージョン (北米、南米、欧�
 
 アプリケーション向けに提供されるドメインは、アプリケーションがデプロイされるリージョンに基づきます。たとえば、`myapp` という名前のアプリケーションをカナダ (中央部) にデプロイする場合、アプリケーションにアクセスするために使用されるドメインは `myapp.ca-c1.cloudhub.io` になります。要求のルーティングに使用されるロードバランサは、アプリケーションと同じリージョンに存在します。
 
-別のリージョンへのアプリケーションのデプロイについての詳細は、xref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。CloudHub のセキュリティおよびコンプライアンスについての詳細は、 https://www.mulesoft.com/lp/whitepaper/saas/cloud-security[「Anypoint Cloud Security & Compliance (Anypoint クラウドセキュリティおよびコンプライアンス)」ホワイトペーパー]を参照してください。
+別のリージョンへのアプリケーションのデプロイについての詳細は、​xref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]​を参照してください。CloudHub のセキュリティおよびコンプライアンスについての詳細は、&#8203;https://www.mulesoft.com/lp/whitepaper/saas/cloud-security[「Anypoint Cloud Security & Compliance (Anypoint クラウドセキュリティおよびコンプライアンス)」]ホワイトペーパーを参照してください。
 
 === ワーカーとマルチテナンシー
 
@@ -163,7 +163,7 @@ CloudHub は、CloudHub ワーカーから監視データ、分析データ、�
 
 xref:secure-application-properties.adoc[セキュアなプロパティ]をアプリケーションバンドルの一部として読み込むこともできます。プロパティにセキュアフラグが設定されている場合、Runtime Manager コンソールでも表示できなくなります。実際には、アプリケーションを実行している CloudHub ワーカー以外の場所に伝播されなくなります。
 
-セキュリティに関する MuleSoft のアプローチについての詳細は、 http://mulesoft.com/downloads/whitepapers/security-whitepaper.pdf[「Anypoint Cloud Security & Compliance whitepaper (Anypoint クラウドセキュリティおよびコンプライアンス)」ホワイトペーパー]を参照してください。
+セキュリティに関する MuleSoft のアプローチについての詳細は、&#8203;http://mulesoft.com/downloads/whitepapers/security-whitepaper.pdf[「Anypoint Cloud Security & Compliance whitepaper (Anypoint クラウドセキュリティおよびコンプライアンス)」]ホワイトペーパーを参照してください。
 
 == 関連情報
 

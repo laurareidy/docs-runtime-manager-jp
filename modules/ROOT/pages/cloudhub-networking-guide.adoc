@@ -18,12 +18,12 @@ CloudHub はすべてのインテグレーションに負荷分散サービス�
 
 CloudHub 負荷分散サービスはワーカー間でラウンドロビン方式の負荷分散を実行します。これにより、ワーカーは、受け取る要求が増加するにつれて規模を線形的に拡大できます。また、この負荷分散では、アプリケーションのアップグレード時に切り替えが透過的に実行されます。xref:managing-applications-on-cloudhub.adoc[「CloudHub でのアプリケーションの管理」]を参照してください。
 
-CloudHub にデプロイされた各アプリケーションには、ロードバランサを参照する `CNAME` レコードがあります (例: `myapp.cloudhub.io`)。CloudHub にデプロイされた Mule アプリケーションはホスト `0.0.0.0` 上で HTTP ポート (`8081`) または HTTPS ポート (`8082`) をリスンする必要があります。 
+CloudHub にデプロイされた各アプリケーションには、ロードバランサを参照する `CNAME` レコードがあります (例: `myapp.cloudhub.io`)。CloudHub にデプロイされた Mule アプリケーションはホスト `0.0.0.0` 上で HTTP ポート (`8081`) または HTTPS ポート (`8082`) をリスンする必要があります。
 
 Mule ワーカーでは次のポートが割り当てられます。
 
-* `http.port` が `8081` に設定されます 
-* `https.port` が `8082` に設定されます 
+* `http.port` が `8081` に設定されます
+* `https.port` が `8082` に設定されます
 
 次に、ロードバランサは Mule ワーカー上の割り当てられたポートに要求を転送します。転送されたトラフィックは引き続き HTTP および HTTPS プロトコルを使用します。つまり、`${http.port}` で HTTPS をリスンしたり、`${https.port}` でプレーン HTTP をリスンしたりできません。 +
 これらのポートを、それぞれに予約されたプロパティ `${http.port}` および `${https.port}` を使用して参照する必要があります。これで、CloudHub サービスはデプロイ時にポートを動的に割り当てることができます。 +
@@ -71,9 +71,9 @@ CloudHub のロードバランサ (`myapp.cloudhub.io`) を介してクライア
 
 == IP 範囲および静的 IP
 
-CloudHub IP アドレスは Amazon EC2 IP プールから選択されます。この範囲のリストについては、 http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html[Amazon AWS IP アドレス範囲 API] を参照してください。このページの「Download (ダウンロード)」リンクでは、リージョンを含むすべての範囲の動的に生成された JSON 表現を取得できます。これらの範囲は通知なしに変更される可能性があるため、この情報を定期的に更新する必要があります。
+CloudHub IP アドレスは Amazon EC2 IP プールから選択されます。この範囲のリストについては、&#8203;http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html[Amazon AWS IP アドレス範囲 API] を参照してください。このページの「Download (ダウンロード)」リンクでは、リージョンを含むすべての範囲の動的に生成された JSON 表現を取得できます。これらの範囲は通知なしに変更される可能性があるため、この情報を定期的に更新する必要があります。
 
-CloudHub では、アプリケーションの静的 IP の割り当てがサポートされるため、他のサービス用に静的 IP をホワイトリストに登録できます。アプリケーションの静的 IP を有効にするには、Runtime Manager UI のアプリケーション設定ページの *[Static IPs (静的 IP)]* タブに移動して、*[Use Static IP (静的 IP を使用)]* チェックボックスをオンにします。デフォルトでは、サブスクリプション内の本番 vCore の 2 倍の数の静的 IP が割り当てられます。この制限を増やすには、 https://support.mulesoft.com[MuleSoft サポート]にお問い合わせください。 
+CloudHub では、アプリケーションの静的 IP の割り当てがサポートされるため、他のサービス用に静的 IP をホワイトリストに登録できます。アプリケーションの静的 IP を有効にするには、Runtime Manager UI のアプリケーション設定ページの *[Static IPs (静的 IP)]* タブに移動して、*[Use Static IP (静的 IP を使用)]* チェックボックスをオンにします。デフォルトでは、サブスクリプション内の本番 vCore の 2 倍の数の静的 IP が割り当てられます。この制限を増やすには、 https://support.mulesoft.com[MuleSoft サポート]にお問い合わせください。
 
 アプリケーションの静的 IP が割り当てられると、その静的 IP はアプリケーション設定ページの *[Static IPs (静的 IP)]* タブに表示されます。詳細は、xref:deploying-to-cloudhub.adoc#static-ips-tab[「CloudHub へのデプロイ」]を参照してください。
 
@@ -91,23 +91,37 @@ xref:runtime-manager-agent.adoc[Runtime Manager エージェント]と Runtime M
 
 アプリケーションをどのリージョンにデプロイするかに応じて、インテグレーションの DNS レコードとロードバランサが変わる場合があります。各リージョンでアプリケーションがどの DNS レコードを使用できるかについて次の表にまとめました。
 
+米国コントロールプレーンの https://anypoint.mulesoft.com[Anypoint Platform] は、以下の地域をカバーしています。
+
 [%header,cols="2*a"]
 |===
-|DNS レコード |リージョン
-| `myapp.us-e1.cloudhub.io` | 米国東部 (北バージニア)
-| `myapp.us-e2.cloudhub.io` | 米国東部 (オハイオ)
-| `myapp.us-w1.cloudhub.io` | 米国西部 (北カリフォルニア)
-| `myapp.us-w2.cloudhub.io` | 米国西部 (オレゴン)
-| `myapp.ca-c1.cloudhub.io` | カナダ (中央部)
-| `myapp.br-s1.cloudhub.io` | 南米 (サンパウロ)
-| `myapp.sg-s1.cloudhub.io` | アジア太平洋 (シンガポール)
-| `myapp.au-s1.cloudhub.io` | アジア太平洋 (シドニー)
-| `myapp.jp-e1.cloudhub.io` | アジア太平洋 (東京)
-| `myapp.ir-e1.cloudhub.io` | EU (アイルランド)
-| `myapp.de-c1.cloudhub.io` | EU (フランクフルト)
-| `myapp.uk-e1.cloudhub.io` | EU (ロンドン)
+| 米国コントロールプレーンの地域 | DNS レコード
+| 米国東部 (北バージニア) | `myapp.us-e1.cloudhub.io`
+| 米国東部 (オハイオ) | `myapp.us-e2.cloudhub.io`
+| 米国西部 (北カリフォルニア) | `myapp.us-w1.cloudhub.io`
+| 米国西部 (オレゴン) | `myapp.us-w2.cloudhub.io`
+| カナダ (中央部) | `myapp.ca-c1.cloudhub.io`
+| 南米 (サンパウロ) | `myapp.br-s1.cloudhub.io`
+| アジア太平洋 (シンガポール) | `myapp.sg-s1.cloudhub.io`
+| アジア太平洋 (シドニー) | `myapp.au-s1.cloudhub.io`
+| アジア太平洋 (東京) | `myapp.jp-e1.cloudhub.io`
+| EU (アイルランド) | `myapp.ir-e1.cloudhub.io`
+| EU (フランクフルト) | `myapp.de-c1.cloudhub.io`
+| EU (ロンドン) | `myapp.uk-e1.cloudhub.io`
 
 |===
+
+EU コントロールプレーンの https://eu1.anypoint.mulesoft.com[Anypoint Platform] は、以下の地域をカバーしています。
+
+[%header,cols="2*a"]
+|===
+| EU コントロールプレーンの地域 | DNS レコード
+| EU (アイルランド) | `myapp.ir-e1.eu1.cloudhub.io`
+| EU (フランクフルト) | `myapp.de-c1.eu1.cloudhub.io`
+
+|===
+
+DNS レコードは各コントロールプレーンで一意です。EU コントロールプレーンは、米国コントロールプレーンがサポートする地域の一部をサポートしますが、DNS レコードは異なります。EU コントロールプレーンの詳細については、xref:eu-control-plane::index.adoc[「EU コントロールプレーンについて」]を参照してください。
 
 リージョンへのデプロイは、内部および外部のワーカー DNS アドレスにも影響します。たとえば、アイルランドにデプロイした場合、内部および外部の IP アドレスの DNS レコードは `mule-worker-myapp.ir-e1.cloudhub.io` および `mule-worker-internal-myapp.ir-e1.cloudhub.io` になります。
 

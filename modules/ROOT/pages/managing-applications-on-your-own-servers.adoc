@@ -86,4 +86,4 @@ image::managing-applications-on-your-own-servers-96463.png[]
 * xref:deploying-to-your-own-servers.adoc[独自サーバにアプリケーションをデプロイ]する方法について参照してください。
 * xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]には、デプロイ後にアプリケーションを管理する方法についての追加情報が含まれています。
 * xref:monitoring.adoc[アプリケーションを監視]する方法について参照してください。
-* サーバのデプロイメントには、 https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] も使用できます。
+* サーバのデプロイメントには、&#8203;https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] も使用できます。

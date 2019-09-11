@@ -3,25 +3,33 @@ ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
 
-既存のアプリケーションを現在実行中のグループにサーバを追加する必要がある場合、サーバをグループに追加する前にそのアプリケーションを停止して削除する必要があります。
+== 前提条件
 
-サーバをサーバグループに追加する前に、次を確認してください。
+サーバをサーバグループに追加する前に、以下を行う必要があります。
 
-* Mule がインストールおよび設定されている。
-* Runtime Manager エージェントがインストールおよび設定されている。
-* Runtime Manager にサーバが作成されている。
+* Mule をインストールして設定します。
+* サーバを作成して設定します。
+* 各サーバに https://www.mulesoft.com/platform/mule[Mule] の同じバージョンをダウンロードしてインストールし、xref:managing-servers.adoc#add-a-server[amc_setup] スクリプトを実行して、各サーバを Runtime Manager に登録します。
 
-各サーバに https://www.mulesoft.com/platform/mule[Mule] の同じバージョンをダウンロードしてインストールし、xref:managing-servers.adoc#add-a-server[amc_setup] スクリプトを実行して、最初に各サーバを Runtime Manager に登録する必要があります。
+[NOTES]
+--
+* サーバグループ内のすべてのサーバは、同じ Mule バージョンおよび同じ Runtime Manager エージェントバージョンを実行している必要があります。 
+* サーバグループには状況が `Running` または `Disconnected` のサーバを含めることができますが、状況が `Created` のサーバをこれらと混在させることはできません。 
+* すべてのサーバが `Created` 状況を示すサーバであれば、それらのサーバからサーバグループを作成できます。
+* 既存のアプリケーションが実行中であるサーバをサーバグループに追加するには、先にアプリケーションを停止してサーバから削除する必要があります。 
+--
 
-. *[Servers (サーバ)]* 画面から、サーバをクリックして追加メニューを表示し、*[Add Servers (サーバを追加)]* をクリックします。
+== サーバをグループに追加する
+
+. *[Servers (サーバ)]* 画面から、サーバグループの行をクリックして管理メニューを表示し、*[Add Servers (サーバを追加)]* をクリックします。
 +
 image::addserverstogroup.png[AddServersToGroup]
 
-. グループに追加するサーバを選択した後、*[Add to Group (グループに追加)]* をクリックします。
-+
-image::addtogroup.png[AddToGroup]
+. 使用できるサーバのリストが表示されます。グループに追加するサーバを選択して、*[Add Servers (サーバを追加)]* をクリックします。
 
 == 関連情報
 
+* xref:installing-and-configuring-runtime-manager-agent.adoc[Runtime Manager エージェントのインストールと設定]
+* xref:mule-runtime::runtime-installation-task.adoc[Mule のダウンロードおよびインストール]
 * xref:servers-create.adoc[サーバの作成 (ハイブリッド)]
 * xref:server-group-about.adoc[サーバグループについて (ハイブリッド)]

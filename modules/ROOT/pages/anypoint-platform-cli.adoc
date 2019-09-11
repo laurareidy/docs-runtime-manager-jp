@@ -17,17 +17,10 @@ CLI は、対話型シェルと標準 CLI モードの両方をサポートし�
 
 == 前提条件
 
-Anypoint-CLI は、NodeJS アプリケーションです。Anypoint Platform CLI をコンピュータにインストールするには、NPM (デフォルトの NodeJS パッケージマネージャ) と共に NodeJS ランタイム環境がコンピュータにインストールされていることを確認する必要があります。
-NodeJS のドキュメントに従って、両方のリソースを取得します。
-
-また、git バージョン管理システムもコンピュータにインストールする必要があります。特定のオペレーティングシステムのインストール手順やダウンロードリンクは、Git ドキュメントサイトにあります。
-
-NodeJS (npm を使用) と git をインストールしたら、コマンドラインインターフェースを開いて以下を入力し、Anypoint Platform CLI をインストールできます。
-
-[source]
-----
-> anypoint-cli 
-----
+* NodeJS と NPM (ノードのパッケージマネージャ) がマシンにインストールされていること。 +
+どちらも https://nodejs.org/en/download/[NodeJS ダウンロードページ]で入手できます。
+* Git バージョン管理システムがコンピュータにインストールされていること。 +
+https://git-scm.com/downloads[Git ダウンロードサイト]で入手してください。
 
 == インストール
 
@@ -60,20 +53,20 @@ Anypoint-CLI の各インスタンスでは、次のいずれかのオプショ�
 
 | `organization` | Anypoint Platform 内の組織。
 
-環境変数 ` export ANYPOINT_ORG=<name>` を使用して、この値を渡すこともできます。 | いいえ
+環境変数 `export ANYPOINT_ORG=<name>` を使用して、この値を渡すこともできます。 | いいえ
 
 | `environment` | Anypoint 環境。
 
 環境変数 `export ANYPOINT_ENV=<name>` を使用して、この値を渡すこともできます。 | いいえ
 
-|host (ホスト) | Anypoint Platform インストールのホスト。 +
+| `host` | Anypoint Platform インストールのホスト。 +
 デフォルトでは、この値は +https://anypoint.mulesoft.com+ を参照します。 +
 Anypoint Platform Private Cloud Edition を使用している場合、プラットフォームをホストしているアドレスを渡していることを確認します。
 Anypoint Platform EU クラウドを使用している場合、EU 準拠の URL を渡していることを確認します。
 
 専用の環境変数 `ANYPOINT_HOST=<name>` を使用して、この値を渡すこともできます。 | いいえ
 
-|bearer (ベアラー) | ユーザ名とパスワードを渡す代わりに、アカウントのトークンを渡すことができる。 +
+| `bearer` | ユーザ名とパスワードを渡す代わりに、アカウントのトークンを渡すことができます。 +
 アカウントのトークンを取得するには、ユーザ名とパスワードを使用して +https://anypoint.mulesoft.com/accounts/login+ エンドポイントにアクセスし、ベアラー値を取得します。
 
 トークンベアラーの有効期限が切れると、セッションの有効期限が切れます。 +
@@ -87,7 +80,7 @@ Anypoint Platform EU クラウドを使用している場合、EU 準拠の URL 
 
 === ログイン情報ファイル
 
-これらのオプションを Anypoint Platform CLI インストールに渡すには、`./anypoint/` ディレクトリ内にある `credentials` ファイルを使用することをお勧めします。このファイルは、インストール時に自動的に作成されません。ログイン情報ファイルを作成する手順は、次のとおりです。
+これらのオプションを Anypoint Platform CLI インストールに渡すには、`~/.anypoint` ディレクトリ内にある `credentials` ファイルを使用することをお勧めします。このファイルは、インストール時に自動的に作成されません。ログイン情報ファイルを作成する手順は、次のとおりです。
 
 . Linux および OSx では `~/` ディレクトリ、Windows では `C:\Users\USERNAME \` に `.anypoint` というディレクトリを作成します。
 . `.anypoint` ディレクトリに移動し、次の構造の `credentials` という名前の空白のファイルを作成します。

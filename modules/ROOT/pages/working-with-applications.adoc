@@ -11,7 +11,7 @@ image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title
 
 [TIP]
 ====
-この API では、Runtime Manager のクラウドベースバージョンを使用するクラウドデプロイメントのみが処理されます。さまざまなデプロイメントシナリオについての詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。API を使用したオンプレミスアプリケーションの管理については、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/ae639f94-da46-42bc-9d51-180ec25cf994/apis/38784/versions/42082[Runtime Manager API ポータル]を参照してください。
+この API では、Runtime Manager のクラウドベースバージョンを使用するクラウドデプロイメントのみが処理されます。さまざまなデプロイメントシナリオについての詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。API を使用したオンプレミスアプリケーションの管理については、&#8203;https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/ae639f94-da46-42bc-9d51-180ec25cf994/apis/38784/versions/42082[Runtime Manager API Portal]を参照してください。
 ====
 
 アプリケーション API では、アプリケーションのリスト、作成、更新、削除ができます。種別を返すか受け入れるすべてのリソースまたはメソッドでは、アプリケーション JSON 種別が使用されます (特に注意書きがある場合を除く)。次に、アプリケーションの取得要求への応答で JSON 形式で受信するデータの例を示します。

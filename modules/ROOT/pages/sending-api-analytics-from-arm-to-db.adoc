@@ -10,7 +10,7 @@ image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", titl
 image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
 image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
-いくつかの設定を行い、API ゲートウェイランタイムを実行するアプリケーションによって生成された HTTP API Analytics を、データベースに簡単に保存することができます。
+いくつかの設定を行うことで、API ゲートウェイランタイムを実行するアプリケーションによって生成された HTTP API Analytics を、データベースに簡単に保存することができます。
 
 [NOTE]
 ====
@@ -32,7 +32,7 @@ Runtime Manager エージェントは、Mule からメッセージの送信を�
 
 == API Analytics 追跡データベース内部ハンドラのインストール
 
-http://mule-agent.s3.amazonaws.com/1.5.1/mule-agent-internal-handlers-db-1.5.1.zip[API Analytics 追跡データベース内部ハンドラ]をダウンロードし、`{MULE_HOME}/plugins/mule-agent-plugin/lib/modules` フォルダに解凍します。
+http://mule-agent.s3.amazonaws.com/1.5.1/mule-agent-internal-handlers-db-1.5.1.zip[API Analytics 追跡データベース内部ハンドラ]をダウンロードして、`{MULE_HOME}/plugins/mule-agent-plugin/lib/modules` フォルダに解凍します。
 
 == エージェントの設定可能項目
 
@@ -98,7 +98,7 @@ CREATE TABLE MULE_API_ANALYTICS (
   host_id                      VARCHAR(255) NULL,
   org_id                       VARCHAR(36)  NULL,
   path                         VARCHAR(500) NOT NULL,
-  policy_violation_policy_id   INT          NULL,
+  policy_violation_policy_id   VARCHAR(50)  NULL,
   policy_violation_policy_name VARCHAR(150) NULL,
   policy_violation_outcome     VARCHAR(10)  NULL,
   received_ts                  VARCHAR(30)  NOT NULL,
@@ -112,6 +112,17 @@ CREATE TABLE MULE_API_ANALYTICS (
   verb                         VARCHAR(8)   NOT NULL,
   PRIMARY KEY (id)
 );
+
+----
+
+[NOTE]
+バージョン 2.3.0 より前の Runtime Manager エージェントから移行する場合に限り、スキーマを更新する必要があります。
+
+MySQL で `policy_violation_policy_id` データ種別を更新するために提案されたスクリプトでの移行。
+
+[source,sql,linenums]
+----
+ALTER TABLE MULE_API_ANALYTICS MODIFY policy_violation_policy_id VARCHAR(50) NULL;
 
 ----
 
@@ -153,7 +164,7 @@ CREATE TABLE MULE_API_ANALYTICS (
   host_id                      VARCHAR(255) NULL,
   org_id                       VARCHAR(36)  NULL,
   path                         VARCHAR(500) NOT NULL,
-  policy_violation_policy_id   INT          NULL,
+  policy_violation_policy_id   VARCHAR(50)  NULL,
   policy_violation_policy_name VARCHAR(150) NULL,
   policy_violation_outcome     VARCHAR(10)  NULL,
   received_ts                  VARCHAR(30)  NOT NULL,
@@ -167,6 +178,20 @@ CREATE TABLE MULE_API_ANALYTICS (
   verb                         VARCHAR(8)   NOT NULL,
   PRIMARY KEY (id)
 );
+----
+
+[NOTE]
+バージョン 2.3.0 より前の Runtime Manager エージェントから移行する場合に限り、スキーマを更新する必要があります。
+
+Oracle 11g XE で `policy_violation_policy_id` データ種別を更新するために提案されたスクリプトでの移行。
+
+[source,sql,linenums]
+----
+ALTER TABLE MULE_API_ANALYTICS ADD temp VARCHAR(50);
+update MULE_API_ANALYTICS set temp=cast(policy_violation_policy_id as VARCHAR(50));
+ALTER TABLE MULE_API_ANALYTICS DROP COLUMN policy_violation_policy_id;
+ALTER TABLE MULE_API_ANALYTICS RENAME COLUMN temp TO policy_violation_policy_id;
+
 ----
 
 ==== 内部ハンドラ設定
@@ -207,7 +232,7 @@ CREATE TABLE MULE_API_ANALYTICS (
   host_id                      VARCHAR(255) NULL,
   org_id                       VARCHAR(36)  NULL,
   path                         VARCHAR(500) NOT NULL,
-  policy_violation_policy_id   INT          NULL,
+  policy_violation_policy_id   VARCHAR(50)  NULL,
   policy_violation_policy_name VARCHAR(150) NULL,
   policy_violation_outcome     VARCHAR(10)  NULL,
   received_ts                  VARCHAR(30)  NOT NULL,
@@ -223,11 +248,22 @@ CREATE TABLE MULE_API_ANALYTICS (
 );
 ----
 
+[NOTE]
+バージョン 2.3.0 より前の Runtime Manager エージェントから移行する場合に限り、スキーマを更新する必要があります。
+
+Microsoft SQL Server 2014 で `update policy_violation_policy_id` データ種別を更新するために提案されたスクリプトでの移行。
+
+[source,sql,linenums]
+----
+ALTER TABLE MULE_API_ANALYTICS ALTER COLUMN policy_violation_policy_id VARCHAR(50) NULL;
+
+----
+
 ==== 内部ハンドラ設定
 
 . https://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=11774 から Microsoft JDBC ドライバをダウンロードします。
 . `sqljdbc_4_%version%.tar.gz` ファイルを展開し、`sqljdbc4%version%_.jar` ファイルを取得します。
-. この .jar ファイルを `{MULE_HOME}/plugins/mule-agent-plugin/lib/modules` にコピーします。
+. この `.jar` ファイルを `{MULE_HOME}/plugins/mule-agent-plugin/lib/modules` にコピーします。
 . `{MULE_HOME}/conf/mule-agent.yml` ファイルを変更して次を含めます。
 
 +
@@ -249,4 +285,4 @@ CREATE TABLE MULE_API_ANALYTICS (
 * xref:deploying-to-your-own-servers.adoc[独自サーバにアプリケーションをデプロイ]する方法について参照してください。
 * xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]には、デプロイ後にアプリケーションを管理する方法についての追加情報が含まれています。
 * xref:managing-applications-on-your-own-servers.adoc[「独自のサーバにあるアプリケーションの管理」]には、オンプレミスデプロイメントに固有の詳細が含まれています。
-* サーバのデプロイメントには、 https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] も使用できます。
+* サーバのデプロイメントには、&#8203;https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] も使用できます。

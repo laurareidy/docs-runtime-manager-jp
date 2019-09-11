@@ -1,4 +1,4 @@
-= VPC 接続方法について
+= VPC 接続方法
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
@@ -33,6 +33,7 @@ image::vpc-connectivity-methods-concept-7dd0e.png[7dd0e]
 [NOTE]
 --
 直接接続を使用するには、AWS 直接接続の場所と Anypoint VPC が同じリージョンにある必要があります。直接接続ゲートウェイはサポートされていません。
+直接接続では、ボーダーゲートウェイプロトコル (BGP) を使用した動的ルーティングが必要です。 
 --
 
 == 関連情報

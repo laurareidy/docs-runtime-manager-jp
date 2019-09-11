@@ -12,9 +12,9 @@ Runtime Manager REST API を使用して、独自のオンプレミスサーバ�
 * スクリプトとして
 * Java で記述された Jenkins/Maven プラグインとして
 
-API を介してサポートされるすべての操作、リソース、メソッド、必須プロパティ、および予想される応答の詳細なリファレンスは、 https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[スタンドアロン Runtime Manager API リファレンス]または https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-application-manager/1.0.3/console/summary/[Runtime Fabric API リファレンス]を参照してください。
+API を介してサポートされるすべての操作、リソース、メソッド、必須プロパティ、および予想される応答の詳細なリファレンスは、&#8203;https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[スタンドアロン Runtime Manager API リファレンス]または https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-application-manager/1.0.3/console/summary/[Runtime Fabric API リファレンス]を参照してください。
 
-同じ機能を提供する Mule Maven プラグインも使用できます。したがって、ここで説明するプロセスは、https://docs.mulesoft.com/mule-runtime/4.1/mmp-deployment-concept[Mule Maven プラグイン]を使用できない場合や、使用することが望まれない場合の代替方法として使用してください。
+同じ機能を提供する Mule Maven プラグインも使用できます。したがって、ここで説明するプロセスは、&#8203;https://docs.mulesoft.com/mule-runtime/4.1/mmp-deployment-concept[Mule Maven プラグイン]を使用できない場合や、使用することが望まれない場合の代替方法として使用してください。
 
 デプロイおよび CI 関連のアクティビティ専用の Anypoint Platform アカウントを作成することをお勧めします。
 
@@ -41,9 +41,9 @@ API を介してサポートされるすべての操作、リソース、メソ�
 
 image::arm-api-workflow.png[ワークフロー]
 
-https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/access-management-api/[Anypoint Platform アクセス管理] API の使用方法
+https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/access-management-api/[Anypoint Platform アクセス管理] API を使用する手順は、次のとおりです。
 
-. 有効な Anypoint Platform ユーザ名とパスワードを使用して、アクセス管理 API の `/login` をコールし、後続のすべてのコールで使用する `access_token` と `token_type` を取得します。
+. 有効な Anypoint Platform ユーザ名とパスワードを使用して、アクセス管理 API の `/login` をコールして、後続のすべてのコールで使用する `access_token` と `token_type` を取得します。
 
 +
 [TIP]
@@ -62,7 +62,7 @@ Jenkins を使用する場合、タスク内で *[Username (ユーザ名)]* と 
 [TIP]
 ステップ 2 で取得した組織 `id` は API URI の一部として渡す必要があります。環境 `id` は、パス「data[i].id」から条件「data[i].name == inputEnvironment」を使用して抽出する必要があります (「Dev」、「Test」、「Production」、または Anypoint Platform でセットアップされた有効な環境名などの値が取得される可能性があります)。
 
-https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[スタンドアロン Runtime Manager] API の使用方法*
+https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[スタンドアロン Runtime Manager] API を使用する手順は、次のとおりです。*
 
 . サーバ、クラスタ、またはサーバグループ名と、取得した組織 `id` および環境 `id` を渡して、Runtime Manager API の `/servers`、`/clusters`、または `/serverGroups` をコールします。このコールでは、`targetId` を含め、このサーバ、クラスタ、またはサーバグループに関するすべてのデータが返されます。
 
@@ -103,13 +103,13 @@ https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4
 
 *Maven ツールの使用*
 
-. https://docs.mulesoft.com/exchange/to-publish-assets-maven[Maven] を使用して、アーチファクトを Exchange アセットマネージャにパブリッシュします。
+. https://docs.mulesoft.com/exchange/to-publish-assets-maven[Maven] を使用して、アーティファクトを Exchange アセットマネージャにパブリッシュします。
 
 +
 [NOTE]
 対象で障害が発生し、回復のためにコントロールプレーンでアーチファクトを再デプロイする必要がある場合、このステップを実行して高可用性を確保する必要があります。
 
-https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/access-management-api/[Anypoint Platform アクセス管理] API の使用方法
+https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/access-management-api/[Anypoint Platform アクセス管理] API を使用する手順は、次のとおりです。
 
 . 有効な Anypoint Platform ユーザ名とパスワードを使用して、アクセス管理 API の `/login` をコールし、後続のすべてのコールで使用する `access_token` と `token_type` を取得します。
 
@@ -131,7 +131,7 @@ Jenkins を使用する場合、タスク内で *[Username (ユーザ名)]* と 
 [TIP]
 ステップ 2 で取得した組織 `id` は API URI の一部として渡す必要があります。環境 `id` は、パス「data[i].id」から条件「data[i].name == inputEnvironment」を使用して抽出する必要があります (「Dev」、「Test」、「Production」、または Anypoint Platform でセットアップされた有効な環境名などの値が取得される可能性があります)。
 
-https://anypoint.mulesoft.com/exchange/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-deployment-target-registry/1.0.1/pages/home/[Runtime Manager 対象レジストリ] API の使用方法
+https://anypoint.mulesoft.com/exchange/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-deployment-target-registry/1.0.1/pages/home/[Runtime Manager 対象レジストリ] API を使用する手順は、次のとおりです。
 
 . プロバイダ `id` と、取得した組織 `id` および環境 `id` を渡して、対象レジストリ API の `/targets` をコールします。これにより、`targetId` を含め、組織で登録されているすべての対象が返されます。
 
@@ -139,7 +139,7 @@ https://anypoint.mulesoft.com/exchange/f1e97bc6-315a-4490-82a7-23abe036327a.anyp
 [NOTE]
 このステップでは、後でデプロイの対象として使用する対象 `id` を取得します。このタスクでは、ワークフローの開始時に入力として指定された対象名に基づいて、適切な対象 ID を選択する必要があります。対象 `id` は、「data[i].id」から条件「data[i].name == inputTargetName」を使用して抽出する必要があります。
 
-*Using the https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-application-manager/1.0.3/console/summary/[アプリケーションマネージャ] API の使用方法*
+https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/amc-application-manager/1.0.3/console/summary/[e/summary/[アプリケーションマネージャ] API*:
 
 . 組織の `id` と環境の `id` を渡して、アプリケーションマネージャ API の deployments をコールし、アプリケーションの `id` とそのデータの残りを取得します。
 

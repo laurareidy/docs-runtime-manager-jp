@@ -1,4 +1,4 @@
-= アプリケーションのデプロイ
+= CloudHub API を使用したアプリケーションのデプロイ
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]

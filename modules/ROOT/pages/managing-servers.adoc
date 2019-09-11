@@ -1,10 +1,9 @@
-= サーバ、サーバグループ、クラスタについて
+= サーバ、サーバグループ、クラスタ
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
-:keywords: cloudhub, アプリケーション, サーバ, サーバグループ, オンプレミス, Runtime Manager, arm, クラスタ, クラスタ
 
-Runtime Manager を使用して、オンプレミスのサーバ、サーバグループ、クラスタのプロパティを登録しセットアップできます。サーバをセットアップした後、アプリケーションのデプロイメント対象として選択できます。
+Runtime Manager を使用して、オンプレミスのサーバ、サーバグループ、クラスタのプロパティを登録しセットアップします。サーバをセットアップした後、アプリケーションのデプロイメント対象として選択できます。
 
 == サーバグループの状況の状態
 
@@ -12,13 +11,16 @@ Runtime Manager を使用して、オンプレミスのサーバ、サーバグ�
 
 == アラート
 
-サーバが切断されたり、クラスタから削除されるなど、サーバに特定のイベントが発生した場合に送信されるメールアラートをセットアップできます。これらのアラートは、特定のサーバまたはすべてのサーバにリンクすることができます。これの手順については、xref:alerts-on-runtime-manager.adoc[「アラート」]を参照してください。
+サーバが切断されたり、クラスタから削除されるなど、サーバに特定のイベントが発生した場合に通知されるメールアラートをセットアップできます。アラートは、クラスタまたはサーバグループの特定のサーバまたはすべてのサーバにリンクできます。 
 
 == 関連情報
 
-* xref:runtime-manager-switch-env.adoc[Runtime Manager を使用した環境の切り替え方法]
+* xref:cluster-add-srv.adoc[クラスタへのサーバの追加 (ハイブリッド)]
+* xref:server-group-add.adoc[サーバグループへのサーバの追加 (ハイブリッド)]
+* xref:alerts-on-runtime-manager.adoc[アラート] 
+* xref:runtime-manager-switch-env.adoc[Runtime Manager を使用した環境の切り替え]
 * xref:deploying-to-your-own-servers.adoc[独自のサーバへのアプリケーションのデプロイ]
 * xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
 * xref:managing-applications-on-your-own-servers.adoc[独自のサーバでのアプリケーションの管理]
-* xref:3.8@mule-runtime::mule-high-availability-ha-clusters.adoc[Mule 高可用性クラスタ]
+* xref:mule-runtime::mule-high-availability-ha-clusters.adoc[Mule 高可用性クラスタ]
 * https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[Anypoint Platform の REST API]

@@ -15,4 +15,4 @@ MuleSoft のポリシーは、すべてのメンテナンスは透明性を持�
 
 Runtime Manager コンソール、CloudHub プラットフォームサービス、CloudHub ワーカークラウドのライブ状況と詳細なサービス履歴は、 http://status.mulesoft.com/[status.mulesoft.com] で参照できます。
 
-バージョン設定ポリシーとサポートポリシーについては、 https://www.mulesoft.com/legal/versioning-back-support-policy[こちら]を参照してください。
+バージョン設定ポリシーとサポートポリシーについては、&#8203;https://www.mulesoft.com/legal/versioning-back-support-policy[こちら]を参照してください。

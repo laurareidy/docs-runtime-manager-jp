@@ -45,20 +45,18 @@ GET http://localhost:9999/mule/agent/components HTTP/1.1
 
 ==== 操作: コンポーネント設定の取得
 
-*要求:*
-
+​*要求:*​
 ----
 GET <Runtime Manager Agent URL>/<component> HTTP/1.1 Content-Type: application/json
 ----
 
-*例:*
-
+​*例:*​
 ----
 GET http://localhost:9999/mule/agent/myservice/ HTTP/1.1
 Content-Type: application/json
 ----
 
-*応答:*
+​*応答:*​
 
 [source,json,linenums]
 ----
@@ -104,13 +102,12 @@ Content-Type: application/json
 PATCH <Runtime Manager Agent URL>/<component> HTTP/1.1
 ----
 
-*例:*
-
+​*例:*​
 ----
 PATCH <Runtime Manager Agent URL>/myservice HTTP/1.1
 ----
 
-*要求で送信される JSON:*
+​*要求で送信される JSON:*​
 [source,json,linenums]
 ----
 {
@@ -119,7 +116,7 @@ PATCH <Runtime Manager Agent URL>/myservice HTTP/1.1
 }
 ----
 
-*例:*
+​*例:*​
 [source,json,linenums]
 ----
 PATCH http://localhost:9999/mule/agent/myservice HTTP/1.1
@@ -130,7 +127,7 @@ PATCH http://localhost:9999/mule/agent/myservice HTTP/1.1
 }
 ----
 
-*設定が正常に変更された場合の応答:*
+​*設定が正常に変更された場合の応答:*​
 [source,json,linenums]
 ----
 {
@@ -168,8 +165,7 @@ PATCH http://localhost:9999/mule/agent/myservice HTTP/1.1
 
 この操作では、コンポーネントの設定を JSON 要求に含まれるプロパティで置き換えます。
 
-*要求:*
-
+​*要求:*​
 ----
 PUT <Runtime Manager Agent URL>/<component> HTTP/1.1
 {
@@ -177,7 +173,7 @@ PUT <Runtime Manager Agent URL>/<component> HTTP/1.1
 }
 ----
 
-*応答:*
+​*応答:*​
 [source,json,linenums]
 ----
 {
@@ -213,19 +209,17 @@ PUT <Runtime Manager Agent URL>/<component> HTTP/1.1
 
 ==== 操作: コンポーネントの有効化
 
-*要求:*
-
+​*要求:*​
 ----
 PUT <Runtime Manager Agent URL>/<component>/enable HTTP/1.1
 ----
 
-*例:*
-
+​*例:*​
 ----
 PUT http://localhost:9999/mule/agent/myservice/enable
 ----
 
-*応答 (サービスが正常に有効化された場合):*
+​*応答 (サービスが正常に有効化された場合):*​
 [source,json,linenums]
 ----
 HTTP 200
@@ -233,19 +227,17 @@ HTTP 200
 
 ===== 操作: コンポーネントの無効化
 
-*要求:*
-
+​*要求:*​
 ----
 PUT <Runtime Manager Agent URL>/<service>/disable HTTP/1.1
 ----
 
-*例:*
-
+​*例:*​
 ----
 PUT http://localhost:9999/mule/agent/myservice/disable
 ----
 
-*応答 (正常に無効化された場合):*
+​*応答 (正常に無効化された場合):*​
 [source,json,linenums]
 ----
 HTTP 200

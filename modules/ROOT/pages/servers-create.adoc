@@ -1,16 +1,16 @@
-= Runtime Manager でのサーバの作成方法 (ハイブリッド)
+= Runtime Manager でのサーバの作成 (ハイブリッド)
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
 
-`amc_setup` スクリプトを使用し、Runtime Manager エージェントと Runtime Manager の通信を設定して、サーバを作成します。Runtime Manager コンソールにサーバを表示して管理できるようにするには、最初にサーバを Runtime Manager エージェントに登録する必要があります。
+`amc_setup` スクリプトを使用して、Runtime Manager エージェントと Runtime Manager の通信を設定して、サーバを作成します。Runtime Manager コンソールにサーバを表示して管理できるようにするには、最初にサーバを Runtime Manager エージェントに登録する必要があります。
 
 == 前提条件
 
 お客様がホストする環境内のサーバを管理するには、次を実行する必要があります。
 
 * Mule バージョン 3.6 以降、または API ゲートウェイバージョン 2.0 以降をインストールする。
-* Runtime Manager エージェントのバージョン 1.1.1 以降をインストールする。
+* Runtime Manager エージェントバージョン 1.1.1 以降をインストールします。
 * (省略可能) ファイアウォールを介して Anypoint Platform と接続するために必要なホワイトリスト登録済みの IP またはポートを設定する。
 
 追加するサーバが Runtime Manager の別のインスタンスにすでに登録済みの場合、そのインスタンスから削除するまで追加できません。次の手順を実行します。
@@ -25,7 +25,7 @@ endif::[]
 . `$MULE_HOME/conf` ディレクトリから `mule-agent.yml` ファイルを削除します。
 
 
-=== コマンド
+=== amc_setup コマンド
 
 `amc_setup` コマンドは `$MULE_HOME/bin` ディレクトリにあります。このディレクトリからコマンドを実行しない場合は、次のいずれかを行う必要があります。
 
@@ -46,10 +46,14 @@ Runtime Manager によって提供される登録トークンは、`-H` パラ�
 
 IBM の Java 仮想マシン (JVM) を使用してサーバを作成する場合、Runtime Manager エージェントによってインストールされたデフォルトのトラストストアとは異なるトラストストアを使用する必要があります。
 
-. カスタマーサポートポータルからカスタムトラストストアをダウンロードします。
-. ファイル名を `truststore.jks` に変更します。
+. 次のナレッジ記事からカスタムトラストストアをダウンロードします。
++
+https://support.mulesoft.com/s/article/Connectivity-issues-between-Mule-Runtime-and-Anypoint-Runtime-manager-using-an-IBM-JVM[Connectivity issues between Mule and Anypoint Runtime Manager using an IBM JVM (IBM JVM を使用する場合の Mule と Anypoint Runtime Manager 間の接続の問題)]
+. $MULE_HOME/conf フォルダのトラストストアファイルの名前を次のように変更します。
+* `anypoint-truststore.jks` — Mule Runtime Engine 4.1.3 (Mule Agent 2.1.4) 以降
+* `truststore.jks` — Mule Runtime Engine 4.1.2 (Mule Agent 2.1.3)
 . カスタムトラストストアを Runtime Manager エージェントの `<MULE_HOME>/conf` フォルダにコピーします。
-. Mule Runtime を再起動します。
+. Mule Runtime Engine を再起動します。
 
 == サーバの作成
 
@@ -62,7 +66,7 @@ image::empty-servers-add-server-1st-srv-corr-comm-real-2.png[empty_servers-add_s
 +
 `amc_setup` コマンドには、組織に一意の情報が含まれています。このコマンドを実行すると、Mule サーバが Runtime Manager と通信できるようになります。`-H` パラメータに含まれているキー (上の画像では一部編集済み) は、Runtime Manager に対して認証するために Mule または API ゲートウェイに特別に生成されるトークンです。
 
-. Mule Runtime がインストールされている環境にログインします。
+. Mule Runtime Engine がインストールされている環境にログインします。
 . `$MULESOFT_HOME/bin` ディレクトリに移動します。
 . ターミナルウィンドウにコマンドを貼り付け、`server-name` をサーバの名前に置き換えます。次に例を示します。
 +
@@ -90,7 +94,7 @@ image::srv1-created.png[srv1_created]
 
 == 関連情報
 
-* xref:3.7@mule-runtime::installing.adoc[Mule Runtime のインストール]
+* xref:3.7@mule-runtime::installing.adoc[Mule Runtime Engine のインストール]
 * xref:runtime-manager-agent.adoc[Runtime Manager エージェント]
 * xref:installing-and-configuring-runtime-manager-agent.adoc[Runtime Manager エージェントのインストールと設定]
 * xref:installing-and-configuring-runtime-manager-agent.adoc#ports-ips-and-hostnames-to-whitelist[ホワイトリストに登録するポートと IP]

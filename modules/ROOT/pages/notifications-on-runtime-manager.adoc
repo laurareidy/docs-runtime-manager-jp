@@ -20,7 +20,6 @@ image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title
 
 == 通知の管理
 
-
 各通知には、優先度レベルと、関連付けられたメッセージがあります。通知が特定のアプリケーションに関連付けられている場合は、アプリケーション名も表示されます。
 
 image::alertmessage.png[AlertMessage]

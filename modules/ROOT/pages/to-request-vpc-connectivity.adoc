@@ -10,25 +10,28 @@ endif::[]
 |VPC 接続方法|方法
 |IPsec トンネル
 |IPsec トンネルを使用する接続方法は、VPC を最初にいつ設定したのかによって異なります。
-
-2018 年 11 月より前の Anypoint VPC の場合は、<<request_vpc_connectivity,「ネットワークとの VPC 接続の要求」>>を参照してください。
-
-2018 年 11 月以降の新しい Anypoint VPC の場合は、xref:vpn-about.adoc[「Anypoint VPN」]を参照してください。
-
-2018 年 11 月以降に接続された Anypoint VPC に静的ルートを追加するには、 https://support.mulesoft.com/s/article/How-to-add-an-additional-Static-route-to-an-Anypoint-VPN-tunnel[「Adding Additional Static Routes Using the API (API を使用した静的ルートの追加)」]を参照してください。
 |VPC ピアリング
 |<<request_vpc_connectivity,ネットワークへの VPC 接続の要求>>
 |CloudHub 直接接続
 |<<request_vpc_connectivity,ネットワークへの VPC 接続の要求>>
 |===
 
-[request_vpc_connectivity]
-== VPC 接続の申請
+== 2018 年 11 月以降の Anypoint VPC での VPC 接続の要求
 
-VPN トンネル、ピアリング、または直接接続を使用して Anypoint VPC を内部ネットワークに接続する必要がある場合は、次を行う必要があります。
+2018 年 11 月以降の新しい Anypoint VPC の場合は、xref:vpn-about.adoc[「Anypoint VPN」]を参照してください。
 
-. link:{attachmentsdir}/VPC-form-v9.3-template.xlsx[Anypoint VPC 検出フォーム]をダウンロードします (MS Excel 2007 以降でマクロを有効にする必要があります)。
-. 接続方法に関する必須の詳細情報を伝えるデータを入力します。複数の Amazon 地域のサポートが必要な場合は、サポートが必要な地域ごとに検出フォームのコピーを 1 部提出します。
+2018 年 11 月以降に接続された Anypoint VPC に静的ルートを追加するには、&#8203;https://support.mulesoft.com/s/article/How-to-add-an-additional-Static-route-to-an-Anypoint-VPN-tunnel[「Adding Additional Static Routes Using the API (API を使用した静的ルートの追加)」]を参照してください。
+
+[[request_vpc_connectivity]]
+== 2018 年 11 月以前の Anypoint VPC での VPC 接続の要求
+
+VPN トンネル、ピアリング、または直接接続を使用して Anypoint VPC を内部ネットワークに接続する場合は、次を行う必要があります。
+
+. link:{attachmentsdir}/VPC-form-v9.3-template.xlsx[Anypoint VPC 検出フォーム]をダウンロードします (MS Excel 2007 以降でマクロを有効にする必要があります)。 
++
+[NOTE]
+既存の VPN を更新する場合、VPN が 2018 年 11 月以前に作成された場合にのみ、VPC 検出フォームが必要です。2018 年 11 月以降に作成されたすべての VPN では、xref:vpn-create-arm.adoc[「Anypoint VPN の作成」]のセルフサービスステップに従ってください。
+. 接続方法に関する必須の詳細情報を伝えるデータを入力します。複数のリージョンのサポートが必要な場合は、サポートが必要な地域ごとに検出フォームのコピーを 1 部提出します。
 . 具体的な要件についてのご相談は、MuleSoft アカウント担当者にお問い合わせください。 +
 MuleSoft サポートチームがフォームを受信し、残りの質問に回答した後、安全にキーを交換し、ルータの設定方法についての指示が提供されます。
 

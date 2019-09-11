@@ -20,7 +20,7 @@ CloudHub はクラウドベースの、サービスとしてのインテグレ�
 
 名前が示すとおり、iPaaS はインテグレーションアプリケーションを作成するための開発プラットフォームです。クラウドおよびエンタープライズ内でアプリケーションを統合するための一連のサービスと機能を提供します。iPaaS の核となる理念は、プラットフォーム上のサービスがインテグレーション向けに作成されているという点を除いて PaaS と同じです。マルチテナント、弾力性、信頼性など、期待されるいくつかの基本機能に加えて、iPaaS では、データとイベントの仲介、オーケストレーション、REST および SOAP サービスをパブリッシュするためのサービスコンテナ、強力なセキュリティ機能、監視および開発者ツールが提供されます。
 
-詳細は、 https://blogs.mulesoft.com/dev/mule-dev/introducing-integration-paas-ipaas/[こちら]を参照してください。
+詳細は、&#8203;https://blogs.mulesoft.com/dev/mule-dev/introducing-integration-paas-ipaas/[こちら]を参照してください。
 
 
 === CloudHub アカウントを作成する方法は?
@@ -137,7 +137,7 @@ Cloudhub では、ワーカーの公開 IP アドレスを「静的」に設定�
 
 === 静的 IP に割り当てることができる可能な IP 範囲は?
 
-CloudHub は Amazon EC2 にデプロイされるため、IP アドレスは Amazon EC2 IP プールから選択されます。この範囲のリストについては、 http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html[Amazon EC2 の公開 IP 範囲]を参照してください。
+CloudHub は Amazon EC2 にデプロイされるため、IP アドレスは Amazon EC2 IP プールから選択されます。この範囲のリストについては、&#8203;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html[Amazon EC2 の公開 IP 範囲]を参照してください。
 
 === アプリケーションのタイムゾーンを変更する方法は?
 

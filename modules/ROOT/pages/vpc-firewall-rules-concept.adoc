@@ -1,10 +1,10 @@
-= VPC ファイアウォールルールについて
+= VPC ファイアウォールルール
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
 
 CloudHub のデフォルト設定では、すべてのアプリケーションは、公開されているロードバランサによって分散されたマルチテナントクラウドでホストされます。 +
-Anypoint Virtual Private Cloud (Anypoint VPC) を作成するときに、独自のファイアウォールルールを追加して、特定の IP 範囲やポートがワーカーにアクセスすることを許可できます。<<configurefirewall,「ファイアウォールルールの設定」>>を参照してください。
+Anypoint Virtual Private Cloud (Anypoint VPC) を作成するときに、独自のファイアウォールルールを追加して、特定の IP 範囲やポートがワーカーにアクセスすることを許可できます。「<<configurefirewall,ファイアウォールルールの設定>>」を参照してください。
 
 [NOTE]
 ====

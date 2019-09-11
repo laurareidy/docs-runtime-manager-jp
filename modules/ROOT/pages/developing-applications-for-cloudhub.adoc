@@ -12,9 +12,7 @@ image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title
 
 CloudHub にデプロイするための Mule アプリケーションでは、オンプレミスサーバにデプロイするためのアプリケーションとは異なる操作が必要な場合があります。ほとんどの場合、同じxref:3.8@mule-runtime::elements-in-a-mule-flow.adoc[フロー要素]とxref:3.8@mule-runtime::global-elements.adoc[グローバル要素]は同じように適用されますが、考慮すべき特定の事項がいくつかあります。両方のデプロイメント環境の主な違いについては、xref:deployment-strategies.adoc[「デプロイメント戦略」]で説明しています。このドキュメントでは、CloudHub にデプロイするときに採用すべきベストプラクティスをいくつか紹介します。
 
-xref:cloudhub.adoc[「CloudHub」]ガイドには、基本概念の説明と xref:general:getting-started:deploy-to-cloudhub.adoc[CloudHub へのデプロイ]の例が含まれていて、CloudHub でのアプリケーションの開発およびデプロイプロセスを理解するために役立ちます。
-
-
+xref:cloudhub.adoc[「CloudHub」]ガイドには、基本概念の説明とデプロイの例があります。
 
 == HTTP/HTTPS ホストの指定
 
@@ -45,7 +43,7 @@ http://0.0.0.0:${http.port}/service/path/two
 アプリケーションからのすべてのログメッセージは、CloudHub ログサービスによってキャプチャされ、Runtime Manager コンソールのログ検索ツールで使用できます。診断や監査のためにログ内で追加情報を公開したい場合、Mule にはメッセージコンテンツの詳細なログのためのxref:3.8@mule-runtime::logger-component-reference.adoc[ロガー要素]が用意されています。
 
 [IMPORTANT]
-CloudHub では、アプリケーションを削除すると、コンソールからログデータにアクセスできなくなります。CloudHub では、古いログデータは一定期間アーカイブされた後、消去されます。そのため、必要に応じてデータを復元できます。詳細は、https://support.mulesoft.com[https://support.mulesoft.com] でサポートケースを開いてください。
+CloudHub では、アプリケーションを削除すると、コンソールからログデータにアクセスできなくなります。CloudHub では、古いログデータは一定期間アーカイブされた後、消去されます。そのため、必要に応じてデータを復元できます。詳細は、 https://support.mulesoft.com[https://support.mulesoft.com] でサポートケースを開いてください。
 
 == サードパーティライブラリのパッケージ化
 

@@ -1,4 +1,4 @@
-= VPC のプロビジョニングについて
+= VPC のプロビジョニング
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
@@ -10,7 +10,7 @@ endif::[]
 [NOTE]
 Anypoint Platform の基本サブスクリプションには 2 つの Anypoint VPC ライセンスが含まれており、Anypoint Platform 組織に 2 つの VPC の権利が与えられます。Anypoint VPC ライセンス制限に達すると、ユーザインターフェースの *[Create VPC (VPC を作成)]* オプションが無効になります。
 . Anypoint VPC に接続する。 +
-これは MuleSoft の担当者が行う必要があります。
+Anypoint VPC をオンプレミスネットワークに接続するように xref:to-request-vpc-connectivity.adoc[Anypoint VPN] を設定します。VPC ピアリングまたは CloudHub 直接接続を使用して Anypoint VPC を接続する場合は、MuleSoft の担当者が作業を行う必要があります。
 
 [NOTE]
 --
@@ -32,16 +32,16 @@ VPC でワーカーをホストできるようにするには、Anypoint VPC を
 
 == FAQ: Anypoint VPC および VPN ライセンス要件の計算方法
 
-IPSec VPN を介して Anypoint VPC を接続するには、デプロイメントシナリオに必要な数のライセンスを所有している必要があります。 
+IPSec VPN を介して Anypoint VPC を接続するには、デプロイメントシナリオに必要な数のライセンスを所有している必要があります。
 
-Anypoint Platform の基本サブスクリプションには 2 つの Anypoint VPC ライセンスが含まれており、Anypoint Platform 組織にライセンス供与された 2 つ VPC の権利が与えられます。Anypoint VPN ライセンスは Anypoint VPC ライセンスにバンドルされており、各 Anypoint VPC ライセンスでは、リモートロケーションにある 1 つのパブリック IP アドレスに接続する 1 つの VPN ゲートウェイの権利が組織に与えられます。 
+Anypoint Platform の基本サブスクリプションには 2 つの Anypoint VPC ライセンスが含まれており、Anypoint Platform 組織にライセンス供与された 2 つ VPC の権利が与えられます。Anypoint VPN ライセンスは Anypoint VPC ライセンスにバンドルされており、各 Anypoint VPC ライセンスでは、リモートロケーションにある 1 つのパブリック IP アドレスに接続する 1 つの VPN ゲートウェイの権利が組織に与えられます。
 
 [NOTE]
-Anypoint VPN ライセンスは、Anypoint VPC ライセンスと 1 対 1 の関係にする必要はありません。たとえば、1 つの Anypoint VPC で 2 つの Anypoint VPN を使用し、もう 1 つの Anypoint VPC では VPN を使用しないことができます。  
+Anypoint VPN ライセンスは、Anypoint VPC ライセンスと 1 対 1 の関係にする必要はありません。たとえば、1 つの Anypoint VPC で 2 つの Anypoint VPN を使用し、もう 1 つの Anypoint VPC では VPN を使用しないことができます。
 
-Anypoint VPC からアクセスできるようにする各リモートロケーションに、Anypoint VPC ライセンスがもう 1 つ必要です。 
+Anypoint VPC からアクセスできるようにする各リモートロケーションに、Anypoint VPC ライセンスがもう 1 つ必要です。
 
-
+[[faq_how_to_size_vpc]]
 == FAQ: VPC のサイズの計算方法
 
 Anypoint VPC を作成するときに、クラスレスドメイン間ルーティング (CIDR) 表記法を使用して、CIDR ブロック形式でネットワークの IP アドレス範囲を指定する必要があります。 +
@@ -78,6 +78,17 @@ Anypoint VPC は、メイン組織からビジネスグループのいずれか�
 使用可能な任意の CloudHub リージョン内に Anypoint VPC を作成できます。 +
 推奨されるリージョンは、Anypoint VPC との接続方法によって異なります。VPN トンネルを使用する場合は、データセンターに最も近い CloudHub リージョンを選択します。 +
 ただし、プライベート AWS VPC とピアリングする場合は、同じ AWS リージョンに Anypoint VPC を作成する必要があります。
+
+== FAQ: アプリケーションを VPC にデプロイまたは移動する方法
+
+MuleSoft アプリケーションを開発や Sandbox などの環境にデプロイします。
+
+デプロイメントのリージョンが VPC リージョンと一致した場合: 
+
+* アプリケーションのデプロイメントの時点ですでに環境が VPC に関連付けられている場合は、アプリケーションは VPC 内で動作します。
+* アプリケーションのデプロイメント後に環境が VPC に関連付けられた場合は、アプリケーションを再起動するまでは、アプリケーションは VPC 内では動作しません。
+
+デプロイメントのリージョンが VPC リージョンと一致しない場合は、アプリケーションは VPC の外部でデプロイされます。この場合、アプリケーションは VPC で設定されている接続方法にはアクセスできません。 
 
 == 関連情報
 

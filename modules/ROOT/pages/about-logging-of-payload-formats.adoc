@@ -38,7 +38,7 @@ Runtime Manager エージェントは、以下の表の *[文字列への変換]
 |.rtf	|リッチテキスト形式 (RTF)|	application/rtf|	はい
 |.azw	|Amazon Kindle eBook 形式|	application/vnd.amazon.ebook|	いいえ
 |.mpkg	|Apple インストーラパッケージ|	application/vnd.apple.installer+xml|	いいえ
-|.xul	|XUL|	application/vnd.mozilla.xul+xml|	はい
+|.xul	|XXUL|	application/vnd.mozilla.xul+xml|	はい
 |.xls	|Microsoft Excel|	application/vnd.ms-excel|	いいえ
 |.ppt	|Microsoft PowerPoint|	application/vnd.ms-powerpoint|	いいえ
 |.odp	|OpenDocuemnt プレゼンテーションドキュメント|	application/vnd.oasis.opendocument.presentation|	いいえ

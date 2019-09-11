@@ -22,9 +22,9 @@ CloudHub ログを無効にするオプションを使用すると、独自の L
 * 非同期ログアペンダーのみを使用できます。同期アペンダーは使用しないでください。
 ====
 
-独自の Log4j アペンダーを有効にするには、まず、ユーザのログ設定を使用して `log4j2.xml` 設定ファイルを作成する必要があります。Anypoint Studio では、このファイルは src/main/resources ディレクトリにあります。独自の Log4j 設定を作成する方法についての詳細は、 https://logging.apache.org/log4j/2.x/manual/configuration.html[Log4j のドキュメント]を参照してください。
+独自の Log4j アペンダーを有効にするには、まず、ユーザのログ設定を使用して `log4j2.xml` 設定ファイルを作成する必要があります。Anypoint Studio では、このファイルは src/main/resources ディレクトリにあります。独自の Log4j 設定を作成する方法についての詳細は、&#8203;https://logging.apache.org/log4j/2.x/manual/configuration.html[Log4j のドキュメント]を参照してください。
 
-独自のログシステムにログを送信する共に CloudHub でログを表示できるようにする場合、CloudHub Log4j アペンダーを設定する必要があります。これをログ設定の基本設定とすることをお勧めします。MuleSoft スタッフがリモートでのデバッグ目的でログが必要になる場合に備えて、アペンダーはログデータを CloudHub に送信し、ローカルのログファイルを提供します。
+独自のログシステムにログを送信すると共に CloudHub でログを表示できるようにする場合、CloudHub Log4j アペンダーを設定する必要があります。これをログ設定の基本設定とすることをお勧めします。MuleSoft スタッフがリモートでのデバッグ目的でログが必要になる場合に備えて、アペンダーはログデータを CloudHub に送信し、ローカルのログファイルを提供します。
 
 [source,xml,linenums]
 ----

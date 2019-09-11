@@ -33,16 +33,16 @@ CloudHub は、インフラストラクチャコンポーネントのプロビ�
 [NOTE]
 ====
 Anypoint Platform CLI コマンドの完全なリストおよび各コマンドの使用方法は、xref:anypoint-platform-cli.adoc#List-of-commands[リファレンスページ]を参照してください。 +
-`loadbalancers` および `vpcs` エンドポイントの詳細は、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal]を参照してください。
+`loadbalancers` および `vpcs` エンドポイントについての詳細は、&#8203;https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals[API Portal] を参照してください。
 
 API Portal で、他の Mule API の中から CloudHub API を検索し、その最新バージョンにアクセスします。
 ====
 
 === マッピング
 
-ロードバランサ設定は、入力 URL をさまざまな CloudHub アプリケーションへのコールに変換する方法を記述する<<マッピングルール>>のリストにより定義されます。
+ロードバランサ設定は、入力 URL をさまざまな CloudHub アプリケーションへのコールに変換する方法が記述された一連の<<マッピングルール>>で定義されます。
 シンプルな一致ルールを作成する場合、1 つの入力アドレスがそのまま定義済みの出力 (いずれかのアプリケーションのエンドポイント) に一致します。
-リテラル一致の代わりにパターンを使用して、変数のような入力テキストをエンドポイントに対して照合することもできます。<<パターン一致>>セクションを参照してください。
+リテラル一致の代わりにパターンを使用して、変数のような入力テキストをエンドポイントに対して照合することもできます。​<<パターン一致>>​のセクションを参照してください。
 
 プロキシルールを使用して、CloudHub で実行されている Mule アプリケーションのいずれかにドメインまたはサブドメインをマップできます。
 
@@ -76,7 +76,7 @@ API Portal で、他の Mule API の中から CloudHub API を検索し、その
 
 === マッピングルール
 
-マッピングルールは、<<入力 URL>> パターンを定義する一連の項目 (以下を参照) と、上述のパターンに関して <<出力 URL>> を記述する一連の項目です。
+マッピングルールは、<<入力 URL>> パターンを定義する一連の項目 (以下を参照) と、上述のパターンに関して<<出力 URL>> を記述する一連の項目です。
 
 最初に定義されたルールには、それ以降に定義された他のルールよりも高い優先度が与えられます。つまり、最初に一致したルールが適用されます。
 既存のルールの作成、参照、削除ができます。
@@ -87,7 +87,7 @@ API Portal で、他の Mule API の中から CloudHub API を検索し、その
 
 [%header,cols="10a,20a,20a,20a,20a,10a"]
 |===
-|ルール番号 3+^|入力 URL 2+^| 出力 URL
+|ルール # 3+^|入力 URL 2+^| 出力 URL
 |  | *サブドメイン* |  *ドメイン*   |        *URI*        |       *appName*       |   *appURI*
 | 1 | `qaparm`    | `services.com`   | `{appname}/{region}/` | `{appname}`             | `{region}`
 | 2 | `api`       | `mcd.com`        |                       | `internal-router-proxy` |

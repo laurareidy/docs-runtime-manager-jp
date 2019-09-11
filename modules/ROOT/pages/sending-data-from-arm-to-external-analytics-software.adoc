@@ -35,7 +35,7 @@ xref:runtime-manager-agent.adoc[Runtime Manager エージェント]は、Runtime
 
 == 前提条件
 
-* Mule v3.6 以降。または API ゲートウェイを使用して構築されるアプリケーションを使用する場合は API ゲートウェイスタンドアロンのバージョン 2.1.0 以降。
+* Mule 3.6 以降。または API ゲートウェイを使用して構築されるアプリケーションを使用する場合は API ゲートウェイスタンドアロンのバージョン 2.1.0 以降。
 * Runtime Manager エージェント 1.2.0 以降が必要です。インストールおよび設定の手順を以下に示します。
 
 == サードパーティ分析ツールを使用する Runtime Manager のインストールとセットアップ
@@ -347,7 +347,7 @@ image::sending-data-from-arm-to-external-monitoring-software-splunk.png[]
 image::agent-to-splunk-tcp.png[splunk]
 
 =====
-
+[discrete.view]
 ==== ELK スタックの統合
 
 ELK では、連携する 3 つのオープンソースツール (Elasticsearch、Logstash、Kibana) を組み合わせて、ログデータの保存、検索、分析を行うことができます。Mule イベント通知を汎用システムログとして出力できます。これは、ELK スタックで処理することができます。Logstash でデータがログにキャプチャおよびインデックス化されます。このログから、Elasticsearch と Kibana を使用してグラフ、レポート、アラート、ダッシュボード、可視化を生成することができます。
@@ -378,6 +378,7 @@ image::sending-data-from-arm-to-external-monitoring-software-elk.png[]
 +
 image::elk-config-advanced.jpg[ELK の詳細]
 
+[discrete.view]
 === API Analytics の設定
 
 Runtime Manager UI を使用して外部ソフトウェアとの接続をセットアップするには、その準備として先に API ゲートウェイに変更を加える必要があります。
@@ -418,25 +419,39 @@ wrapper.java.additional.<n>=-Danypoint.platform.on_prem=true
 
 image::sending-data-from-arm-to-external-monitoring-software-api-analytics.png[]
 
+[NOTE]
+--
+Mule バージョン 4.2.0 および 3.9.3 以降では、`wrapper.conf` ファイルに新しいプロパティを追加することで、ELK や Splunk などのサードパーティシステムと Anypoint Platform の両方にイベントを転送するように Mule Runtime Engine を設定できます。
+
+[source,java,linenums]
+----
+wrapper.java.additional.<n>=-Danypoint.platform.analytics_multiple_consumers_enabled=true
+----
+--
+
 [WARNING]
 上記のように `wrapper.conf` ファイルを変更しても、(Runtime Manager UI を使用して) データに外部宛先を割り当てないと、この分析データは API ゲートウェイが実行されているサーバのキューに保存され、システムがクラッシュするまで集積する可能性があります。
 
+[discrete.view]
 == API Analytics と Splunk および ELK の統合
 
 API ゲートウェイを設定したら、Runtime Manager に戻り、サーバのメニューにオプションがいくつか追加されていることを確認できます。
 
 image::sending-data-from-arm-to-external-monitoring-software-api-analytics.png[]
 
-API Analytics を Splunk と ELK の両方に送信するようセットアップできます。ビジネスイベントを送信する場合とまったく同じように設定できます。<<Integrating with an ELK Stack,「ELK スタックの統合」>>と<<Integrating with Splunk,「Splunk の統合」>>を参照してください。
+API Analytics を Splunk と ELK の両方に送信するようセットアップできます。ビジネスイベントを送信する場合とまったく同じように設定できます。<<ELK スタックの統合,「ELK スタックの統合」>>と<<Splunk の統合, 「Splunk の統合」>>を参照してください。
 
+[discrete.view]
 == ペイロード形式
 
 ペイロードのコンテンツをログにエクスポートする場合は、すべての形式をエクスポートできるわけではないことに留意してください。詳細は、xref:about-logging-of-payload-formats.adoc[「ペイロード形式のログについて」]を参照してください。
 
+[discrete.view]
 == パスワードの暗号化
 
 Mule インスタンスまたは API ゲートウェイスタンドアロンインスタンスを起動するときに、マスタパスワードを割り当てます。割り当てない場合、Runtime Manager UI を使用して外部アプリケーションのログイン情報をセットアップするときに、ログイン情報はプレーンテキストとして `conf/mule-agent.yml` ファイルに保存されます。これは、セキュリティ上の理由からお勧めできません。代わりに、引数を追加して Mule または API ゲートウェイランタイムを起動します。この引数を使用して、YAML ファイルに保存するときにこれらのパスワードが暗号化されます。
 
+[discrete.view]
 === Mule
 
 ----
@@ -475,4 +490,4 @@ Mule または API ゲートウェイを再起動するときにこれらの暗�
 * xref:deploying-to-your-own-servers.adoc[独自のサーバへのアプリケーションのデプロイ]
 * xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]には、デプロイ後にアプリケーションを管理する方法についての追加情報が含まれています。
 * xref:managing-applications-on-your-own-servers.adoc[「独自のサーバにあるアプリケーションの管理」]には、オンプレミスデプロイメントに固有の詳細が含まれています。
-* https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] はサーバへのデプロイメントでも使用できます。
+* サーバのデプロイメントには、&#8203;https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[REST API] も使用できます。

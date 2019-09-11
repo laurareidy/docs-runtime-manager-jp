@@ -10,5 +10,4 @@ IP アドレスをロードバランサのホワイトリストに登録する�
 == 関連情報
 
 * xref:lb-cert-upload.adoc[証明書のアップロードについて]
-* xref:lb-whitelists.adoc[ホワイトリストについて]
 * xref:lb-mapping-rules.adoc[マッピングルールについて]

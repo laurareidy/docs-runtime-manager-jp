@@ -10,7 +10,7 @@ endif::[]
 +
 * *Shutdown (シャットダウン)*
 * *Restart (再起動)*
-* *Delete*
+* *Delete (削除)*
 * *Renew Certificate (証明書を更新)*
 
 . 選択したアクションを実行することを確認します。

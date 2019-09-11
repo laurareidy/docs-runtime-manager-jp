@@ -2,7 +2,6 @@
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
-:keywords: cloudhub, クラウド, api, Runtime Manager, arm, Mule, Mule, ランタイム, オンプレミス, オンプレミス
 
 Runtime Manager では、Mule Runtime サーバのトポロジに応じて、いくつかの方法で Mule アプリケーションを Mule インスタンスにデプロイできます。現在使用できるデプロイメント戦略には、次のものがあります。
 
@@ -18,13 +17,13 @@ Runtime Manager では、Mule Runtime サーバのトポロジに応じて、い
 
 |image:logo-server-active.png[link="/runtime-manager/deploying-to-your-own-servers", title="Anypoint Platform On-Premises (Anypoint Platform オンプレミス)"]
 
-|xref:1.6@private-cloud::index.adoc[Anypoint Platform Private Cloud Edition]
+|xref:private-cloud::index.adoc[Anypoint Platform Private Cloud Edition]
 
 |xref:deploying-to-your-own-servers.adoc[独自の Mule サーバ]
 
 |image:logo-pcf-active.png[link="/runtime-manager/deploying-to-pcf", title="Pivotal Cloud Foundry"]
 
-|xref:1.6@private-cloud::index.adoc[Anypoint Platform Private Cloud Edition]
+|xref:private-cloud::index.adoc[Anypoint Platform Private Cloud Edition]
 
 | Mule Runtime インスタンスを管理する http://docs.pivotal.io/pivotalcf/1-8/installing/pcf-docs.html[Pivotal Cloud Foundry (PCF)] リポジトリ。
 
@@ -63,11 +62,11 @@ xref:studio::index.adoc[Anypoint Studio] で *[Play (プレイ)]* アイコン�
 
 image::infrastructure-simple-cloud.png[ch]
 
-xref:cloudhub.adoc[CloudHub] は完全なサービスとしてのプラットフォーム (PaaS) で、標準で <<Object Store (オブジェクトストア)>> インフラストラクチャ、<<監視>>、<<トラブルシューティング>>、<<スケジュール>>などを備えており、あらゆるサーバニーズに対応します。
+xref:cloudhub.adoc[CloudHub] は完全なサービスとしてのプラットフォームで、標準で<<オブジェクトストア>>インフラストラクチャ、<<監視>>、<<トラブルシューティング>>、<<スケジューリング>>などを備えており、あらゆるサーバニーズに対応します。
 
 Runtime Manager の https://anypoint.mulesoft.com[クラウドコンソール]を使用して、簡単に xref:deploying-to-cloudhub.adoc[CloudHub にデプロイ]することができ、他の要素を事前に設定する必要はありません。
 
-契約で使用が許可されているリソースの部分を使用して、アプリケーションに割り当てることができます。アプリケーションが複数の CloudHub ワーカーで実行される場合は、ロードバランサによって自動的に受信トラフィックが均等に分散されます。詳細は、「<<負荷分散とドメイン名>>」を参照してください。
+契約で使用が許可されているリソースの部分を使用して、アプリケーションに割り当てることができます。アプリケーションが複数の CloudHub ワーカーで実行される場合は、ロードバランサによって自動的に受信トラフィックが均等に分散されます。詳細については、「<<負荷分散とドメイン名>>」を参照してください。
 
 [TIP]
 この手法に適用される具体的な操作機能とその設定方法については、下記のセクションを参照してください。また、この方法でデプロイされたアプリケーションでセットアップする必要がある具体的な内容についてはxref:developing-applications-for-cloudhub.adoc[「CloudHub 用のアプリケーションの開発」]を参照してください。
@@ -79,17 +78,17 @@ image:logo-hybrid-active.png[link="/runtime-manager/deploying-to-your-own-server
 
 image::infrastructure-hybrid.png[ハイブリッド]
 
-アプリケーションを独自サーバにホストして、クラウドでそれらを管理するハイブリッドシナリオでは、高い柔軟性と厳重なセキュリティ (セキュリティ保護された独自のオンプレミス環境にデプロイする場合) を実現できます。一方、<<Object Store (オブジェクトストア)>> インフラストラクチャ、<<共有リソースのサポート>>、<<ログ記録>>といったいくつかの考慮事項を自社で解決する必要があります。
+アプリケーションを独自サーバにホストして、クラウドでそれらを管理するハイブリッドシナリオでは、高い柔軟性と厳重なセキュリティ (セキュリティ保護された独自のオンプレミス環境にデプロイする場合) を実現できます。一方、<<オブジェクトストア>>インフラストラクチャ、<<共有リソースサポート>>、<<ログ>>といったいくつかの考慮事項を自社で解決する必要があります。
 
 Runtime Manager にサーバが表示されるようにするには、まずサーバのコマンドラインで手順を実行してサーバを登録する必要があります。詳細はxref:managing-servers.adoc#add-a-server[「サーバの追加」]を参照してください。次に、サーバをxref:managing-servers.adoc#create-a-server-group[サーバグループ]やxref:managing-servers.adoc#create-a-cluster[クラスタ]にグループ化して、それらを<<高可用性>>デプロイメント対象にすることができます。そして、サーバ、サーバグループ、クラスタのいずれにxref:deploying-to-your-own-servers.adoc[アプリケーションをデプロイ]するかを選択できます。
 
-==== セキュリティおよびハイブリッドデプロイメント 
+==== セキュリティおよびハイブリッドデプロイメント
 
 デフォルトでは、アプリケーションデータはクラウドには送信されず、メタデータのみが各 Mule Runtime Engine の Runtime Manager エージェントによって転送されます。
-エージェントは Mule の監視と制御を行い、独自のデータをコントロールプレーンにパブリッシュします。 
+エージェントは Mule の監視と制御を行い、独自のデータをコントロールプレーンにパブリッシュします。
 Runtime Manager の外部では、外部システムから Runtime Manager Agent API をコールするか、Mule から独自データを外部システムにパブリッシュすることによって Mule を制御できます。
 
-必要に応じて、ID や最終平均値など、アプリケーションの監視や制御に有用なデータをエージェントが転送するようにデフォルトの動作を変更できます。 
+必要に応じて、ID や最終平均値など、アプリケーションの監視や制御に有用なデータをエージェントが転送するようにデフォルトの動作を変更できます。
 また、xref:anypoint-security::tokenization-example.adoc[機密データをトークナイズ]することもできます。
 
 ==== ハイブリッドデプロイメントについての追加情報
@@ -103,9 +102,9 @@ image::infrastructure-onprem.png[オンプレミス]
 
 厳格な規制やコンプライアンス要件があるためにクラウドソリューションの使用が制限されるお客様向けに、MuleSoft は Anypoint Platform Private Cloud Edition を提供しています。これは、Anypoint Platform の管理およびエンゲージメント機能のコンテナ化された配布で、オンプロミスまたはお客様のプライベートクラウド環境にデプロイできます。
 
-この方法では、プラットフォームとデプロイメントの両方をオンプレミスに持つことができます。実装には追加作業が必要なことと、現時点では一部の操作機能が使用できないことに注意してください。ハイブリッドシナリオと同様に、<<Object Store (オブジェクトストア)>>インフラストラクチャ、<<共有リソースのサポート>>、<<ログ記録>>を解決するための追加手順が必要です。
+この方法では、プラットフォームとデプロイメントの両方をオンプレミスに持つことができます。実装には追加作業が必要なことと、現時点では一部の操作機能が使用できないことに注意してください。ハイブリッドシナリオと同様に、<<オブジェクトストア>>インフラストラクチャ、<<共有リソースサポート>>、<<ログ>>を解決するための追加手順が必要です。
 
-Anypoint Platform のこのパッケージには、現在、他のデプロイメント手法で使用できる一部の<<Dashboards>>、<<Insights>>、一部の<<Alerts and Notifications,アラート>>が含まれていません。
+Anypoint Platform のこのパッケージには、現在、他のデプロイメント手法で使用できる一部の<<ダッシュボード>>、<<インサイト>>、および<<アラートと通知,アラート>>が含まれていません。
 
 Runtime Manager にサーバが表示されるようにするには、まずサーバのコマンドラインで手順を実行してサーバを登録する必要があります。詳細はxref:managing-servers.adoc#add-a-server[「サーバの追加」]を参照してください。次に、サーバをxref:managing-servers.adoc#create-a-server-group[サーバグループ]やxref:managing-servers.adoc#create-a-cluster[クラスタ]にグループ化して、それらを<<高可用性>>デプロイメント対象にすることができます。そして、サーバ、サーバグループ、クラスタのいずれにxref:deploying-to-your-own-servers.adoc[アプリケーションをデプロイ]するかを選択できます。
 
@@ -123,11 +122,11 @@ image::infrastructure-pcf.png[pcf]
 IT インフラストラクチャが http://docs.pivotal.io/pivotalcf/1-8/installing/pcf-docs.html[Pivotal Cloud Foundry (PCF)] 上に構築されていてローカルリソースが仮想化されている場合、このプラットフォームを活用して Mule アプリケーションをデプロイし、リソースを動的に割り当てることに関心があるかもしれません。Runtime Manager は Pivotal Cloud Foundry と統合されているため、UI でデプロイメント対象として Pivotal Cloud Foundry を選択するだけで、xref:deploying-to-pcf.adoc[PCF インスタンスにデプロイ]できます。
 
 
-このデプロイメント戦略は、Anypoint Platform Private Cloud Edition を通じてのみ使用可能なため、前のシナリオと同じ制限が適用されます。追加作業が必要で、現時点では一部の操作機能が使用できません。<<Object Store (オブジェクトストア)>>インフラストラクチャ、<<共有リソースのサポート>>、<<ログ記録>>を解決するための追加手順が必要です。
+このデプロイメント戦略は、Anypoint Platform Private Cloud Edition を通じてのみ使用可能なため、前のシナリオと同じ制限が適用されます。追加作業が必要で、現時点では一部の操作機能が使用できません。<<オブジェクトストア>>インフラストラクチャ、<<共有リソースサポート>>、<<ログ>>を解決するための追加手順が必要です。
 
-Anypoint Platform のこのパッケージには、現在、<<Dashboards>>、<<Insights>>、<<Alerts and Notifications,アラート>>が不足しています。今後のリリースで、これらのギャップは解消されていきます。
+Anypoint Platform のこのパッケージには、現在、<<ダッシュボード>>、<<インサイト>>、および<<アラートと通知,アラート>>が不足しています。今後のリリースで、これらのギャップは解消されていきます。
 
-xref:deploying-to-pcf.adoc[アプリケーションをデプロイ]するたびに、Pivotal Cloud Foundry は、使用される buildPack で指定された仕様に従って、使用可能な動的リソースから新しい Mule サーバのインスタンスを作成し、そこにアプリケーションをデプロイします。*複製係数*を選択することで、デプロイメントを拡張できます。複製係数は、定義済みの規模のインスタンスを起動する数を定義します。
+xref:deploying-to-pcf.adoc[アプリケーションをデプロイ]するたびに、Pivotal Cloud Foundry は、使用される buildPack で指定された仕様に従って、使用可能な動的リソースから新しい Mule サーバのインスタンスを作成し、そこにアプリケーションをデプロイします。​*複製係数*​を選択することで、デプロイメントを拡張できます。複製係数は、定義済みの規模のインスタンスを起動する数を定義します。
 
 
 [TIP]
@@ -166,13 +165,14 @@ image::arm-vs-ch2.png[diagram1]
 | Runtime Manager UI を使用してxref:managing-schedules.adoc[スケジュール]を管理できます。
 | タスクをスケジュールするには、フロー内で xref:3.8@mule-runtime::poll-schedulers.adoc[[Poll Scheduler (ポーリングスケジューラ)]] 要素を使用する必要があります。
 
-| CloudHub には、独自の事前設定されたデフォルトのxref:managing-application-data-with-object-stores.adoc[オブジェクトストア]があり、それを参照できます。使用するには、xref:3.8@mule-runtime::mule-object-stores.adoc[Object Store Connector] を追加し、その config_ref がデフォルトの CloudHub オブジェクトストアを参照するように設定します。
+| CloudHub には、独自の事前設定されたデフォルトのxref:managing-application-data-with-object-stores.adoc[オブジェクトストア]があり、それを参照できます。使用するには、xref:3.8@mule-runtime::mule-object-stores.adoc[Object Store Connector] を追加し、その「config_ref」がデフォルトの CloudHub オブジェクトストアを参照するように設定します。
 | xref:3.8@mule-runtime::mule-object-stores.adoc[オブジェクトストア]を使用するには、データを保存する独自のデータベースを設定する必要があります。
 |===
 
 
 
 == 負荷分散とドメイン名
+
 
 外部のクライアントやアプリケーションからの要求には、CloudHub に標準で含まれているロードバランサ設定を使用できます。その場合、CloudHub によって 2 つのホストが提供されます。
 
@@ -185,11 +185,9 @@ DNS ネームサーバを使用して、これらの公開 URL を非公開に�
 
 image::infrastructure-cloud-vpc.png[vpc]
 
-ロードバランサを活用するには、アプリケーションで、CloudHub が HTTP および HTTPS エンドポイントに割り当てている特定のポートを使用する必要があります。詳細は、xref:developing-applications-for-cloudhub.adoc[「CloudHub 用のアプリケーションの開発」]を参照してください。
+ロードバランサを利用するには、CloudHub が HTTP および HTTPS エンドポイントに割り当てたポートを、アプリケーションが使用できる必要があります。詳細は、xref:developing-applications-for-cloudhub.adoc[「CloudHub 用のアプリケーションのデプロイ」]を参照してください。
 
-オンプレミスのクラスタやサーバグループに対するデプロイメントでは、負荷分散はデプロイ時に自動的に処理されます。
-
-複数のインスタンスに対する Pivotal Cloud Foundry デプロイメントの場合にも、負荷分散は自動的に処理されます。
+ローカルクラスタとサーバグループでのデプロイメントでは、オンプレミスリソースに接続されているツールによって負荷分散を管理できます。
 
 == CloudHub 上でのアプリケーションの命名方法
 
@@ -211,7 +209,7 @@ xref:3.8@mule-runtime::mule-high-availability-ha-clusters.adoc#clustering-for-hi
 
 == CloudHub 上のアプリケーションのプロパティ管理
 
-CloudHub にデプロイされたアプリケーションのプロパティを読み込む最も簡単な方法は、Runtime Manager の xref:deploying-to-cloudhub.adoc#properties-tab[*[Properties (プロパティ)\]*] タブを使用することです。ここでは、Java システム環境変数を指定します。これは、オンプレミスサーバへのデプロイで環境変数を追加した場合と同じように機能します。
+CloudHub にデプロイされたアプリケーションのプロパティを読み込む最も簡単な方法は、Runtime Manager の xref:deploying-to-cloudhub.adoc#properties-tab[*[Properties (プロパティ)]*] タブを使用することです。ここでは、Java システム環境変数を指定します。これは、オンプレミスサーバへのデプロイで環境変数を追加した場合と同じように機能します。
 
 オンプレミス Mule デプロイメントと同じように、デプロイ可能なアプリケーションアーカイブファイル内に `mule-app.properties` ファイルを追加することもできます。これらのプロパティはアプリケーションの起動時に CloudHub によってアプリケーションに読み込まれます。
 
@@ -220,7 +218,7 @@ CloudHub では、外部の場所を設定してプロパティプレースホ�
 アプリケーションがデプロイされると、CloudHub の *[Properties (プロパティ)]* タブのエントリは、アプリケーション内にバンドルされたファイルで同じ名前のプロパティが定義されていた場合にそれを上書きします。
 
 [NOTE]
-デプロイ可能なアーカイブにバンドルされたプロパティを CloudHub プロパティで上書きできないようにアプリケーションの動作を変更することができます。これを行うには、Mule アプリケーションの [Property Placeholder (プロパティプレースホルダ)] 要素のオプションを変更します。デフォルト以外のプロパティプレースホルダオプションの詳細は、 http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html[プロパティプレースホルダオプションに関する Spring のドキュメント]を参照してください。
+デプロイ可能なアーカイブにバンドルされたプロパティを CloudHub プロパティで上書きできないようにアプリケーションの動作を変更することができます。これを行うには、Mule アプリケーションの [Property Placeholder (プロパティプレースホルダ)] 要素のオプションを変更します。デフォルト以外のプロパティプレースホルダオプションの詳細は、&#8203;http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html[プロパティプレースホルダオプションに関する Spring のドキュメント]を参照してください。
 
 アプリケーションプロパティにセキュアフラグを設定して、その値が実行時にユーザに表示されず、サーバとコンソールの間でも渡されないようにすることができます。詳細は、xref:secure-application-properties.adoc[「アプリケーションプロパティの保護」]を参照してください。
 
@@ -316,7 +314,7 @@ CloudHub オブジェクトストアを使用すると、ディスクへの書�
 
 CloudHub にデプロイされる各アプリケーションは、別個の仮想サーバ上で実行されるため、ドメインを使用してアプリケーション間のポートやその他のリソースの共有を有効にする必要はありません。
 
-オンプレミスにデプロイする場合は、「Domain」(ドメイン) Mule プロジェクトを作成することができます。このプロジェクトには、フローを含めず、同じサーバ上にデプロイされた他のアプリケーションとの間で共有するグローバル設定要素のセットを含めます。これによって、各アプリケーションに同じ設定やログイン情報を設定する必要がなくなり、特に複数のアプリケーションが同じ HTTP ホストとポートまたはその他の排他的なリソースでリスンする場合に役立ちます。xref:3.8@mule-runtime::shared-resources.adoc[詳細はこちらを参照してください。]
+オンプレミスにデプロイする場合は、「Domain」(ドメイン) Mule プロジェクトを作成することができます。このプロジェクトには、フローを含めず、同じサーバ上にデプロイされた他のアプリケーションとの間で共有するグローバル設定要素のセットを含めます。これによって、各アプリケーションに同じ設定やログイン情報を設定する必要がなくなり、特に複数のアプリケーションが同じ HTTP ホストとポートまたはその他の排他的なリソースでリスンする場合に役立ちます。xref:3.8@mule-runtime::shared-resources.adoc[詳細はこちらを参照してください]。
 
 現在、Runtime Manager コンソールを使用してドメインをデプロイすることはできません。いくつかのシナリオで必要になるローカルサーバに対しても同じです。その場合は、xref:3.8@mule-runtime::starting-and-stopping-mule-esb.adoc[コマンドライン]を使用してローカルサーバ上で直接、ドメインを手動でデプロイできます。
 
@@ -351,9 +349,9 @@ CloudHub で Mule Runtime 3.5.1 以降を使用して作成されたすべての
 
 == デプロイメント戦略の柔軟性
 
-同じ Mule アプリケーションをさまざまなデプロイメント戦略 (<<Cloud Console On-Premises Deployment,オンプレミスサーバ>>へのデプロイメントと<<Cloud Console CloudHub Deployment, CloudHub>> へのデプロイメントなど) によってデプロイするには、アプリケーションの一部のパラメータをxref:3.8@mule-runtime::mule-application-deployment-descriptor.adoc[アプリケーションプロパティ]に抽象化する必要があります。これによって、実際のアプリケーションを変更せずに、各ユースケースに異なる値を設定できます。
+同じ Mule アプリケーションをさまざまなデプロイメント戦略 (<<クラウドコンソールのオンプレミスデプロイメント,オンプレミスサーバ>>へのデプロイメントと<<クラウドコンソールの CloudHub へのデプロイメント, CloudHub>> へのデプロイメントなど) によってデプロイするには、アプリケーションの一部のパラメータをxref:3.8@mule-runtime::mule-application-deployment-descriptor.adoc[アプリケーションプロパティ]に抽象化する必要があります。これによって、実際のアプリケーションを変更せずに、各ユースケースに異なる値を設定できます。
 
-プロジェクトの `src/main/app` フォルダに *mule-app.properties* というアプリケーションプロパティファイルを作成します。CloudHub または Pivotal Cloud Foundry の [Properties (プロパティ)] タブを使用する場合は、これらのプロパティは上書きされます。それぞれの場合に、どのように値が読み込まれるかについては、「<<CloudHub 上のアプリケーションのプロパティ管理>>」を参照してください。
+プロジェクトの `src/main/app` フォルダに *mule-app.properties* というアプリケーションプロパティファイルを作成します。CloudHub または Pivotal Cloud Foundry の [Properties (プロパティ)] タブを使用する場合は、これらのプロパティは上書きされます。それぞれの場合に、どのように値が読み込まれるかについては、「<<プロパティの管理>>」を参照してください。
 
 == さまざまな環境の使用
 

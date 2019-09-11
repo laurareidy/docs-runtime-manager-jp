@@ -37,7 +37,7 @@ Mule フロー内のアプリケーションデータを操作するには、Obj
 
 === OAuth データの保存
 
-Object Store モジュールを使用して OAuth トークンの保存と取得を実行する方法についての詳細は、 http://mulesoft.github.com/linkedin-connector/mule/linkedin-config.html#config[「LinkedIn connector configuration (LinkedIn コネクタの設定)」]ドキュメントの「Saving and Restoring State (状態の保存と復元)」セクションを参照してください。
+オブジェクトストアモジュールを使用して OAuth トークンの保存と取得を実行する方法についての詳細は、http://mulesoft.github.com/linkedin-connector/mule/linkedin-config.html#config[「LinkedIn connector configuration (LinkedIn コネクタの設定)」]ドキュメントの「Saving and Restoring State (状態の保存と復元)」セクションを参照してください。
 
 == アプリケーションデータの表示
 

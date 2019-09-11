@@ -35,7 +35,7 @@ Anypoint VPC を作成する前に、組織には次が必要です。
 [CAUTION]
 --
 この設定は、Anypoint VPC の最初の作成時のみ可能です。Anypoint VPC インスタンスが作成されたら、サイズの変更や選択した CIDR ブロックの編集はできません。 +
-このパラメータを設定する前に、ニーズを満たす Anypoint VPC のサイズを適切に指定する方法をよく理解してください。これを設定する方法がわからない場合は、xref:virtual-private-cloud.adoc#size-your-vpc[Anypoint VPC のサイズ指定]ガイドに従ってください。
+このパラメータを設定する前に、ニーズを満たす Anypoint VPC のサイズを適切に指定する方法をよく理解してください。これを設定する方法がわからない場合は、xref:vpc-provisioning-concept.adoc#faq-how-to-size-my-vpc[Anypoint VPC のサイズ指定]ガイドに従ってください。
 --
 +
 * *Environments (環境)*: (省略可能) Anypoint VPC をバインドする環境を選択します。 +
@@ -72,14 +72,9 @@ image::vpc-tutorial-31341.png[]
 
 == Anypoint VPC に接続する
 
-xref:virtual-private-cloud.adoc#vpc-connectivity-methods[Anypoint VPC 接続方法] (Anypoint VPC ピアリングと CloudHub 直接接続) は、現時点ではセルフサービス機能ではありません。 +
-Anypoint VPC とインフラストラクチャ間の接続を設定するには、link:{attachmentsdir}/VPC-form-v9.3-template.xlsx[Anypoint VPC 検出フォーム]をダウンロードし (MS Excel 2007 以降でマクロを有効にする必要があります)、接続方法に関する必須情報を入力し、MuleSoft カスタマーサポートに送信してください。
-
-Anypoint VPC の設定の SLA は、Anypoint VPC 検出フォームに記入し返送してから 5 営業日です。ただし、それより早く Anypoint VPC の設定が完了する場合があります。
+設定のステップは、選択した xref:virtual-private-cloud.adoc#vpc-connectivity-methods-concept[VPC 接続方法]によって異なります。xref:virtual-private-cloud.adoc#to-request-vpc-connectivity[「ネットワークとの Anypoint VPC 接続の申請」]の指示に従ってください。
 
 == 既存の Anypoint VPC の更新
-
-以下は、2018 年 11 月以前に作成された Anypoint VPC を更新する手順です。2018 年 11 月以降に作成された IPsec VPN トンネルに静的ルートを追加する場合は、 https://support.mulesoft.com/s/article/How-to-add-an-additional-Static-route-to-an-Anypoint-VPN-tunnel [API を使用]して行うことができます。
 
 image::vpc-tutorial-c5a66.png[]
 

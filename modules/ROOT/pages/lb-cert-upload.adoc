@@ -10,7 +10,7 @@ endif::[]
 |===
 | Certificate (証明書) | 例
 | プライマリ証明書 | -----BEGIN CERTIFICATE----- +
-(プライマリ SSL 証明書: .crt) +
+(プライマリ SSL 証明書: <ドメイン名>.crt) +
 -----END CERTIFICATE-----
 | 中間証明書 | -----BEGIN CERTIFICATE----- +
 (中間証明書: DigiCertCA.crt) +

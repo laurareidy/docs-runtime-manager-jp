@@ -45,7 +45,7 @@ CloudHub ロードバランサでは、必要に応じてクライアント要�
 [NOTE]
 --
 CloudHub REST API を使用して、プログラムによって失効リストを更新することをお勧めします。 +
-CLI から必要な `vpcId` と loadbalancerId を取得するには、それぞれ xref:anypoint-platform-cli.adoc#cloudhub-vpc-describe-json[`vpc JSON describe`] と xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-describe-json[`load-balancer JSON describe`] を使用できます。
+CLI から必要な `vpcId` と loadbalancerId を取得するには、それぞれ xref:anypoint-platform-cli.adoc#cloudhub-vpc-describe-json[`vpc JSON describe`] コマンドと xref:anypoint-platform-cli.adoc#cloudhub-load-balancer-describe-json[`load-balancer JSON describe`] コマンドを使用できます。
 --
 
 PATCH 要求をロードバランサのエンドポイントに送信して、その他のプロパティを更新することもできます。

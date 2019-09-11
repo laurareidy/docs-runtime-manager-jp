@@ -9,94 +9,19 @@ image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", ti
 image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
 image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
-Mule アプリケーションは以下の方法で CloudHub にデプロイできます。
+Mule アプリケーションは以下を使用して CloudHub にデプロイできます。
 
-* Studio: プロジェクトを右クリックし、*[Deploy to Anypoint Platform (Anypoint Platform にデプロイ)]*、*[Cloud (クラウド)]* の順にクリックします。
-* Runtime Manager: https://anypoint.mulesoft.com[Anypoint Platform] のクラウドベースのバージョンで、*[Runtime Manager]* セクションに移動し、*[Applications (アプリケーション)]* タブから *[Deploy application (アプリケーションをデプロイ)]* をクリックします。
-
-以下を使用して、CloudHub にデプロイすることもできます。
-
+* Runtime Manager
+* Anypoint Studio
 * CloudHub API
 * CloudHub CLI
 * Mule-Maven プラグイン
 
-== アプリケーションのデプロイ
+== アプリケーションの命名
 
-=== Anypoint Platform から
+アプリケーションをデプロイするときは、アプリケーションに名前を付ける必要があります。アプリケーション名は、アプリケーションにアクセスするために使用する `cloudhub.io` ドメイン名です。したがって、アプリケーション名を一意にしてドメインの競合を回避する必要があります。
 
-. https://anypoint.mulesoft.com[Anypoint Platform] にサインオンするか、サインオンページで *[Sign up (サインアップ)]* をクリックします。
-. *[Runtime Manager]* アイコンの上にマウスポインタを置いてクリックするか、*[Open (開く)]* をクリックします。
-+
-image::deploying-to-cloudhub-5f383.png[]
-+
-. *[Applications (アプリケーション)]* タブで *[Deploy application (アプリケーションをデプロイ)]* をクリックします。
-+
-// image::deploying-to-cloudhub-3dcbb.png[]
-+
-[Deploy Application (アプリケーションをデプロイ)] ページが開きます。
-+
-image::deploying-to-cloudhub-8524f.png[]
-
-
-=== SandBox から
-
-Sandbox 環境で作成およびテストしたアプリケーションを本番にデプロイする準備ができた場合、まずアプリケーションを移行する必要があります。
-
-Sandbox 環境から本番にアプリケーションを移行する方法
-
-. Anypoint Platform アカウントにログインし、本番環境に移動します。
-. *[Applications (アプリケーション)]* タブで *[Deploy Application (アプリケーションをデプロイ)]* ボタンをクリックします。
-+
-// image::deploying-to-your-own-servers-d84f7.png[]
-
-. アプリケーションファイルを選択する場合、*[Get from sandbox (Sandbox から取得)]* をクリックします。
-+
-image::deploying-to-cloudhub-d6f7a.png[]
-
-. *[Get from sandbox (Sandbox から取得)]* ダイアログで、対象の Sandbox 環境を選択し、本番にデプロイするアプリケーションを選択して、*[Apply (適用)]* をクリックします。
-
-. 他のデプロイの場合と同様にデプロイの設定を続行します。
-
-
-==== 制限事項
-
-* CloudHub システム管理者のみが環境間でアプリケーションを移行できます。
-* ドメイン名の競合を回避するため、同じ名前のアプリケーションを 2 つの環境に同時にデプロイすることはできません。アプリケーションの名前を少し変更して別の環境にデプロイします。
-* Runtime Manager では、1 つの環境内でアプリケーションを重複できないため、アプリケーションを、それがすでに含まれている環境に移行することはできません。同じまたは似たアプリケーションを 1 つの環境に含めるには、1 つのアプリケーションのファイルを変更して、元のアプリケーションと区別します。
-
-
-=== Studio から
-
-アプリケーションを Studio から CloudHub にデプロイできます。アプリケーションをまだ開発していて、オンラインテスト環境にアプリケーションを頻繁にデプロイする場合にこれが役立ちます。
-
-. Studio でアプリケーションを Mule プロジェクトとして開きます。
-
-. *Package Explorer* でプロジェクトノードを右クリックし、*[Anypoint Platform]*、*[Deploy to CloudHub (CloudHub にデプロイ)]* の順に選択します。
-+
-// image::deploy-to-cloudhub.png[deploy+to+cloudhub]
-+
-. Studio からの初めてデプロイする場合、Anypoint Platform のログイン情報の提供を求めるポップアップダイアログボックスが表示されます。Studio はログイン情報を保存し、CloudHub への次回のデプロイ時にそのログイン情報を自動的に使用します。
-
-+
-[TIP]
-このログイン情報は、Studio の *[Preferences (プリファレンス)]* メニューの *[Anypoint Studio]* > *[Authentication (認証)]* で管理できます。
-
-. サインインすると、*[Deploy Application (アプリケーションをデプロイ)]* ダイアログボックスが開きます。
-+
-image::deployappfirstscreen.png[DeployAppFirstScreen]
-
-[NOTE]
---
-Studio から CloudHub の *[Design (設計)]* 環境にアプリケーションをデプロイすることはできません。*[Design (設計)]* 環境は、Anypoint Platform Design Center で作成されたアプリケーションに固有の環境です。
---
-
-Studio から CloudHub に直接デプロイする方法を示す例は、xref:general:getting-started:deploy-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
-
-== アプリケーション名の作成
-
-アプリケーション名は、アプリケーションにアクセスするために使用する `cloudhub.io` ドメイン名です。したがって、アプリケーション名を一意にしてドメインの競合を回避する必要があります。アプリケーションドメインは、Runtime Manager 内のアプリケーションを識別します。また、アプリケーションで何らかのインバウンドエンドポイントが公開される場合は、アプリケーションにアクセスするための公開 URL も提供します。URL の形式は `+http://myapplicationdomain.cloudhub.io+` です。たとえば、`abcde` という名前のアプリケーションには `+http://abcde.cloudhub.io+` でアクセスできます。
-
-*[Deploy Application (アプリケーションをデプロイ)]* ダイアログで、一意のアプリケーション名を入力します。有効な名前は最大 42 文字で、英数字とダッシュを含むことができます。名前が有効な場合、Runtime Manager は、名前が使用可能であるか、または別のユーザによってすでに予約されているかについて警告を表示します。
+アプリケーションドメインは、Runtime Manager 内のアプリケーションを識別します。また、アプリケーションで何らかのインバウンドエンドポイントが公開される場合は、アプリケーションにアクセスするための公開 URL も提供します。URL の形式は `+http://myapplicationdomain.cloudhub.io+` です。たとえば、`abcde` という名前のアプリケーションには `+http://abcde.cloudhub.io+` でアクセスできます。
 
 image::deployappname.png[DeployAppName]
 
@@ -105,24 +30,145 @@ CloudHub の専用ロードバランサを使用すると、必要に応じてxr
 
 == デプロイメント対象
 
-サーバを Anypoint Platform にすでに登録している場合、*[Deployment Target (デプロイメント対象)]* 項目が表示されます。これを使用して、アプリケーションをデプロイする場所を指定します。
+サーバを Anypoint Platform にすでに登録してある場合は、*[Deploy Application (アプリケーションをデプロイ)]* ページに *[Deployment Target (デプロイメント対象)]* 項目が表示されます。これを使用して、アプリケーションをデプロイする場所 (この場合は CloudHub) を指定します。
 
-* CloudHub ワーカークラウド
-* オンプレミスサーバ、サーバグループ、またはクラスタ
-
-このドキュメントでは、CloudHub へのデプロイに焦点を当てます。サーバ、サーバグループ、およびクラスタへのデプロイについての詳細は、xref:deploying-to-your-own-servers.adoc[「独自のサーバへのデプロイ」]を参照してください。
+オンプレミスサーバ、サーバグループ、およびクラスタへのデプロイについての詳細は、xref:deploying-to-your-own-servers.adoc[「独自のサーバへのデプロイ」]を参照してください。
 
 
-== アプリケーションファイル
+== Studio から CloudHub へのアプリケーションのデプロイ
 
-. *[Choose file (ファイルを選択)]* をクリックして、アプリケーションファイルを選択します。
-. *[Open (開く)]* をクリックして、デプロイメント用の新しいファイルをアップロードします。
-. *[Get from sandbox (Sandbox から取得)]* をクリックして、本番以外の環境から現在の環境にファイルをコピーすることもできます。  (*[Get from sandbox (Sandbox から取得)]* ボタンが表示されない場合、最初に本場以外の環境の作成が必要になることがあります)。
+アプリケーションを Studio から CloudHub にデプロイできます。アプリケーションをまだ開発していて、オンラインテスト環境にアプリケーションを頻繁にデプロイする場合にこれが役立ちます。
 
-*注意:* アプリケーションファイルのサイズ制限は 200 MB です。
+. Studio でアプリケーションを Mule プロジェクトとして開きます。
+. *Package Explorer* でプロジェクトノードを右クリックし、*[Anypoint Platform]*、*[Deploy to CloudHub (CloudHub にデプロイ)]* の順に選択します。
+. Studio からの初めてデプロイする場合、Anypoint Platform のログイン情報の提供を求めるポップアップダイアログボックスが表示されます。Studio はログイン情報を保存し、CloudHub への次回のデプロイ時にそのログイン情報を自動的に使用します。
++
+[TIP]
+このログイン情報は、Studio の *[Preferences (プリファレンス)]* メニューの *[Anypoint Studio]* > *[Authentication (認証)]* で管理できます。
+. サインインすると、*[Deploy Application (アプリケーションをデプロイ)]* ダイアログボックスが開きます。
++
+image::deployappfirstscreen.png[DeployAppFirstScreen]
++
+[NOTE]
+--
+Studio から CloudHub の *[Design (設計)]* 環境にアプリケーションをデプロイすることはできません。*[Design (設計)]* 環境は、Anypoint Platform Design Center で作成されたアプリケーションに固有の環境です。
+--
 
-image::applicationfile.png[ApplicationFile]
+== Runtime Manager から CloudHub へのアプリケーションのデプロイ
 
+. Anypoint Platform で、*[Management Center] > [Runtime Manager]* に移動します。
+. *[Applications (アプリケーション)]* タブで *[Deploy application (アプリケーションをデプロイ)]* をクリックします。
+. *[Deploy Application (アプリケーションをデプロイ)]* ページで、次の手順を実行します。 +
+* *[Application Name (アプリケーション名)]* を入力します。 +
+[NOTE]
+同じ名前のアプリケーションを 2 つの環境に同時にデプロイすることはできません。有効な名前は最短 3 文字、最長 42 文字で、英数字とダッシュを含むことができます。Runtime Manager は、名前が使用可能であるか、または別のユーザによってすでに予約されているかについて警告を表示します。
+* *[Deployment Target (デプロイメント対象)]* ドロップダウンリストで *[CloudHub]* を選択します。
+* *[Choose File (ファイルを選択)]* をクリックしてから次のいずれかを選択します。
+** *Import file from Exchange (Exchange からファイルをインポート)*
+** *Upload file (ファイルをアップロード)*
++
+[NOTE]
+アプリケーションファイルのサイズ制限は 200 MB です。
+. (省略可能) Sandbox 環境にあるアプリケーションをデプロイするには、<<move_app_from_sandbox_to_prod,アプリケーションを Sandbox>> 環境から本番環境に移動しておく必要があります。そのためには、*[Get from sandbox (Sandbox から取得)]* をクリックします。 +
+*[Get from sandbox (Sandbox から取得)]* ボタンが表示されていない場合は、本場以外の環境を作成しておく必要があります。
+. *[Runtime]* タブで、以下の値をドロップダウンリストから選択します。 +
+* *Runtime のバージョン*
+* *<<worker_sizing,Worker size (ワーカーのサイズ)>>*
+* *Workers (ワーカー)*
+* *<<region,Region (地域)>>*
++
+以下のオプションから選択します。 +
+* *Automatically restart application when not responding (応答しない場合はアプリケーションを自動的に再起動する)* &#8211; <<automatic_restart,アプリケーションからの応答がない場合にアプリケーションを自動的に>>再起動します。
+* *Persistent queues (永続的なキュー)* &#8211; 入力キューのデータをディスクに保存します。詳細については、<<persistent_queues,「永続的なキュー」>>を参照してください。
+* *Encrypt Persistent queues (永続的なキューを暗号化)* &#8211; ディスク上の入力キューに保存されるデータを暗号化します。
+* *Enable Monitoring and Visualizer (Monitoring と Visualizer を有効化)* &#8211; サポートされている Mule バージョンで動作している Mule アプリケーションで Anypoint Monitoring および Anypoint Visualizer アプリケーションを使用します。
++
+[NOTE]
+このオプションは、組織で有効化されていて、Anypoint Monitoring の Titanium サブスクリプションがある場合にのみ表示されます。
+. *[Deploy Application (アプリケーションをデプロイ)]* をクリックします。
+
+== デプロイの実行
+
+CloudHub はアプリケーションをアップロードし、デプロイプロセスを自動的に開始します。このプロセス中にビューがログビューに切り替えられるため、アプリケーションデプロイのプロセスを監視できます。このプロセスには数分かかることがあります。
+
+デプロイ中、アプリケーションの状況インジケータは黄色に変わり、デプロイが進行中であることを示します。
+
+デプロイが完了すると、アプリケーションの状況インジケータは緑に変わり、アプリケーションが正常にデプロイされたことを示す通知が状況領域に表示されます。ログには次のメッセージが含まれます。
+
+----
+Successfully deployed [mule application name]
+----
+
+== CloudHub CLI からのデプロイ
+
+CloudHub コマンドラインユーティリティ (CLI) から Mule アプリケーションをデプロイする手順は、次のとおりです。
+
+. Anypoint Platform で https://www.mulesoft.com/platform/saas/cloudhub-ipaas-cloud-based-integration[CloudHub アクセス]が有効であることを確認します。
+. まだ Anypoint-CLI コマンドラインツールにアクセスできない場合は、xref:anypoint-platform-cli2.adoc#installation[Anypoint Platform CLI のインストール手順]に従ってインストールしてください。
+. コマンドラインから Anypoint Platform アカウントにログインします。ユーザ名を入力します。`anypoint-cli --username="user"`。
+  .. パスワードを入力します。
+. `runtime-mgr application deploy` コマンドを使用し、アプリケーションの​*名前*​およびファイルシステムでデプロイ可能アーカイブ (`.zip`) ファイルの​*場所*​を入力します。たとえば次のように入力します。
++
+----
+runtime-mgr cloudhub-application deploy myMuleApp /Users/exported-app-folder/my-mule-app.zip
+----
++
+. 入力した名前、場所、その他の省略可能なパラメータに問題がなければ、デプロイメント情報が入ったテーブルが表示されます。
++
+----
+Deploying myMuleApp ...
+┌──────────────────────────────┬────────────────────────────────────────┐
+│ Domain                       │ mymuleapp.cloudhub.io                  │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Status                       │ UNDEPLOYED                             │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Updated                      │ a few seconds ago                      │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Runtime                      │ 4.1.0                                  │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ File name                    │ my-mule-app.zip                        │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Persistent queues            │ false                                  │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Persistent queues encrypted  │ false                                  │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Static IPs enabled           │ false                                  │
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Monitoring                   │ Enabled. Auto-restart if not responding│
+├──────────────────────────────┼────────────────────────────────────────┤
+│ Workers                      │ 1 vCore * 1                            │
+----
+
++
+. おめでとうございます。アプリケーションは CloudHub にデプロイされました。
+
++
+[TIP]
+. CLI を使用してデプロイしたアプリケーションは、他のアプリケーションと同じように Runtime Manager で表示および管理できます。
+  .. アプリケーションを停止するには、コマンドラインで「`runtime-mgr cloudhub-application stop <app-name>`」と入力します。
+  .. コマンドラインツールを終了するには、`ctrl + c` を 2 回押します。
+. xref:anypoint-platform-cli2.adoc[Anypoint Platform CLI] には、完全なコマンドリストがあります。
+
+[[move_app_from_sandbox_to_prod]]
+== Sandbox 環境から本番環境へのアプリケーションの移動
+
+Sandbox 環境でアプリケーションを作成してテストした場合、アプリケーションをデプロイする準備ができたら、まず、Sandbox 環境から本番環境にアプリケーションを移動する必要があります。
+
+. Anypoint Platform アカウントにサインインして、本番環境に移動します。
+. *[Applications (アプリケーション)]* タブで *[Deploy Application (アプリケーションをデプロイ)]* ボタンをクリックします。
+. *[Get from sandbox (Sandbox から取得)]* をクリックして、本番環境に移動するアプリケーションを選択します。
++
+image::deploying-to-cloudhub-d6f7a.png[]
+. *[Get from sandbox (Sandbox から取得)]* ダイアログで、対象の Sandbox 環境を選択し、本番にデプロイするアプリケーションを選択して、*[Apply (適用)]* をクリックします。
++
+​*[Merge environment variables and mule version (環境変数と Mule バージョンのマージ)]*​チェックボックスをオンにすると、選択したソースアプリケーションから環境変数および Mule バージョンをコピーできます (省略可能)。
+. 他のデプロイの場合と同様にデプロイの設定を続行します。
+
+=== 制限事項
+
+* CloudHub システム管理者のみが環境間でアプリケーションを移行できます。
+* ドメイン名の競合を回避するため、同じ名前のアプリケーションを 2 つの環境に同時にデプロイすることはできません。アプリケーションの名前を少し変更して別の環境にデプロイします。
+* Runtime Manager では、1 つの環境内でアプリケーションを重複できないため、アプリケーションを、それがすでに含まれている環境に移行することはできません。同じまたは似たアプリケーションを 1 つの環境に含めるには、1 つのアプリケーションのファイルを変更して、元のアプリケーションと区別します。
 
 == [Runtime (ランタイム)] タブ
 
@@ -134,7 +180,7 @@ image::runtimeversion2.png[RuntimeVersion2]
 
 [IMPORTANT]
 ====
-* ランタイムバージョンが、アプリケーションの開発で使用された Mule バージョンと同じであることを確認します。たとえば、値 3.5.0 を使用したとします。Mule 3.6 以降で導入された新しい HTTP コネクタがアプリケーションで使用されている場合、アプリケーションはデプロイされず、ログにエラーが含まれます。
+* ランタイムバージョンが、アプリケーションの開発で使用された Mule バージョンと同じであることを確認します。たとえば、値 3.9.1 を使用したとします。Mule 4.1.1 以降で導入された新しい HTTP コネクタがアプリケーションで使用されている場合、アプリケーションはデプロイされず、ログにエラーが含まれます。
 * アプリケーションのデプロイ時に設定したランタイムバージョンを確認する方法
 . *[Applications (アプリケーション)]* タブをクリックし、対象のアプリケーションをクリックします。
 . 右側の拡張ビューで、*[Manage Application (アプリケーションを管理)]* をクリックします。
@@ -145,7 +191,7 @@ image::runtimeversion2.png[RuntimeVersion2]
 
 image::deploying-to-cloudhub-update.png[]
 
-
+[[worker_sizing]]
 === ワーカーのサイズ変更
 
 アプリケーションをデプロイしたら、アプリケーションに関連付けられているワーカーの数とサイズを割り当てることができます。各アプリケーションでワーカーがアプリケーションロジックを実行します。
@@ -164,10 +210,10 @@ image::deploying-to-cloudhub-update.png[]
 |0.1 vCore |500 MB
 |0.2 vCore |1 GB
 |1 vCore |1.5 GB
-|2 vCores |3.5 GB
-|4 vCores |7.5 GB
-|8 vCores |15 GB
-|16 vCores |32 GB
+|2 vCore |3.5 GB
+|4 vCore |7.5 GB
+|8 vCore |15 GB
+|16 vCore |32 GB
 |===
 
 1 vCore 容量未満 (0.1 vCore および 0.2 vCore) のワーカーの CPU と IO は、ワークロードが少ないため制限されます。各ワーカーには、システムとアプリケーションの両方のストレージで使用する 8 GB のストレージがあります。
@@ -203,6 +249,7 @@ image::workersizeandqty.png[WorkerSizeAndQty]
 
 複数のワーカーを使用するアプリケーションをデプロイすると、CloudHub は受信トラフィックを、割り当てられたワーカー間で自動的に負荷分散します。詳細は、xref:cloudhub-fabric.adoc[「CloudHub Fabric」]を参照してください。
 
+[[region]]
 === リージョン
 
 アカウントでグローバルデプロイを有効にしている場合、ドロップダウンを使用して、アプリケーションのデプロイ先の *[Region (リージョン)]* を変更できます。システム管理者は [Account Settings (アカウント設定)] の *[Organization (組織)]* タブでxref:managing-cloudhub-specific-settings.adoc[デフォルトリージョンを設定]できますが、そのリージョンを、アプリケーションのデプロイ時にここで必要に応じて調整できます。
@@ -213,6 +260,7 @@ image::workersizeandqty.png[WorkerSizeAndQty]
 * アジア/太平洋にデプロイされたアプリケーションのドメインは自動的に `+http://myapplicationdomain.au.cloudhub.io+` に更新されます。
 --
 
+[[automatic_restart]]
 === 自動再起動
 
 ワーカー監視をサポートするランタイム (3.4.0 ランタイム以降) にデプロイする場合、*[Automatically restart application when not responding (応答がない場合にアプリケーションを自動的に再起動)]* オプションを選択できます。このオプションを選択した場合、監視システムでアプリケーションの問題が検出されたときに CloudHub はアプリケーションを自動的に再起動します。
@@ -221,6 +269,7 @@ image::workersizeandqty.png[WorkerSizeAndQty]
 
 詳細は、xref:worker-monitoring.adoc[「ワーカーの監視」]を参照してください。
 
+[[persistent_queues]]
 === 永続的なキュー
 
 このボックスをオンにすると、アプリケーションで永続的なキューが有効になります。永続的なキューを使用すると、メッセージの損失を防ぐことができ、ワークロードを一連のワーカーに分散できます。永続的なキューを利用する前に、キューを使用するようにアプリケーションをセットアップする必要があります。詳細は、xref:cloudhub-fabric.adoc[「CloudHub Fabric」]を参照してください。
@@ -253,7 +302,7 @@ image::deploying-to-cloudhub-cff02.png[]
 ----
 
 [NOTE]
-テキスト形式では、バックスラッシュ (`\`) 文字はエスケープ文字として使用されます。たとえば、キーまたは値内で `:` を使用するには、テキストに `\:` を配置します。`\` を使用するには、`\\` が必要です。 
+テキスト形式では、バックスラッシュ (`\`) 文字はエスケープ文字として使用されます。たとえば、キーまたは値内で `:` を使用するには、テキストに `\:` を配置します。`\` を使用するには、`\\` が必要です。
 リスト形式ではエスケープ文字は不要です。
 
 === CloudHub とオンプレミス Mule でのプロパティの上書き
@@ -274,7 +323,7 @@ mule -M-Dsecret.key=toSecretPassword -M-Denv=prod -M-Ddb.password=secretPassword
 
 この場合、コマンドに入力されたすべての値はメモリにのみ保存されます。つまり、どのファイルにも保存されません。
 
-CloudHub では、プロパティを上書きするためのこれらの方法の動作が異なります。
+CloudHub では、プロパティを上書きするための方法は異なる動作になります。
 
 1 番目の方法では CloudHub での変換が困難になります。アプリケーションを CloudHub にデプロイする場合、ファイルシステムに上書きプロパティファイルを書き込むことがより困難になるためです。
 
@@ -283,22 +332,23 @@ CloudHub では、プロパティを上書きするためのこれらの方法�
 アプリケーション内の `mule-app.properties` ファイルまたはバンドルされたプロパティプレースホルダファイルでもプロパティ名を設定している場合、アプリケーションをデプロイしたときに、同じ名前を持つ CloudHub の [Properties (プロパティ)] タブ内のエントリによって、アプリケーションにバンドルされている一致する値が上書きされます。
 
 [NOTE]
-デプロイ可能なアーカイブにバンドルされたプロパティを CloudHub プロパティで上書きできないようにアプリケーションの動作を変更することができます。これを行うには、Mule アプリケーションで [Property Placeholder (プロパティプレースホルダ)] 要素内のオプションを変更し、プロパティプレースホルダファイルを JVM システム環境変数よりも優先するようにします。デフォルト以外のプロパティプレースホルダオプションの詳細は、 http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html[プロパティプレースホルダオプションに関する Spring のドキュメント]を参照してください。
+デプロイ可能なアーカイブにバンドルされたプロパティを CloudHub プロパティで上書きできないようにアプリケーションの動作を変更することができます。これを行うには、Mule アプリケーションで [Property Placeholder (プロパティプレースホルダ)] 要素内のオプションを変更し、プロパティプレースホルダファイルを JVM システム環境変数よりも優先するようにします。デフォルト以外のプロパティプレースホルダオプションの詳細は、&#8203;http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html[プロパティプレースホルダオプションに関する Spring のドキュメント]を参照してください。
 
 === セキュアプロパティの上書き
 
-アプリケーションプロパティをセキュアとしてフラグ付けすると、その値は実行時にユーザに表示されず、サーバとコンソール間で渡されなくなります。また、アプリケーションバンドルに「applications.properties」ファイルを含めることができます。このファイルには、セキュアとしてマークされたプロパティを含めることができるため、該当のプロパティは自動的にセキュアとして処理されます。このプロパティは、Runtime Manager コンソールで実行時に設定できる新しい値で上書きできます。詳細は、xref:secure-application-properties.adoc[「アプリケーションプロパティの保護」]を参照してください。
+アプリケーションプロパティをセキュアとしてフラグ付けすると、その値は実行時にユーザに表示されず、サーバとコンソール間で渡されなくなります。また、アプリケーションバンドルに `applications.properties` ファイルを含めることができます。このファイルには、セキュアとしてマークされたプロパティを含めることができるため、該当のプロパティは自動的にセキュアとして処理されます。
 
+セキュアプロパティは、Runtime Manager コンソールで実行時に設定できる新しい値でも上書きできます。詳細は、xref:secure-application-properties.adoc[「アプリケーションプロパティの保護」]を参照してください。
 
 == [Insight (インサイト)] タブ
 
-[Insight (インサイト)] タブでは、インサイト分析機能のメタデータオプションを指定できます。詳細は、xref:insight.adoc[「インサイト」]を参照してください。
+*[Insight (インサイト)]* タブでは、インサイト分析機能のメタデータオプションを指定できます。詳細は、xref:insight.adoc[「インサイト」]を参照してください。
 
 image::chinsighttab.png[CHInsightTab]
 
 == [Logging (ログ)] タブ
 
-CloudHub には、プラットフォームから参照またはダウンロードできる活動ログが保存されます。デプロイメニューの [Logging (ログ)] タブでは、このログの構成方法を設定できます。具体的には、デフォルトの使用方法に従わないようにさまざまなログレベル (INFO、DEBUG、WARN、または ERROR) を適用する方法を設定でます。詳細は、xref:viewing-log-data.adoc[「ログデータの参照」]を参照してください。
+CloudHub には、プラットフォームから参照またはダウンロードできる活動ログが保存されます。デプロイメニューの *[Logging (ログ)]* タブでは、このログの構成方法を設定できます。具体的には、デフォルトの使用方法に従わないようにさまざまなログレベル (INFO、DEBUG、WARN、または ERROR) を適用する方法を設定でます。詳細は、xref:viewing-log-data.adoc[「ログデータの参照」]を参照してください。
 
 image::chloggingtab.png[CHLoggingTab]
 
@@ -311,31 +361,24 @@ image::chloggingtab.png[CHLoggingTab]
 
 image::static-ip-tab.png[[Static IP (静的 IP)] タブ]
 
-アプリケーションに静的 IP を事前に割り当てるには、*[Region (リージョン)]* ドロップダウンメニューからリージョンを選択し、*[Allocate Static IP (静的 IP を割り当て)]* をクリックして、選択したリージョンに静的 IP を割り当てます。静的 IP アドレスは、アプリケーションがそのリージョンにデプロイされたときに割り当てられます。アプリケーションがすでに実行されている場合、静的 IP の変更を適用すると、新しく適用された静的 IP を使用したアプリケーションの再起動がトリガされます。
+アプリケーションに静的 IP アドレスを事前に割り当てるには、*[Region (リージョン)]* ドロップダウンメニューからリージョンを選択し、*[Allocate Static IP (静的 IP を割り当て)]* をクリックして、選択したリージョンに静的 IP を割り当てます。静的 IP アドレスは、アプリケーションがそのリージョンにデプロイされたときに割り当てられます。アプリケーションがすでに実行されている場合、静的 IP アドレスの変更を適用すると、新しく適用された静的 IP アドレスを使用したアプリケーションの再起動がトリガされます。
 
 image::static-ip-regions.png[リージョン別静的 IP]
 
-デフォルトでは、組織に割り当てられる静的 IP の数は、サブスクリプション内の本番 vCore 数の 2 倍です。この数は *[Use Static IP (静的 IP を使用)]* チェックボックスの下に表示されます。この割り当てを増やす必要がある場合は、 https://www.mulesoft.com/support-and-services/mule-esb-support-license-subscription[MuleSoft サポート]にお問い合わせください。
+デフォルトでは、組織に割り当てられる静的 IP アドレスの数は、サブスクリプション内の本番 vCore 数の 2 倍です。この数は *[Use Static IP (静的 IP を使用)]* チェックボックスの下に表示されます。
 
-複数のリージョンでアプリケーションに静的 IP が予約されている場合、アプリケーションはデプロイ先のリージョンから IP を選択します。これにより、障害回復 (DR) シナリオに対応する、複数リージョンの IP ルールを事前に設定できます。
+この割り当てを増やす必要がある場合は、&#8203;https://www.mulesoft.com/support-and-services/mule-esb-support-license-subscription[MuleSoft サポート]にお問い合わせください。
+
+複数のリージョンでアプリケーションに静的 IP アドレスが予約されている場合、アプリケーションはデプロイ先のリージョンから IP アドレスを選択します。これにより、障害回復 (DR) シナリオに対応する、複数リージョンの IP アドレスルールを事前に設定できます。
 
 全体的な静的 IP 割り当ての一部を解放する必要がある場合、アプリケーションに現在割り当てられている静的 IP を解放することができます。
 
 
-
-== デプロイの実行
-
-上記の手順を完了したら、*[Create (作成)]* をクリックします。CloudHub はアプリケーションをアップロードし、デプロイプロセスを自動的に開始します。このプロセス中にビューがログビューに切り替えられるため、アプリケーションデプロイのプロセスを監視できます。このプロセスに数分かかることがあります。デプロイ中、アプリケーションの状況インジケータは黄色に変わり、デプロイが進行中であることを示します。
-
-デプロイが完了すると、アプリケーションの状況インジケータは緑に変わり、アプリケーションが正常にデプロイされたことを示す通知が状況領域に表示されます。ログには次のメッセージが含まれます。
-
-----
-Successfully deployed [mule application name]
-----
-
 == デプロイ済みアプリケーションの設定
 
-上記の手順で説明したほとんどの設定は、アプリケーションが CloudHub にすでにデプロイされていても編集できます。そのためには、以下の手順を実行する必要があります。
+アプリケーションのデプロイ時に行ったほとんどの設定は、アプリケーションを CloudHub にデプロイした後でも編集できます。
+
+アプリケーション設定を編集する手順は、次のとおりです。
 
 . *[Applications (アプリケーション)]* タブでアプリケーションエントリを選択し、*[Manage Application (アプリケーションを管理)]* をクリックします。
 +
@@ -346,23 +389,19 @@ image::amc-manageapplication.png[AMC_ManageApplication]
 image::viewingdeployedapp.png[ViewingDeployedApp]
 
 
-
-
 == API Manager からのプロキシの自動デプロイ
 
 Anypoint Platform で API を登録している場合、自動生成されたプロキシを介して API を容易に実行し、その使用状況を追跡して、ポリシーを実装できます。Anypoint Platform の [Runtime Manager] セクションに一切移動することなく、このプロキシを CloudHub にデプロイできます。
 
-API バージョンページのメニューから、プロキシのデプロイをトリガし、使用する CloudHub アプリケーション名、環境、およびゲートウェイバージョンをセットアップできます。次に、必要に応じて、このプロキシの Runtime Manager デプロイメニューにアクセスし、高度な設定を定義できます。xref:1.x@api-manager::setting-up-an-api-proxy.adoc[プロキシの設定]を参照してください。
+API バージョンページのメニューから、プロキシのデプロイをトリガし、使用する CloudHub アプリケーション名、環境、およびゲートウェイバージョンをセットアップできます。次に、必要に応じて、このプロキシの Runtime Manager デプロイメニューにアクセスし、高度な設定を定義できます。
 
 == デプロイエラー
 
 エラーが発生し、アプリケーションをデプロイできない場合、アプリケーションの状況インジケータは `Failed` に変わります。エラーが発生したことを示すアラートが状況領域に表示されます。ログの詳細を参照し、アプリケーションのデプロイエラーがないかどうかを確認します。エラーを修正し、アプリケーションをアップロードして、再度デプロイする必要があります。
 
 
-
 == 関連情報
 
-* xref:general:getting-started:deploy-to-cloudhub.adoc[CloudHub へのデプロイ]
 * xref:cloudhub.adoc[CloudHub]
 * xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
 * xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
@@ -371,3 +410,5 @@ API バージョンページのメニューから、プロキシのデプロイ�
 * xref:anypoint-platform-cli.adoc[CloudHub コマンドラインインターフェース]
 * xref:cloudhub-api.adoc[REST API]
 * xref:deploying-to-your-own-servers.adoc[独自のサーバへのデプロイ]
+* xref:monitoring::index.adoc[Anypoint Monitoring]
+* xref:visualizer::index.adoc[Anypoint Visualizer]

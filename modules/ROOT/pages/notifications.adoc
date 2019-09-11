@@ -15,7 +15,7 @@ image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title
 通知 API では、通知をリストしたり、作成したり、既読としてマークしたりできます。種別を返すか受け入れるすべてのリソースまたはメソッドでは、アプリケーション JSON 種別が使用されます (特に注意書きがある場合を除く)。例として、通知リソースからどのような結果が返されるのかを以下に示します。
 
 [NOTE]
-アラートと通知は、現在 CloudHub ワーカーにデプロイされたアプリケーションのみで使用可能な機能です。Runtime Manager からローカルサーバにデプロイするアプリケーションでは使用できません。詳細は、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
+アラートと通知は、現在 CloudHub ワーカーにデプロイされたアプリケーションでのみ使用可能な機能です。Runtime Manager からローカルサーバにデプロイするアプリケーションでは使用できません。詳細は、xref:deployment-strategies.adoc[「デプロイ戦略」]を参照してください。
 
 [source,json,linenums]
 ----
@@ -86,8 +86,8 @@ API Portal で、他の Mule API の中から CloudHub API を検索し、その
 * xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
 * xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]
 * xref:deploying-to-cloudhub.adoc[[CloudHub にデプロイ]
-* xref:cloudhub.adoc[CloudHub] の概要とその機能についての詳細
-* xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
+* xref:cloudhub.adoc[CloudHub] とは何か、どのような機能があるかについて詳細を確認
+* xref:developing-applications-for-cloudhub.adoc[CloudHub 用のアプリケーションのデプロイ]
 * xref:deployment-strategies.adoc[デプロイメント戦略]
 * xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
 * xref:cloudhub-fabric.adoc[CloudHub Fabric]
@@ -95,6 +95,6 @@ API Portal で、他の Mule API の中から CloudHub API を検索し、その
 * xref:managing-schedules.adoc[スケジュールの管理]
 * xref:managing-application-data-with-object-stores.adoc[オブジェクトストアを使用したアプリケーションデータの管理]
 * xref:anypoint-platform-cli.adoc[コマンドラインツール]
-* xref:secure-application-properties.adoc[アプリケーションプロパティの保護]
-* xref:virtual-private-cloud.adoc[Virtual Private Cloud]
-* xref:penetration-testing-policies.adoc[侵入テストポリシー]
+* xref:secure-application-properties.adoc[安全なアプリケーションプロパティ]
+* xref:virtual-private-cloud.adoc[仮想非公開 Cloud]
+* xref:penetration-testing-policies.adoc[ペネトレーションテストポリシー]

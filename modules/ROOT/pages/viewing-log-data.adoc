@@ -2,19 +2,12 @@
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
-:keywords: cloudhub, ログ, 拡張ログ管理, r44, arm, Runtime Manager
-
-image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
-image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
-image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
-image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
 CloudHub は各ワーカーのデプロイメントのメッセージとイベントを含むログデータへのアクセスを提供します。
 
-
 [NOTE]
 ====
-ログと診断は、現在 CloudHub ワーカーにデプロイされたアプリケーションのみで使用可能です。アプリケーションが Runtime Manager ローカルサーバを使用してデプロイされている場合、xref:sending-data-from-arm-to-external-analytics-software.adoc[外部の分析ソフトウェアに]データを送信できます。詳細は、xref:deployment-strategies.adoc[「デプロイメント戦略」]とxref:monitoring.adoc[「アプリケーションの監視」]を参照してください。
+ログと診断は、現在 CloudHub ワーカーにデプロイされたアプリケーションのみで使用可能です。アプリケーションがローカルサーバにデプロイされている場合、外部の分析ソフトウェアにデータを送信できます。
 
 Pivotal Cloud Foundry (PCF) にデプロイされたアプリケーションでは、Runtime Manager を介してログデータは公開されませんが、Pivotal の UI でイベントログを参照できます。
 ====
@@ -22,33 +15,29 @@ Pivotal Cloud Foundry (PCF) にデプロイされたアプリケーションで�
 
 == ログの表示
 
-. Runtime Manager の左側のメニューで *[Applications (アプリケーション)]* をクリックし、CloudHub にデプロイされるアプリケーションをクリックして管理オプションを開きます。
-. 左側のメニューで *[Logs (ログ)]* をクリックします。アプリケーションログが表示されます。
-+
-//image::elmstart.png[ELMStart]
+CloudHub にデプロイされたアプリケーションのログを表示します。
 
+. Runtime Manager の左側のメニューで *[Applications (アプリケーション)]* をクリックし、CloudHub にデプロイされるアプリケーションをクリックして、右側の管理パネルを開きます。
+. ​*[Logs (ログ)]*​をクリックします。
++
+アプリケーションログが表示されます。
 . ログ画面の右側の *[Deployments (デプロイメント)]* セクションで、日付、デプロイメント、システムログ、ワーカー別の出力を選択して参照できます。日付の横のチェックボックスをオフにして検索条件の適用を解除できます。
 +
 image::elmfilters.png[ELMfilters]
 
-. ログコンテンツを検索するか、*[Advanced (詳細)]* をクリックして、指定した時間、日付、日付範囲、またはメッセージの優先度で検索できます。検索条件を指定した後、*[Apply (適用)]* をクリックします。詳細は、<<Advanced Search,「高度な検索」>>を参照してください。
-+
-image::elmadvancedsearch.png[ELMAdvancedSearch]
-
-
-
 == ログのダウンロード
 
-各デプロイメントのワーカーごとにダウンロード可能なログがあります。
+各 CloudHub デプロイメントのワーカーごとにダウンロード可能なログがあります。
 
-右側の *[Deployments (デプロイメント)]* 検索条件セクションで、表示する日付とワーカーを検索し、その横のダウンロードアイコンをクリックして、*[Logs (ログ)]* を選択します。
+. 右側の *[Deployments (デプロイメント)]* 検索条件セクションで、表示する日付とワーカーを検索します。
+. ワーカーの横のダウンロードアイコンをクリックして、*[Logs (ログ)]* を選択します。
 
 image::downloadlogs.png[DownloadLogs]
 
-ログファイルは `.log` ファイル拡張子を使用するテキストファイルで、`<deployment-ID>-<instance-ID>.log` 形式の名前が付けられます。このファイルはテキストエディタを使用して表示できます。
+ログファイルは、`.log` ファイル拡張子を使用するテキストファイルで、`<deployment-ID>-<instance-ID>.log` 形式になります。ログファイルはテキストエディタを使用して表示できます。
 
 [NOTE]
-CloudHub のアプリケーションログを、監査、分析、または同様の目的で定期的にアーカイブまたはダウンロードする必要がある場合、xref:custom-log-appender.adoc[カスタムログアペンダー]を使用してログを抽出します。
+CloudHub のアプリケーションログを、監査、分析、または同様の目的で定期的にアーカイブまたはダウンロードする必要がある場合は、xref:custom-log-appender.adoc[カスタムログアペンダ]を使用してログを抽出します。
 
 
 == 診断のダウンロード
@@ -59,7 +48,8 @@ CloudHub のアプリケーションログを、監査、分析、または同�
 3.8.0 より前の Mule バージョン (バージョン 3.7.4 を除く) で実行されるアプリケーションでは診断は利用できません。
 
 
-右側の *[Deployments (デプロイメント)]* 検索条件セクションで、表示する日付とワーカーを検索し、その横のダウンロードアイコンをクリックして、*[Diagnostics (診断)]* を選択します。
+. 右側の *[Deployments (デプロイメント)]* 検索条件セクションで、診断をダウンロードする日付とワーカーを選択します。
+. 横にあるダウンロードアイコンをクリックして、*[Diagnostics (診断)]* を選択します。
 
 ダウンロードされるログファイルは、`.txt` ファイル拡張子を使用するテキストファイルで、`<app-name>-instance-<instance-ID>-<worker-number>-diag.txt` 形式の名前が付けられます。このファイルはテキストエディタを使用して表示できます。
 
@@ -68,7 +58,7 @@ CloudHub のアプリケーションログを、監査、分析、または同�
 ====
 診断では、ワーカーのインスタンス ID はデプロイメント ID とワーカー番号 (0 ～ 4) の組み合わせになります。
 
-また、診断ファイルは、UI を使用しなくても次の URL にアクセスして直接ダウンロードすることができます。
+次の URL を使用して診断ファイルを直接ダウンロードすることもできます。
 
 `api/v2/applications/appName/instances/instanceId/diagnostics`
 ====
@@ -85,11 +75,12 @@ CloudHub では、ログデータは協定世界時 (UTC) で保存されます�
 
 == 検索ログ
 
-高度な検索では、日付と優先度でログを検索できます。
+特定の値を含むログを検索したり、高度な検索を使用して日付や優先度でログを検索したりできます。
 
-高度な検索にアクセスするには、検索項目で *[Advanced (詳細)]* をクリックします。
-
-image::elmadvsearch.png[ELMAdvSearch]
+. 検索ボックスに値を入力するか、または ​*[Advanced (詳細)]*​をクリックして、時刻、日付、日付範囲、およびメッセージ優先度を指定してログを検索します。
+. *[Apply (適用)]* をクリックします。
++
+image::elmadvancedsearch.png[ELMAdvancedSearch]
 
 === 日時による検索
 
@@ -102,7 +93,7 @@ image::elmadvsearch.png[ELMAdvSearch]
 
 === メッセージの優先度による検索
 
-*[Priority (優先度)]* 検索条件では、ログの特定のイベントを表示できます。表の*コマンド*列に示すように、検索ボックスに`priority<type>`を入力してさまざまな優先度を指定することもできます。
+*[Priority (優先度)]* 検索条件では、ログの特定のイベントを表示できます。表の​*コマンド*​列に示すように、検索ボックスに`priority<type>`を入力してさまざまな優先度を指定することもできます。
 
 可能な値:
 
@@ -151,8 +142,11 @@ image::elmadvsearch.png[ELMAdvSearch]
 ログページ上部の検索ボックスに、ログメッセージの結果と照合する検索語を入力して、ログデータを絞り込むことができます。また、ワイルドカード検索の一般的な量指定子を使用して、ログメッセージ内の正確な語を検索することもできます。
 
 * `?` - 疑問符は 0 または 1 個の先行要素に一致します。
-* `*` - アスタリスクは 0 または 1 個の先行要素に一致します。
+* `&#8727;` - アスタリスクは 0 または 1 個の先行要素に一致します。
 
 == 関連情報
 
+* xref:deployment-strategies.adoc[デプロイメント戦略]
+* xref:sending-data-from-arm-to-external-analytics-software.adoc[外部分析ツールへのデータのエクスポート]
 * xref:monitoring.adoc[アプリケーションの監視]
+* xref:mule-runtime::logging-in-mule.adoc[ログの設定]

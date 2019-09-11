@@ -99,7 +99,7 @@ cloudhub vpc firewall-rules describe vpc-tutorial
 ルール `0` では、ポート 8091 および 8092 でのローカル Anypoint VPC からのインバウンド接続が許可されます。ルール `1` では、任意のホストからのトラフィックがポート 8081 および 8082 を介してワーカーにアクセスすることが許可されます。
 --
 
-xref:anypoint-platform-cli.adoc#cloudhub-vpc-delete[`vpc firewall-rules delete`] コマンドを使用して任意のデフォルトルールを削除できます。また、xref:anypoint-platform-cli.adoc#cloudhub-vpc-firewall-rules-add[`vpc firewall-rules add`] コマンドを使用して新しいルールを作成できます。
+xref:anypoint-platform-cli.adoc#cloudhub-vpc-delete[`vpc firewall-rules delete`] コマンドを使用して任意のデフォルトルールを削除できます。また、xref:anypoint-platform-cli.adoc#cloudhub-vpc-firewall-rules-add[`vpc firewall-rules add`] コマンドを使用して新しいルールを追加できます。
 
 Anypoint VPC 内でポート 8090 を介した TCP トラフィックを有効にする必要があるとします。次の手順を実行する必要があります。
 
@@ -127,19 +127,19 @@ VPC firewall modified successfully
 
 == 既存の Anypoint VPC の更新
 
-Anypoint Platform CLI を使用して Anypoint VPC の特定の値を更新することはできませんが、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955/pages/107964[Cloudhub API] を使用して Anypoint VPC をプログラムで管理および更新することはできます。
+Anypoint Platform CLI を使用して Anypoint VPC の特定の値を更新することはできませんが、https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955/pages/107964[Cloudhub API] を使用して Anypoint VPC をプログラムで管理および更新することはできます。
 
 . `+https://anypoint.mulesoft.com/accounts/login+` エンドポイントを介して、ログイン情報を渡して CloudHub サービスにログインします。
 . `organizations/{orgid}/vpcs/{vpcId}` エンドポイントを使用して、Anypoint VPC を更新します。
 
 [NOTE]
-API のリソースとやり取りする方法についての詳細は、 https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955/pages/107964[API リファレンス]を参照してください。
+API のリソースとやり取りする方法についての詳細は、&#8203;https://anypoint.mulesoft.com/apiplatform/anypoint-platform/#/portals/organizations/68ef9520-24e9-4cf2-b2f5-620025690913/apis/8617/versions/85955/pages/107964[API リファレンス]を参照してください。
 
 たとえば、Anypoint VPC の環境を更新するには、`PUT` 要求を JSON ペイロードと共に `anypoint.mulesoft.com/cloudhub/api/organizations/{orgid}/vpcs/{vpcId}` エンドポイントに送信する必要があります。
 
 [TIP]
 --
-xref:anypoint-platform-cli.adoc#account-business-group-list[account business-group describe] コマンドを使用して、`{orgid}` をクエリできます。
+​Account xref:anypoint-platform-cli.adoc#account-business-group-list[account business-group describe] コマンドを使用して、 `{orgid}` をクエリできます。
 
 xref:anypoint-platform-cli.adoc#cloudhub-vpc-describe-json[cloudhub vpc describe-json] コマンドを実行すると、`{vpcId}` 値のリストが表示されます。
 --

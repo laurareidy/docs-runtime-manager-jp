@@ -1,4 +1,4 @@
-= アプリケーションの作成
+= CloudHub API のコール
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
@@ -10,8 +10,7 @@ image:logo-server-active.png[link="/runtime-manager/deployment-strategies", titl
 image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
 [TIP]
-このドキュメントでは、xref:cloudhub-api.adoc[CloudHub API] のコールについて説明します。Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] とその下位ページを参照してください。
-
+Runtime Manager UI を使用してこれらの同じタスクをより簡単に実行する手順については、xref:cloudhub.adoc[「CloudHub」]とその下位ページを参照してください。
 
 `/api/applications` リソースを指定して `POST` 操作を実行すると、CloudHub に新しいアプリケーションが作成されます。
 
@@ -63,7 +62,7 @@ API Portal で、他の Mule API の中から CloudHub API を検索し、その
 
 == 関連情報
 
-* xref:index.adoc[Runtime Manager]
+* xref:runtime-manager::index.adoc[Runtime Manager]
 * xref:cloudhub.adoc[CloudHub]
 * xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理]
 * xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理]

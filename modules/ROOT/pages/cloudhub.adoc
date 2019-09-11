@@ -9,22 +9,20 @@ image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", ti
 image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
 image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
-http://www.mulesoft.com/cloudhub/ipaas-cloud-based-integration-demand[CloudHub] は、サービスとしてのインテグレーションプラットフォーム (iPaaS) です。xref:index.adoc[Runtime Manager] では、高度なクロスクラウドインテグレーションアプリケーションをクラウドにデプロイしたり、既存のデータソース上に新しい API を作成したり、オンプレミスアプリケーションをクラウドサービスと統合したりできます。 
-
-xref:index.adoc[Runtime Manager] コンソールを使用して、オンプレミスのxref:managing-servers.adoc[サーバ、サーバグループ、クラスタ]にアプリケーションをxref:deploying-to-your-own-servers.adoc[デプロイ]できます。
+&#8203;http://www.mulesoft.com/cloudhub/ipaas-cloud-based-integration-demand[CloudHub] は、サービスとしてのインテグレーションプラットフォーム (iPaaS) であり、高度なクロスクラウドインテグレーションアプリケーションをクラウドにデプロイしたり、既存のデータソース上に新しい API を作成したり、オンプレミスアプリケーションをクラウドサービスと統合したりできます。 
 
 == CloudHub のアプリケーションの作成
 
 image::logo-app.png[アプリケーション]
 
-* Mule アプリケーションの構築の基礎については、xref:general:getting-started:build-a-hello-world-application.adoc[「Hello World アプリケーションの構築」]を参照してください。
-* このアプリケーションと CloudHub の互換性を確保する方法については、xref:general:getting-started:deploy-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
+* xref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
 * HTTPS をサポートするようにこのアプリケーションを設定する方法については、xref:building-an-https-service.adoc[「CloudHub での HTTPS サービスの構築」]を参照してください。
 
 [TIP]
 その他のアプリケーションの例については、xref:exchange::index.adoc[「Anypoint Exchange」] を参照してください。
 
-同じ Mule アプリケーションを CloudHub またはxref:deploying-to-your-own-servers.adoc[オンプレミスサーバ]にデプロイできます。デプロイメント戦略を計画する場合、各環境種別間で機能がどのように動作するのかについてxref:deployment-strategies.adoc[いくつかの考慮事項]があります。xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。
+同じ Mule アプリケーションを CloudHub またはxref:deploying-to-your-own-servers.adoc[オンプレミスサーバ]にデプロイできます。環境間では機能の動作が若干異なるため、デプロイメント戦略を立てるときにはこの点を考慮する必要があります。xref:deployment-strategies.adoc[「デプロイメント戦略」]を参照してください。
+
 
 == CloudHub へのアプリケーションのデプロイ
 
@@ -35,25 +33,16 @@ image::logo-deploy.png[デプロイ]
 * xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
 * 必要に応じて、xref:anypoint-platform-cli.adoc[Anypoint Platform コマンドラインインターフェース (Anypoint Platform CLI)] を使用して、アプリケーションをデプロイおよび管理することもできます。
 
-[TIP]
-必要に応じて、同じ Runtime Manager コンソールでアプリケーションを各自のサーバにxref:deploying-to-your-own-servers.adoc[デプロイ]して管理することもできます。
-
-
 === 高い拡張性
 
 CloudHub は拡張性の高いクラウドで、オンデマンドでスケールできます。小さく始めて、拡張が必要なときにアプリケーションの変更やダウンタイムなしでスケールアップできます。CloudHub は、インテグレーションアプリケーションを構築したり、REST API や Web サービスをパブリッシュしたりできる拡張性の高いアーキテクチャを提供します。
-////
-
-With the xref:autoscaling-in-cloudhub.adoc[Autoscaling] feature, you can give your apps access to a varying amount of processing resources depending on how much they have been using, and you can define the rules and thresholds for triggering automatic changes.
-////
-
 
 
 === Anypoint Studio とのインテグレーション
 
-xref:6@studio::index.adoc[Anypoint Studio (Studio)] では、数回クリックするだけで、Studio から移動することなくインテグレーションアプリケーションをすばやく構築して CloudHub にデプロイできます。詳細は、xref:deploying-to-cloudhub.adoc#from-anypoint-platform[「CloudHub へのデプロイ」]を参照してください。
+xref:studio::index.adoc[Anypoint Studio (Studio)] では、数回クリックするだけで、Studio から移動することなくインテグレーションアプリケーションをすばやく構築して CloudHub にデプロイできます。詳細は、xref:deploying-to-cloudhub.adoc#from-anypoint-platform[「CloudHub へのデプロイ」]を参照してください。
 
-アプリケーションを CloudHub のマルチテナントランタイムにデプロイしたら、プラットフォームを介してデプロイされた他のアプリケーションと同様に、Anypoint Platform に http://anypoint.mulesoft.com[ログイン]し、Runtime Manager に移動してアプリケーションにアクセスできます。
+アプリケーションを CloudHub のマルチテナントランタイムにデプロイしたら、プラットフォームを介してデプロイされた他のアプリケーションと同様に、Anypoint Platform に http://anypoint.mulesoft.com[サインイン]し、Runtime Manager に移動してアプリケーションにアクセスできます。
 
 === クラウドアプリケーションとエンタープライズアプリケーションのインテグレーション
 
@@ -61,7 +50,7 @@ CloudHub xref:virtual-private-cloud.adoc[Anypoint Virtual Private Cloud (Anypoin
 
 === CloudHub API
 
-タスクを自動化したり、CloudHub に自動的にデプロイしたりするには、https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/cloudhub-api[CloudHub REST API] を使用します。これにより、アプリケーションの管理、監視、スケーリングなどのタスクを実行できます。
+タスクを自動化したり、CloudHub に自動的にデプロイしたりするには、&#8203;https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/cloudhub-api[CloudHub REST API] を使用します。これにより、アプリケーションの管理、監視、スケーリングなどのタスクを実行できます。
 
 == アプリケーションの管理
 
@@ -69,19 +58,12 @@ image::logo-manage.png[管理]
 
 現在 CloudHub で実行されているアプリケーションを管理する方法について説明します。
 
-* xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]では、すべてのアプリケーション (CloudHub にデプロイされているアプリケーションとオンプレミスサーバにデプロイされているアプリケーション) の一般的な設定について説明します。
-* xref:managing-applications-on-cloudhub.adoc[「CloudHub でのアプリケーションの管理」]では、CloudHub のアプリケーションに固有の設定について説明します。
+* xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]では、すべてのアプリケーション (CloudHub にデプロイされているアプリケーションとオンプレミスサーバにデプロイされているアプリケーション) に関する情報を提供します。
+* xref:managing-applications-on-cloudhub.adoc[「CloudHub でのアプリケーションの管理」]では、CloudHub のアプリケーションに固有の設定に関する情報を提供します。
 
-=== Runtime Manager での表示と制御
+=== Runtime Manager でのアプリケーションの管理
 
-アプリケーションのあらゆる側面をすべて 1 か所でxref:managing-deployed-applications.adoc[管理]およびxref:monitoring.adoc[監視]できる直感的なクラウドコンソールの xref:index.adoc[Runtime Manager] を介して CloudHub のアプリケーションを処理します。この Runtime Manager コンソールでは、すべてのアプリケーションとサーバに対応する単一の管理ペインが提供されるため、上記の作業の他にオンプレミスのサーバ、サーバグループ、クラスタ、およびxref:managing-deployed-applications.adoc[それらにデプロイされているアプリケーション]をxref:managing-servers.adoc[管理]できます。
-
-
-情報:
-
-* xref:managing-deployed-applications.adoc[「デプロイ済みアプリケーションの管理」]では、Runtime Manager でアプリケーションに対して実行できる一般的な操作の概要について説明します。
-* xref:managing-applications-on-cloudhub.adoc[「CloudHub でのアプリケーションの管理」]では、Runtime Manager でアプリケーションに対して実行できる特定の操作の概要について説明します。
-
+アプリケーションのあらゆる側面をすべて 1 か所でxref:managing-deployed-applications.adoc[管理]およびxref:monitoring.adoc[監視]できる直感的なクラウドコンソールの xref:index.adoc[Runtime Manager] を介して CloudHub のアプリケーションを維持管理します。 
 
 [NOTE]
 http://trust.mulesoft.com/[`trust.mulesoft.com`] では、Runtime Manager コンソール、プラットフォームサービス、CloudHub ワーカークラウドのライブ状況と詳細なサービス履歴を表示できます。
@@ -93,18 +75,17 @@ image::logo-monitor.png[監視]
 
 Runtime Manager では、さまざまなツールを介して問題の選別、ログの表示、アラートのセットアップ、ダッシュボードの表示などを行うことができます。xref:monitoring.adoc[「アプリケーションの監視」]では、Runtime Manager で実行中のアプリケーションを監視するさまざまな方法の概要について説明します。
 
-
-
 == 関連情報
 
 * xref:deploying-to-cloudhub.adoc[CloudHub へのデプロイ]
-* xref:general:getting-started:deploy-to-cloudhub.adoc[CloudHub へのデプロイ]
 * xref:deployment-strategies.adoc[デプロイメント戦略] 
 * xref:developing-applications-for-cloudhub.adoc[CloudHub のアプリケーションの開発]
 * xref:cloudhub-faq.adoc[CloudHub FAQ]
 * xref:cloudhub-architecture.adoc[CloudHub アーキテクチャ]
 * xref:cloudhub-fabric.adoc[CloudHub Fabric]
 * xref:cloudhub-networking-guide.adoc[CloudHub ネットワークガイド]
+* xref:managing-deployed-applications.adoc[デプロイ済みアプリケーションの管理] 
+* xref:managing-applications-on-cloudhub.adoc[CloudHub でのアプリケーションの管理] 
 * xref:penetration-testing-policies.adoc[侵入テストポリシー]
 * https://www.mulesoft.com/lp/whitepaper/saas/cloud-security[「Cloud Security and Compliance Whitepaper (クラウドセキュリティおよびコンプライアンス)」ホワイトペーパー]
-* http://www.mulesoft.com/cloudhub/ipaas-cloud-based-integration-demand[CloudHub でできること]
+* http://www.mulesoft.com/cloudhub/ipaas-cloud-based-integration-demand[CloudHub でできること]。

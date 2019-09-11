@@ -11,14 +11,14 @@ image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", titl
 image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
 image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
-Runtime Manager エージェントは Mule Runtime Engine にインストールされ、Runtime Manager に Mule を登録するために使用されます。Mule Runtime Engine は特定の Anypoint Platform ビジネスグループの特定の環境内の Runtime Manager に登録され、この Runtime Manager によって制御されます。
+Runtime Manager エージェントは Mule Runtime Engine (Mule) にインストールされ、Mule と Runtime Manager を登録するために使用されます。Mule Runtime Engine を登録した後は、登録された特定の環境と Anypoint Platform ビジネスグループ内で Runtime Manager によって管理できます。Mule は複数の Runtime Manager ビジネスグループまたは環境に登録することはできません。
 
-Mule Runtime Engine の最新バージョンは、Runtime Manager エージェントの最新バージョンにバンドルされています。最新の Mule Runtime Engine は、 https://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードできます。
+Mule の最新バージョンは、Runtime Manager エージェントの最新バージョンにバンドルされています。最新のバージョンは、&#8203;https://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードできます。
 
 [NOTE]
-使用している Anypoint Platform のバージョンをサポートしている Runtime Manager エージェントのバージョンをダウンロードしてインストールする必要があります。必要な Runtime Manager エージェントのバージョンは、Runtime Manager の最新バージョンにバンドルされているバージョンとは異なる可能性があります。使用しているプラットフォームのバージョンをサポートするために、エージェントのバージョンをダウングレードする必要がある場合もあります。
+使用している Anypoint Platform Runtime Manager のバージョンをサポートしている Runtime Manager エージェントのバージョンをダウンロードしてインストールする必要があります。必要な Runtime Manager エージェントのバージョンは、Runtime Manager の最新バージョンにバンドルされているバージョンとは異なる可能性があります。使用している Anypoint Platform のバージョンをサポートするために、Runtime Manager エージェントのバージョンをダウングレードする必要がある場合もあります。
 
-Mule Runtime Engine または API ゲートウェイの以前のバージョンを使用している場合や、Mule Runtime Engine のリリースの間に Runtime Manager エージェントの新しいバージョンがリリースされた場合は、Runtime Manager エージェントの最新バージョンを https://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードしてインストールできます。
+Mule Runtime Engine または API ゲートウェイの以前のバージョンを使用している場合や、Mule のリリースの間に Runtime Manager エージェントの新しいバージョンがリリースされた場合は、Runtime Manager エージェントの最新バージョンを&#8203;https://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードしてインストールできます。
 
 
 [NOTE]
@@ -46,22 +46,22 @@ Runtime Manager エージェントは、Mule 3.6.0 以降および API ゲート
 
 [TIP]
 ====
-Mule Enterprise の最新バージョンを実行することをお勧めします。最新のバージョンは、 http://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードできます。
+Mule Enterprise の最新バージョンを実行することをお勧めします。最新のバージョンは、&#8203;https://www.mulesoft.com/support-login[カスタマーポータル]からダウンロードできます。
 ====
 
 == ソフトウェア配布からのインストール
 
 エージェントは、Mule Runtime Engine のインストールにバンドルされています。インストールするには、`$MULE_HOME/bin/amc_setup` (Windows の場合は `$MULE_HOME\bin\amc_setup.bat`) を実行します。
 
-*See the <<Installation Options>> section below for the arguments that can be used when running this command.*
+このコマンドの実行時に使用できる引数については、下記の「インストールオプション」を参照してください。
 
 [IMPORTANT]
 ====
 現在、Mule 3.7.x 以前と API ゲートウェイバージョン 2.x 以前では、xref:release-notes::runtime-manager-agent/runtime-manager-agent-release-notes.adoc[Runtime Manager エージェントの以前のバージョン]が提供されます。このバージョンでは、xref:sending-data-from-arm-to-external-analytics-software.adoc[Runtime Manager から外部分析ソフトウェアへのデータ送信]がサポートされません。これをサポートする新しいバージョンを個別にダウンロードする必要があります。
 
-*Mule 3.6.0 および 3.6.1 のインストール*
+*Mule 3.6.0 および 3.6.1 のインストール:*
 
-エージェントをダウンロードし、<<Installing the Agent from the ZIP File,「ZIP ファイルからのエージェントのインストール」>>セクションの手順に従います。そして、OS に応じて `amc_setup` または `amc_setup.bat` を実行します。
+エージェントをダウンロードし、「<<ZIP ファイルからのエージェントのインストール,ZIP ファイルからのエージェントのインストール>>」セクションの手順に従います。そして、OS に応じて `amc_setup` または `amc_setup.bat` を実行します。
 ====
 
 == エージェントの最新バージョンのダウンロード
@@ -90,7 +90,7 @@ Mule を停止するには、`./mule stop` コマンドを実行するか、プ�
 . OS に応じて `amc_setup` または `amc_setup.bat` をコマンドラインで実行して Runtime Manager エージェントプラグインをインストールまたは更新します。
 
 
-*See the <<Installation Options>> section below for the arguments that can be used when running this command.*
+このコマンドの実行時に使用できる引数については、下記の「インストールオプション」を参照してください。
 
 インストールされた Runtime Manager エージェントは、配布に Runtime Manager エージェントがすでに含まれている Mule および API ゲートウェイランタイムのバージョンで正しく動作します。
 
@@ -98,7 +98,7 @@ Runtime Manager エージェントの ZIP ファイルをダウンロードし�
 
 == 以前の Runtime Manager エージェントインストールの更新
 
-既存する以前の Runtime Manager エージェントインストールを更新できます。新しい Runtime Manager エージェントをインストールする方法については、下の「<<インストールオプション>>」セクションを参照してください。
+既存する以前の Runtime Manager エージェントインストールを更新できます。新しい Runtime Manager エージェントをインストールする方法については、下の「<<インストールオプション>>」のセクションを参照してください。
 
 [TIP]
 ====
@@ -122,12 +122,12 @@ Runtime Manager エージェントの以前のバージョンがすでにイン�
 ====
 Windows を使用している場合は、`./amc_setup -U` の代わりに `amc_setup.bat -U` を実行し、`$MULE_HOME/bin/./mule restart` コマンドによって Mule を再起動します。
 
-*See the <<Installation Options>> section below for the arguments you can use when running this command.*
+このコマンドの実行時に使用できる引数については、下記の「インストールオプション」を参照してください。
 ====
 
 [NOTE]
 ====
-API ゲートウェイの開始と停止についての詳細は、xref:1.x@api-manager::configuring-an-api-gateway.adoc[「API ゲートウェイの設定」]を参照してください。
+API ゲートウェイの開始と停止についての詳細は、​xref:1.x@api-manager::configuring-an-api-gateway.adoc[「API ゲートウェイの設定」]​を参照してください。
 ====
 
 == 以前のインストールの削除
@@ -173,9 +173,9 @@ Runtime Manager エージェントのほとんどの設定オプションでは�
 
 Runtime Manager エージェントが 1 つ以上の REST トランスポートを使用して他の管理コンソールと通信するように設定できます。これらのオプションは、`-I` オプションと `-S` オプションによってサポートされます。
 
-`-I` オプションまたは `-S` オプションを指定して `amc_setup` を実行すると、以前の `$MULE_HOME/conf/mule-agent.yml` ファイルは完全に置き換えられます。 
+`-I` オプションまたは `-S` オプションを指定して `amc_setup` を実行すると、以前の `$MULE_HOME/conf/mule-agent.yml` ファイルは完全に置き換えられます。
 
-`amc_setup` コマンドを使用して定義できない設定もあります。たとえば、JMX 監視を他の外部サービスに拡張する場合などです。このようなオプションは、手動で `$MULE_HOME/conf/mule-agent.yml` ファイルに追加する必要があります。また、`$MULE_HOME/conf/mule-agent.yml` ファイルでは、さまざまな設定オプションをバックアップできます。 
+`amc_setup` コマンドを使用して定義できない設定もあります。たとえば、JMX 監視を他の外部サービスに拡張する場合などです。このような設定は、手動で `$MULE_HOME/conf/mule-agent.yml` ファイルに追加する必要があります。また、`$MULE_HOME/conf/mule-agent.yml` ファイルでは、さまざまな設定オプションをバックアップできます。
 
 === JMX 監視公開サービス
 
@@ -191,7 +191,7 @@ Zabbix: Zabbix インスタンスにメトリクスを送信するモジュー�
 
 詳細は、Runtime Manager エージェントのドキュメントの JMX に関するセクションを参照してください。
 
-==  パラメータ
+== amc_setup パラメータ
 
 `amc_setup` コマンドには、さまざまなユースケースを実現するための各種パラメータがあります。
 
@@ -205,7 +205,7 @@ Zabbix: Zabbix インスタンスにメトリクスを送信するモジュー�
 次の表に、これらのユースケースに使用するパラメータの詳細を示します。
 
 
-=== 全般的なパラメータ
+=== 全般的な amc_setup パラメータ
 
 これらの引数は、CloudHub と Anypoint Platform Private Cloud Edition で機能します。
 
@@ -264,7 +264,7 @@ Runtime Manager コンソールで、xref:managing-servers.adoc#add-a-server[[Ad
 |`-P <PROXY_HOST> <PROXY_PORT> <PROXY_USER> <PROXY_PASSWORD>`
 
 `--proxy <PROXY_HOST> <PROXY_PORT> <PROXY_USER> <PROXY_PASSWORD>`
-|接続に登録するときに使用するプロキシ設定。このオプションによってプロキシの詳細を定義します。<<プロキシ経由のインストール>>を参照してください。
+|接続に登録するときに使用するプロキシ設定。このオプションによってプロキシの詳細を定義します。「<<プロキシ経由のインストール>>」を参照してください。
 
 |===
 
@@ -301,9 +301,11 @@ globalConfiguration:
 
 [WARNING]
 ====
-複数の Runtime Manager ビジネスグループまたは環境への Mule Runtime Engine の登録はサポートされていません。
+単一の Mule Runtime Engine を複数の Runtime Manager ビジネスグループまたは環境には登録しないでください。
 
-また、古い xref:mule-management-console::index.adoc[Mule Management Console (MMC)] と Runtime Manager の両方に Mule Runtime Engine を登録することもサポートされていません。Mule Runtime Engine が現在 MMC で管理されている場合は、`amc_setup -H` スクリプトを実行する前に、Mule Runtime Engine の登録を解除する必要があります。
+個別の Mule と Runtime Manager は 1 回しか登録できません。
+
+古い xref:mule-management-console::index.adoc[Mule Management Console (MMC)] と Runtime Manager の両方に Mule Runtime Engine を登録しないでください。Mule Runtime Engine が現在 MMC で管理されている場合は、`amc_setup -H` スクリプトを実行する前に、Mule Runtime Engine の登録を解除してください。
 ====
 
 [TIP]
@@ -351,7 +353,7 @@ amc_setup -H <token> MaxRuntime -P acme.proxy.com 443 internalAdmin Ins1d3V0iceP
 
 Runtime Manager エージェントをすでにインストール済みで、プロキシを使用するように設定を変更するには、`mule-agent.yml` ファイルを編集します。
 
-Runtime Manager エージェントでプロキシサーバを設定するのに加えて、`wrapper.conf` ファイルでもプロキシサーバを設定して API 関連の通信と分析も有効にする必要があります。詳細は、「<<プロキシのセットアップ>>」を参照してください。
+Runtime Manager エージェントでプロキシサーバを設定するのに加えて、`wrapper.conf` ファイルでもプロキシサーバを設定して API 関連の通信と分析も有効にする必要があります。詳細については、「<<プロキシの設定>>」を参照してください。
 
 
 ==== Anypoint Platform Private Cloud Edition Runtime Manager への登録
@@ -414,7 +416,7 @@ Mule Runtime Engine をオンプレミス Runtime Manager に適切に登録す�
 |`-Z <AUTH_PROXY_SERVICE_HOST>`
 
 `--auth-proxy-host <AUTH_PROXY_SERVICE_HOST>`
-|認証プロキシのサービス URL の場所 (例: +https://10.0.0.3:8080+)。
+|認証プロキシのサービス URL の場所 (例:+https://10.0.0.3:8080+)。
 
 |===
 
@@ -445,7 +447,7 @@ Runtime Manager エージェントを設定して、非セキュア接続また�
 |`-I`
 
 `--insecure`
-|Runtime Manager エージェントが暗号化されていない接続を使用するように設定します。これは、REST トランスポートでのみ有効です。ブラウザや、HTTP 要求を実行するその他のツールを使用して、API とのやりとりを行うことができます。デフォルトの TCP ポートは 9999 です。そのため、ベース URL `+https://localhost:9999/mule/agent/+` で Runtime Manager エージェントに接続できます。
+|Runtime Manager エージェントが暗号化されていない接続を使用するように設定します。これは、REST トランスポートでのみ有効です。ブラウザや、HTTP 要求を実行するその他のツールを使用して、API とのやりとりを行うことができます。デフォルトの TCP ポートは 9999 です。そのため、ベース URL `+http://localhost:9999/mule/agent/+` で Runtime Manager エージェントに接続できます。
 
 |===
 
@@ -468,13 +470,14 @@ services:
     frequencyTimeUnit: MINUTES
 ----
 
-
-
 === セキュア接続チャネル
 
-インストールコマンドで -S 引数を指定して設定できるこのオプションでは、Runtime Manager エージェントがオンプレミス管理コンソールと TLS 接続を確立するように設定します。
+インストールコマンドラインで `-S` 引数を使用することで、TLS 接続を確立するように Runtime Manager エージェントを設定できます。このオプションでは、REST 通信用の TLS チャネルのみが有効になります。
 
-トラストストアとキーストアを JKS 形式で指定する必要があります。このオプションでは、REST 通信用の TLS チャネルのみが有効になります。セキュア接続チャネルモードを選択すると、次のメニューが表示されます。
+このオプションは、エージェントを手動で管理する場合に使用できます。詳細な手順については、「<<コントロールプレーンを使用しない Mule Runtime Engine の双方向 TLS の設定>>」を参照してください。
+
+Anypoint Platform Runtime Manager クラウドコンソールを使用してエージェントを管理している場合は、「<<コントロールプレーンで管理される Mule Runtime Engine の双方向 TLS の設定>>」を参照してください。
+
 
 [%header,cols="20a,80a"]
 |===
@@ -484,9 +487,13 @@ services:
 |`-S`
 
 `--secure`
-|Runtime Manager エージェントがオンプレミス管理コンソールと TLS 接続を確立するように設定します。トラストストアとキーストアを JKS 形式で指定する必要があります。このオプションでは、REST 通信用の TLS チャネルのみが有効になります。<<セキュア接続チャネル>>を参照してください。これは、手動でエージェントを管理するためのものです (ARM クラウドコンソールを使用せずにエージェントを管理する場合など)。
+|Runtime Manager エージェントがオンプレミス管理コンソールと TLS 接続を確立するように設定します。
+
+キーストア (公開/非公開鍵ペア) とトラストストアのファイルを JKS 形式で提供します。
 
 |===
+
+セキュア接続チャネルモードを選択すると、次のメニューが表示されます。
 
 ----
 The communication channel for the agent will be encrypted using
@@ -501,24 +508,21 @@ Keystore Alias (?):
 Keystore Alias Password (?):
 INFO: Mule agent was successfully configured to use a TLS channel for REST communications.
 ----
-_Keystore location (キーストアの場所)_
 
-通信チャネルを暗号化するためのキーストアファイルの場所。キーストアは JKS 形式である必要があります。必ず指定する必要があります。
-
-_Truststore location (トラストストアの場所)_
-
-管理コンソールからの要求を受信するためのトラストストアの場所。トラストストアは JKS 形式である必要があります。またパスワードは設定しないでください。
-
-_Keystore Password (キーストアパスワード)_
-
-キーストアを参照するためのパスワード。このパスワードは、エージェントがキーストアを開くために使用されます。
-
-_Keystore Alias (キーストアの別名)_
-
-キーストア内に保存された鍵の別名。
-
-_Keystore Alias Password (キーストアの別名のパスワード)_
-
+* *Keystore location (キーストアの場所)* (必須)
++
+通信チャネルを暗号化するためのキーストアファイルの場所を指定します。キーストアファイルは JKS 形式である必要があります。
+* *Truststore location (トラストストアの場所)*
++
+管理コンソールからの要求を受信するためのトラストストアの場所を指定します。トラストストアは JKS 形式である必要があります。またパスワードは設定しないでください。
+* *Keystore Password (キーストアパスワード)*
++
+エージェントがキーストアを読むために使用するパスワードを指定します。エージェントは、キーストアを開くときにもこのパスワードを使用します。
+* *Keystore Alias (キーストアの別名)*
++
+キーストア内に保存された鍵の別名を指定します。
+* *Keystore Alias Password (キーストアの別名のパスワード)*
++
 キーストア内の別名のパスワード。
 
 `-S` パラメータによって生成された `mule-agent.yml` ファイルの例を次に示します。
@@ -532,7 +536,7 @@ transports:
   rest.agent.transport:
     restSecurity:
       keyStoreFile: server.jks
-      keystorePassword: P@ssword
+      keyStorePassword: P@ssword
       keyStoreAlias: serverkey
       keyStoreAliasPassword: P@ssword
     port: 9999
@@ -544,20 +548,19 @@ services:
     frequencyTimeUnit: MINUTES
 ----
 
-=== 双方向 TLS 用の Mule Runtime の設定
+=== コントロールプレーンを使用しない Mule Runtime Engine の双方向 TLS の設定
 
-`amc_setup -S` オプションを使用して双方向 TLS を設定する例を次に示します。
+Mule がコントロールプレーンに接続されていない場合に双方向 TLS を設定するには、`amc_setup -S` オプションを使用します。
 
-TLS を設定する手順は、次のとおりです。
-
-. Runtime Manager エージェント (サーバ) を識別するキーストア (公開/非公開鍵ペア) を生成します。Runtime Manager エージェントのホスト名または IP アドレスに一致する CN を設定します。
-
+. Runtime Manager エージェント (サーバ) を識別するキーストア (公開/非公開鍵ペア) を生成します。
++
+Runtime Manager エージェントのホスト名または IP アドレスに一致する CN を設定します。
 +
 [source,console,linenums]
 ----
-echo "Generate a new keystore to identify the Runtime Manager Agent. Use CN=localhost"
+echo "Generate a new keystore to identify the Runtime Manager agent. Use CN=localhost"
 
-keytool -keystore rmakeystore.jks -keypass mulesoft -storepass mulesoft  -genkey -keypass mulesoft -noprompt \
+keytool -keystore rmakeystore.jks -keypass mulesoft -storepass mulesoft -genkey -keyalg RSA -keypass mulesoft -noprompt \
 -alias rma \
 -dname "CN=localhost, OU=Runtime Manager Agent, O=MuleSoft, L=San Francisco, S=Califorina, C=US"
 ----
@@ -571,19 +574,16 @@ echo "Export the rma alias' certificate from the rmakeystore.jks key store"
 keytool -export -alias rma -file rma.crt -keystore rmakeystore.jks -storepass mulesoft
 ----
 
-
-
 . Runtime Manager エージェントに接続する各 REST クライアントに対して、REST クライアントを識別するキーストア (公開/非公開鍵ペア) を生成します。
 
 +
 [source,console,linenums]
 ----
 echo "Generate a new keystore to be used by client requestors. Use CN=localhost"
-keytool -keystore clientkeystore.jks -storepass mulesoft -genkey -keypass mulesoft -noprompt \
+keytool -keystore clientkeystore.jks -storepass mulesoft -genkey -keyalg RSA -keypass mulesoft -noprompt \
 -alias client \
 -dname "CN=localhost, OU=RMA Client, O=MuleSoft, L=San Francisco, S=California, C=US"
 ----
-
 
 . REST クライアントの証明書 (公開鍵のみ) を DES 形式の証明書ファイルにエクスポートします。
 
@@ -594,8 +594,8 @@ echo "Export the client alias' certificate from the clientkeystore.jks key store
 keytool -export -alias client -file client.crt -keystore clientkeystore.jks -storepass mulesoft
 ----
 
-. これらは自己署名証明書ファイルであり、クライアントが認証機関 (CA) を使用してファイルを検証できないため、クライアントと RMA の両方の証明書 (公開鍵) を含むトラストストアファイルを作成して、CA によるこれらの両方の証明書への署名をエミュレートする必要があります。本番環境では、サーバとクライアントの両方の証明書は信頼された CA によって署名され、クライアントマシンとサーバマシンに対して公開または共有されます。
-
++
+. トラストストアファイルを作成します。
 +
 [source,console,linenums]
 ----
@@ -605,9 +605,16 @@ keytool -import -v -trustcacerts -alias rma -file rma.crt -keystore cacerts.jks 
 
 keytool -import -v -trustcacerts -alias client -file client.crt -keystore cacerts.jks -keypass mulesoft -storepass mulesoft -noprompt
 ----
++
+証明書ファイルは自己署名されているため、クライアントは認証機関 (CA) で証明書を検証することはできません。証明書に署名する CA をエミュレートするには、クライアント証明書と RMA 証明書 (公開鍵) の両方が入ったトラストストアファイルを作成する必要があります。本番環境では、サーバとクライアントの両方の証明書は信頼された CA によって署名され、クライアントマシンとサーバマシンに対して公開または共有されます。
 
-. `rmakeystore.jks` ファイルと `cacerts.jks` トラストストアを使用して Mule Runtime Engine を設定します。`$MULE_HOME/bin` フォルダからコマンド `./amc_setup -S` を実行します。たとえば、これまでのコマンドをすべて `/security` フォルダから実行した場合は、次の値を入力します。
+. `rmakeystore.jks` ファイルと `cacerts.jks` トラストストアを使用して Mule Runtime Engine を設定します。
++
+`$MULE_HOME/bin` フォルダで `./amc_setup -S` を実行します。
 
+. プロンプトに対して、生成した値を入力します。
++
+たとえば、これまでのコマンドを `/security` フォルダから実行した場合は、次の値を入力します。
 +
 [source,console,linenums]
 ----
@@ -650,11 +657,130 @@ services:
     frequencyTimeUnit: MINUTES
 
 ----
-`/security/cacerts.jks` トラストストアファイルが `$MULE_HOME/conf` フォルダにインポートされ、名前が `anypoint-truststore.jks` に変更されます。 +
++
+このコマンドは、`/security/cacerts.jks` トラストストアファイルを `$MULE_HOME/conf` フォルダにインポートして、名前を `anypoint-truststore.jks` に変更します。
++
 [NOTE]
-デフォルトのトラストストアは、Runtime Manager エージェントのバージョン 1.10.0 以降、名前が `anypoint-truststore.jks` に変更されました。Runtime Manager エージェントの以前のバージョンでは、デフォルトのトラストストアは `truststore.jks` という名前でした。 
+Runtime Manager エージェントバージョン 1.10.0 以降では、デフォルトのトラストストアの名前は `anypoint-truststore.jks` になります。Runtime Manager エージェントの以前のバージョンでは、デフォルトの名前は `truststore.jks` でした。
 
-. Mule Runtime Engine を再起動し、Runtime Manager エージェントの REST インターフェースが正常に起動したことを確認します。Mule Runtime Engine のログに SSL デバッグを追加します。 `./mule -M-Djavax.net.debug=all`
+. Mule Runtime Engine を再起動し、Runtime Manager エージェントの REST インターフェースが正常に起動したことを確認します。
+. Mule Runtime Engine のログに SSL デバッグを追加します。
++
+`./mule -M-Djavax.net.debug=all`
+
+=== コントロールプレーンで管理される Mule Runtime Engine の双方向 TLS の設定
+
+Mule がコントロールプレーンに接続されている場合に双方向 TLS を設定する手順は、次のとおりです。
+
+. Runtime Manager エージェント (サーバ) を識別するキーストア (公開/非公開鍵ペア) を生成します。
++
+Runtime Manager エージェントのホスト名または IP アドレスに一致する CN を設定します。
++
+[source,console,linenums]
+----
+echo "Generate a new keystore to identify the Runtime Manager Agent. Use CN=localhost"
+
+keytool -keystore rmakeystore.jks -keypass mulesoft -storepass mulesoft -genkey -keyalg RSA -keypass mulesoft -noprompt \
+-alias rma \
+-dname "CN=localhost, OU=Runtime Manager Agent, O=MuleSoft, L=San Francisco, S=Califorina, C=US"
+----
+
+. Runtime Manager エージェントの証明書 (公開鍵のみ) を DES 形式の証明書ファイルにエクスポートします。
+
++
+[source,console,linenums]
+----
+echo "Export the rma alias' certificate from the rmakeystore.jks key store"
+keytool -export -alias rma -file rma.crt -keystore rmakeystore.jks -storepass mulesoft
+----
+
+. Runtime Manager エージェントに接続する各 REST クライアントに対して、REST クライアントを識別するキーストア (公開/非公開鍵ペア) を生成します。
++
+[source,console,linenums]
+----
+echo "Generate a new keystore to be used by client requestors. Use CN=localhost"
+keytool -keystore clientkeystore.jks -storepass mulesoft -genkey -keyalg RSA -keypass mulesoft -noprompt \
+-alias client \
+-dname "CN=localhost, OU=RMA Client, O=MuleSoft, L=San Francisco, S=California, C=US"
+----
+
+. REST クライアントの証明書 (公開鍵のみ) を DES 形式の証明書ファイルにエクスポートします。
++
+[source,console,linenums]
+----
+echo "Export the client alias' certificate from the clientkeystore.jks key store"
+keytool -export -alias client -file client.crt -keystore clientkeystore.jks -storepass mulesoft
+----
+
+. クライアント証明書と RMA 証明書の両方が入ったトラストストアファイルを作成します。
+
++
+[source,console,linenums]
+----
+echo "Import client and server public keys into a common cacerts.jks truststore file"
+
+keytool -import -v -trustcacerts -alias rma -file rma.crt -keystore cacerts.jks -keypass mulesoft -storepass mulesoft -noprompt
+
+keytool -import -v -trustcacerts -alias client -file client.crt -keystore cacerts.jks -keypass mulesoft -storepass mulesoft -noprompt
+----
++
+証明書ファイルは自己署名されているため、クライアントは認証機関 (CA) で証明書を検証することはできません。証明書に署名する CA をエミュレートするには、クライアント証明書と RMA 証明書 (公開鍵) の両方が入ったトラストストアファイルを作成する必要があります。本番環境では、サーバとクライアントの両方の証明書は信頼された CA によって署名され、クライアントマシンとサーバマシンに対して公開または共有されます。
+
+. `anypoint-truststore.jks` ファイルと `mule-agent.yml` ファイルをバックアップします。
+
++
+[source,console,linenums]
+----
+cp anypoint-truststore.jks anypoint-truststure.jks.bkp
+cp mule-agent.yml mule-agent.yml.bkp
+----
+. Anypoint Platform 証明書を DES 形式の証明書ファイルにエクスポートします。
++
+パスワードが求められた場合は Enter を押します。
++
+[source,console,linenums]
+----
+keytool -export -alias hybrid -file hybrid.crt -keystore anypoint-truststore.jks
+----
+
+. クライアント、RMA、および Anypoint Platform の証明書が入ったトラストストアファイルを作成します。
++
+----
+keytool -import -v -trustcacerts -alias rma -file rma.crt -keystore cacerts.jks -keypass mulesoft -storepass mulesoft -noprompt
+keytool -import -v -trustcacerts -alias client -file client.crt -keystore cacerts.jks -keypass mulesoft -storepass mulesoft -noprompt
+keytool -import -v -trustcacerts -alias hybrid -file hybrid.crt -keystore cacerts.jks -keypass mulesoft -storepass mulesoft -noprompt
+----
++
+証明書ファイルは自己署名されているため、クライアントは認証機関 (CA) で証明書を検証することはできません。これらの証明書に署名する CA をエミュレートするには、クライアント証明書と RMA 証明書の両方が入ったトラストストアファイルを作成する必要があります。コントロールプレーンとの接続を維持するには、トラストストアファイルに Anypoint Platform 証明書も入っている必要があります。本番環境では、サーバとクライアントの両方の証明書は信頼された CA によって署名され、クライアントマシンとサーバマシンに対して公開または共有されます。
+
+. Mule Runtime Engine をシャットダウンし、`mule-agent.yml` ファイルを修正してセキュア REST API エンドポイントを設定します。
++
+----
+transports:
+  rest.agent.transport:
+    restSecurity:
+      keyStoreFile: rmakeystore.jks
+      keyStorePassword: mulesoft
+      keyStoreAlias: rma
+      keyStoreAliasPassword: mulesoft
+    port: 9995
+----
+
+. 新しく作成した`cacerts.jks` ファイルの名前を `anypoint-truststore.jks` に変更します。このファイルが、Runtime Manager エージェントと Anypoint Platform 接続で使用する新しいトラストストアになります。
++
+----
+mv cacerts.jks anypoint-truststore.jks
+----
++
+[NOTE]
+Runtime Manager エージェントバージョン 1.10.0 以降では、デフォルトのトラストストアの名前は `anypoint-truststore.jks` になります。Runtime Manager エージェントの以前のバージョンでは、デフォルトの名前は `truststore.jks` でした。
+
+. Mule Runtime Engine を起動して、Runtime Manager エージェント REST インターフェースが正常に立ち上がることと、まだ Anypoint Platform の Runtime Manager に接続されていることを確認します。
+
+. Mule のログに SSL デバッグを追加します。
++
+`./mule -M-Djavax.net.debug=all`
+
 
 ==== 双方向 TLS REST 要求の送信
 
@@ -860,7 +986,7 @@ Mule が管理するホストにアクセスするためにホワイトリスト
 |*EU*|*mule-manager.eu1.anypoint.mulesoft.com* |18.194.245.32
 |===
 
-次の DNS エンドポイントには静的 IP アドレスはありません。 
+次の DNS エンドポイントには静的 IP アドレスはありません。
 
 [%header,cols="2*a"]
 |====

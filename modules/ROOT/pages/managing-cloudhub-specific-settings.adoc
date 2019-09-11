@@ -11,7 +11,7 @@ image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title
 
 このドキュメントでは、CloudHub にデプロイされたアプリケーションに関する Anypoint Platform の設定について説明します。
 
-これらの設定は、Anypoint Platform の xref:access-management::index.adoc[*[Access Management (アクセス管理)\]*] から管理できます。
+これらの設定は、Anypoint Platform の xref:access-management::index.adoc[*[Access Management (アクセス管理)]*] から管理できます。
 
 [NOTE]
 アクセス管理設定を編集するには、アカウントに *Cloudhub administratrator (Cloudhub 管理者)* または *Organization Administrator (組織のシステム管理者)* のロールが必要です。

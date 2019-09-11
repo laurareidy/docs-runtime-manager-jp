@@ -9,36 +9,24 @@ image:logo-hybrid-active.png[link="/runtime-manager/deployment-strategies", titl
 image:logo-server-active.png[link="/runtime-manager/deployment-strategies", title="Anypoint Platform Private Cloud Edition"]
 image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
+サーバにデプロイする前に、以下を行う必要があります。
 
-[TIP]
-サーバにデプロイする前に、まず Mule をxref:3.8@mule-runtime::installing.adoc[インストール]し、xref:managing-servers.adoc#add-a-server[プラットフォームに登録]する必要があります。
+. xref:mule-runtime::mule-standalone.adoc[Mule のインストール]
+. xref:servers-create.adoc[Runtime Manager でのサーバの作成]
 
 Mule アプリケーションをローカルサーバにデプロイするには、次のものを使用できます。
 
 * xref:deployment-strategies.adoc#cloud-console-on-premises-deployment[Runtime Manager クラウドコンソール]
 * xref:deployment-strategies.adoc#on-premises-console-on-premises-deployment[Anypoint Platform Private Cloud Edition]
-
-// * *Anypoint Studio* - Right-click your project and click *Deploy to Anypoint Platform* -> *Cloud*.
-
-
-このドキュメントでは、*[Deploy Application (アプリケーションをデプロイ)]* ページのオプションについて説明します。このページは、上記のすべての場合で同じです。
-
+* https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[Runtime Manager API]
+* xref:3.9@mule-runtime::mule-maven-plugin.adoc[Mule-Maven プラグイン]
 
 [TIP]
 ====
-Anypoint Platform Private Cloud Edition をリクエストすることに関心がある場合は、営業担当にお問い合わせください。
+Anypoint Platform Private Cloud Edition を要求するには、営業担当にお問い合わせください。
 
-さらに、次のものを使用してサーバへのデプロイを実行することもできます。
-
-* The *https://anypoint.mulesoft.com/exchange/portals/anypoint-platform/f1e97bc6-315a-4490-82a7-23abe036327a.anypoint-platform/arm-rest-services[Runtime Manager API]*
-* *xref:3.8@mule-runtime::mule-maven-plugin.adoc[Mule-Maven プラグイン]*
-
-アプリケーションを xref:cloudhub.adoc[CloudHub] にデプロイする場合は、xref:deploying-to-cloudhub.adoc[「CloudHub へのデプロイ」]を参照してください。
+Runtime Manager を使用してサーバを管理する場合は、他のデプロイメント/管理方法やツール (MMC および手動デプロイメント) を使用してサーバを管理することはできません。
 ====
-
-
-[NOTE]
-同じサーバに二重の管理が存在しないようにする必要があります。Runtime Manager を使用する場合は、他のデプロイメントおよび管理方法やツール (MMC や手動デプロイメント) は避ける必要があります。
 
 == アプリケーションのデプロイ
 
@@ -55,7 +43,7 @@ image::deploying-to-your-own-servers-get-to-arm.png[]
 image::deployappfromconsole.png[DeployAppFromConsole]
 +
 [TIP]
-*注意*: *[Servers (サーバ)]* タブについての詳細は、xref:managing-servers.adoc[「サーバの管理」]を参照してください。
+*[Servers (サーバ)]* タブについての詳細は、xref:managing-servers.adoc[「サーバの管理」]を参照してください。
 +
 .  [Deploy Application (アプリケーションをデプロイ)] ページが開きます。
 +
@@ -214,7 +202,7 @@ Runtime Manager でプロパティを指定することにより、1 か所で�
 image::deploying-to-your-own-servers-198b4.png[]
 
 [TIP]
-[Logging (ログ)] タブでこれを設定すると、Mule の `log4j2.xml` ファイルを編集するのと同じ効果が得られます。その方法についての詳細は、xref:3.8@mule-runtime::logging-in-mule.adoc#configuring-custom-logging-settings[「logging in Mule (Mule のログ)」]を参照してください。Apache のドキュメントで https://logging.apache.org/log4j/2.x/manual/configuration.html[`log4j2.xml` configuration] への参照を確認することもできます。
+[Logging (ログ)] タブでこれを設定すると、Mule の `log4j2.xml` ファイルを編集するのと同じ効果が得られます。その方法についての詳細は、xref:3.8@mule-runtime::logging-in-mule.adoc#configuring-custom-logging-settings[「logging in Mule (Mule のログ)」]を参照してください。Apache のドキュメントで https://logging.apache.org/log4j/2.x/manual/configuration.html[`log4j2.xml` の設定]への参照を確認することもできます。
 
 
 

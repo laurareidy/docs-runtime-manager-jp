@@ -1,8 +1,8 @@
-= 通知の作成
+= CloudHub API コールによる通知の作成
 ifndef::env-site,env-github[]
 include::_attributes.adoc[]
 endif::[]
-:keywords: cloudhub, cloudhub api, 管理, クラウド, enterprise, arm, Runtime Manager
+
 
 image:logo-cloud-active.png[link="/runtime-manager/deployment-strategies", title="CloudHub"]
 image:logo-hybrid-disabled.png[link="/runtime-manager/deployment-strategies", title="ハイブリッドデプロイメント"]
@@ -10,11 +10,11 @@ image:logo-server-disabled.png[link="/runtime-manager/deployment-strategies", ti
 image:logo-pcf-disabled.png[link="/runtime-manager/deployment-strategies", title="Pivotal Cloud Foundry"]
 
 [TIP]
-このドキュメントでは、xref:cloudhub-api.adoc[CloudHub API] のコールについて説明します。Runtime Manager UI を使用してこれと同じタスクをより容易に実行する手順については、xref:cloudhub.adoc[CloudHub] とその下位ページを参照してください。
+Runtime Manager UI を使用して通知を作成する手順については、xref:cloudhub.adoc[「CloudHub」]とその下位ページを参照してください。
 
-/api/notifications リソースを指定して POST 操作を実行すると、新しい CloudHub 通知が作成されます。
+`/api/notifications` リソースを指定して POST 操作を実行すると、新しい CloudHub 通知が作成されます。
 
-*要求の例:*
+== 要求の例
 
 [source,json,linenums]
 ----
@@ -28,7 +28,7 @@ Content-Type: application/json
 }
 ----
 
-応答の例:
+== 応答の例
 
 [source,json,linenums]
 ----
